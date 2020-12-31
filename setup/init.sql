@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS guardian;
+CREATE DATABASE guardian;
