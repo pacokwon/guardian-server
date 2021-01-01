@@ -13,22 +13,18 @@ export default class Pet {
     id: number;
 
     @Column({
+        type: 'varchar',
         length: 20,
         nullable: false
     })
     species: string;
-
-    @Column({
-        length: 20,
-        nullable: false
-    })
-    breed: string;
 
     @ManyToOne(() => User, { cascade: ['update'] })
     @JoinColumn({ name: 'guardian' })
     guardian: User;
 
     @Column({
+        type: 'varchar',
         length: 20,
         nullable: false
     })

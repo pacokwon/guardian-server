@@ -1,11 +1,11 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export default class User {
-    @Column({
+    @PrimaryColumn({
+        type: 'varchar',
         length: 30,
-        nullable: false,
-        primary: true
+        nullable: false
     })
     username: string;
 
