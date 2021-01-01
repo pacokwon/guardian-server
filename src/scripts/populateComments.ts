@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { getConnection } from 'typeorm';
 import Comment from '../entities/Comment';
 import Pet from '../entities/Pet';
@@ -23,8 +24,20 @@ export default async (numberOfComments: number): Promise<void> => {
         .limit(20)
         .getMany();
 
+    const result: { data: string[] } = await axios.get(
+        `http://names.drycodes.com/${numberOfComments}`,
+        {
+            params: {
+                nameOptions: 'funnyWords',
+                separator: 'space',
+                combine: 3
+            }
+        }
+    );
+    const { data: randomComments } = result;
+
     await Promise.all(
-        Array.from(Array(numberOfComments)).map(async _ => {
+        randomComments.map(async randomComment => {
             const userIndex = Math.floor(Math.random() * users.length);
             const petIndex = Math.floor(Math.random() * pets.length);
 
@@ -33,7 +46,8 @@ export default async (numberOfComments: number): Promise<void> => {
 
             const comment = commentRepository.create({
                 author: randomUser.username,
-                petID: randomPet.id
+                petID: randomPet.id,
+                content: randomComment
             });
 
             await commentRepository.save(comment);
