@@ -13,6 +13,7 @@ export default class Pet {
     id: number;
 
     @Column({
+        type: 'varchar',
         length: 20,
         nullable: false
     })
@@ -23,6 +24,7 @@ export default class Pet {
     guardian: User;
 
     @Column({
+        type: 'varchar',
         length: 20,
         nullable: false
     })
