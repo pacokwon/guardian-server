@@ -18,12 +18,6 @@ export default class Pet {
     })
     species: string;
 
-    @Column({
-        length: 20,
-        nullable: false
-    })
-    breed: string;
-
     @ManyToOne(() => User, { cascade: ['update'] })
     @JoinColumn({ name: 'guardian' })
     guardian: User;
