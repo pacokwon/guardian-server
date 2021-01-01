@@ -15,11 +15,11 @@ export default class Comment {
 
     @ManyToOne(() => User, { cascade: ['update'] })
     @JoinColumn({ name: 'author' })
-    author: User;
+    author: string;
 
     @ManyToOne(() => Pet, { cascade: ['update'] })
     @JoinColumn({ name: 'petID' })
-    petID: Pet;
+    petID: number;
 
     @Column({
         type: 'tinyint',
