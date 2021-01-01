@@ -26,4 +26,10 @@ export default class Comment {
         default: 0
     })
     deleted: number;
+
+    @Column({
+        type: 'varchar',
+        length: 50
+    })
+    content: string;
 }
