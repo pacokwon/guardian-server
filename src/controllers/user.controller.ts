@@ -17,7 +17,9 @@ const getAllUsers = async (_: Request, res: Response): Promise<void> => {
 const getUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
     const user = await UserService.getSingleUser(id);
-    res.json({ user });
+
+    const statusCode = user ? 200 : 400;
+    res.status(statusCode).json({ user });
 };
 
 const createUser = async (
@@ -33,7 +35,7 @@ const createUser = async (
     const userExists = await UserService.exists(username);
 
     if (userExists) {
-        res.json({ success: false });
+        res.status(400).json({ success: false });
         return;
     }
 
@@ -55,7 +57,8 @@ const modifyUser = async (
     // as of now, the only modifiable data in a user is the username
     const success = await UserService.modifyUsername(oldUsername, newUsername);
 
-    res.json({ success });
+    const statusCode = success ? 200 : 400;
+    res.status(statusCode).json({ success });
 };
 
 const removeUser = async (
@@ -68,7 +71,9 @@ const removeUser = async (
 ): Promise<void> => {
     const { id } = req.params;
     const success = await UserService.removeUser(id);
-    res.json({ success });
+
+    const statusCode = success ? 200 : 400;
+    res.status(statusCode).json({ success });
 };
 
 const getUserPets = async (req: Request, res: Response): Promise<void> => {};
