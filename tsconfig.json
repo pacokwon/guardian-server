@@ -15,7 +15,8 @@
         "experimentalDecorators": true,
         "baseUrl": "./src", // for non-relative modules import
         "paths": {
-            "@entities/*": ["entities/*"]
+            "@entities/*": ["entities/*"],
+            "@controllers/*": ["controllers/*"]
         }
     }
 }
