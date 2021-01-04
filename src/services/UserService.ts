@@ -32,6 +32,9 @@ const modifyUsername = async (
     oldUsername: string,
     newUsername: string
 ): Promise<boolean> => {
+    const newUsernameExists = await exists(newUsername);
+    if (newUsernameExists) return false;
+
     const user = await getSingleUser(oldUsername);
 
     if (!user) return false;
