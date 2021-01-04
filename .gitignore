@@ -192,3 +192,4 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,macos,windows
 
 ormconfig.json
+ormconfig.js
