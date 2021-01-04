@@ -1,5 +1,5 @@
 import express from 'express';
-import * as pc from '@controllers/pet.controller';
+import * as pc from '@/controllers/pet.controller';
 
 const router = express.Router();
 
