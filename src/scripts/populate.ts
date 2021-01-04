@@ -7,16 +7,16 @@ import populateComments from './populateComments';
 (async () => {
     const connection = await createConnection();
 
-    console.log('👱 Creating Users...')
+    console.log('👱 Creating Users...');
     await populateUsers(15);
 
-    console.log('🐶 Creating Pets...')
+    console.log('🐶 Creating Pets...');
     await populatePets(20, 20);
 
-    console.log('✉️ Creating Comments...')
+    console.log('✉️ Creating Comments...');
     await populateComments(40);
 
-    console.log('🎉 Done!')
+    console.log('🎉 Done!');
 
     await connection.close();
-})()
+})();
