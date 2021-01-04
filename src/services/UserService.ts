@@ -45,7 +45,7 @@ const removeUser = async (username: string): Promise<boolean> => {
     const user = await getSingleUser(username);
 
     // cannot remove a user that does not exist
-    if (!user || user.deleted === 0) return false;
+    if (!user || user.deleted === 1) return false;
 
     user.deleted = 1;
     await getRepository(User).save(user);
