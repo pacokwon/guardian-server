@@ -1,55 +1,57 @@
-import { getConnection, Repository } from 'typeorm';
+import { getRepository } from 'typeorm';
 import User from '@/entities/User';
 
-export class UserService {
-    private repository: Repository<User>;
+const getAll = async (): Promise<User[]> => {
+    return await getRepository(User).find();
+};
 
-    constructor() {
-        this.repository = getConnection().getRepository(User);
-    }
+const getSingleUser = async (username: string): Promise<User | null> => {
+    const user = await getRepository(User).findOne({ username });
 
-    async getAll(): Promise<User[]> {
-        return await this.repository.find();
-    }
+    if (!user) return null;
+    return user;
+};
 
-    async getSingleUser(username: string): Promise<User | null> {
-        const user = await this.repository.findOne({ username });
+const exists = async (username: string): Promise<boolean> => {
+    const count = await getRepository(User).count({ username });
+    return count > 0;
+};
 
-        if (!user) return null;
-        return user;
-    }
+const createUser = async (username: string): Promise<void> => {
+    const repository = getRepository(User);
+    const user = repository.create({ username });
+    await repository.save(user);
+};
 
-    async exists(username: string): Promise<boolean> {
-        const count = await this.repository.count({ username });
-        return count > 0;
-    }
+const modifyUsername = async (
+    oldUsername: string,
+    newUsername: string
+): Promise<boolean> => {
+    const user = await getSingleUser(oldUsername);
 
-    async createUser(username: string): Promise<void> {
-        const user = this.repository.create({ username });
-        await this.repository.save(user);
-    }
+    if (!user) return false;
 
-    async modifyUsername(
-        oldUsername: string,
-        newUsername: string
-    ): Promise<boolean> {
-        const user = await this.getSingleUser(oldUsername);
+    user.username = newUsername;
+    await getRepository(User).save(user);
+    return true;
+};
 
-        if (!user) return false;
+const removeUser = async (username: string): Promise<boolean> => {
+    const user = await getSingleUser(username);
 
-        user.username = newUsername;
-        await this.repository.save(user);
-        return true;
-    }
+    // cannot remove a user that does not exist
+    if (!user || user.deleted === 0) return false;
 
-    async removeUser(username: string): Promise<boolean> {
-        const user = await this.getSingleUser(username);
+    user.deleted = 1;
+    await getRepository(User).save(user);
+    return true;
+};
 
-        // cannot remove a user that does not exist
-        if (!user || user.deleted === 0) return false;
-
-        user.deleted = 1;
-        await this.repository.save(user);
-        return true;
-    }
-}
+export {
+    getAll,
+    getSingleUser,
+    exists,
+    createUser,
+    modifyUsername,
+    removeUser
+};
