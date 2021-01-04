@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserService } from '@/services/UserService';
+import * as UserService from '@/services/UserService';
 
 interface CreateUserBody {
     username: string;
@@ -9,16 +9,14 @@ interface ModifyUserBody {
     username: string;
 }
 
-const UserServiceInstance = new UserService();
-
 const getAllUsers = async (_: Request, res: Response): Promise<void> => {
-    const users = await UserServiceInstance.getAll();
+    const users = await UserService.getAll();
     res.json({ users });
 };
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const user = await UserServiceInstance.getSingleUser(id);
+    const user = await UserService.getSingleUser(id);
     res.json({ user });
 };
 
@@ -32,14 +30,14 @@ const createUser = async (
 ): Promise<void> => {
     const { username } = req.body;
 
-    const userExists = await UserServiceInstance.exists(username);
+    const userExists = await UserService.exists(username);
 
     if (userExists) {
         res.json({ success: false });
         return;
     }
 
-    await UserServiceInstance.createUser(username);
+    await UserService.createUser(username);
     res.json({ success: true });
 };
 
@@ -55,10 +53,7 @@ const modifyUser = async (
     const { id: oldUsername } = req.params;
 
     // as of now, the only modifiable data in a user is the username
-    const success = await UserServiceInstance.modifyUsername(
-        oldUsername,
-        newUsername
-    );
+    const success = await UserService.modifyUsername(oldUsername, newUsername);
 
     res.json({ success });
 };
@@ -72,7 +67,7 @@ const removeUser = async (
     res: Response
 ): Promise<void> => {
     const { id } = req.params;
-    const success = await UserServiceInstance.removeUser(id);
+    const success = await UserService.removeUser(id);
     res.json({ success });
 };
 
