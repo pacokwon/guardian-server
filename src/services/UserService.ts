@@ -1,5 +1,5 @@
 import { getConnection, Repository } from 'typeorm';
-import User from '@entities/User';
+import User from '@/entities/User';
 
 export class UserService {
     private repository: Repository<User>;
