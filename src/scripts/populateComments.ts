@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { getConnection } from 'typeorm';
-import Comment from '../entities/Comment';
-import Pet from '../entities/Pet';
-import User from '../entities/User';
+import Comment from '@entities/Comment';
+import Pet from '@entities/Pet';
+import User from '@entities/User';
 
 export default async (numberOfComments: number): Promise<void> => {
     const connection = getConnection();
