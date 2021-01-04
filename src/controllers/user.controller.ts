@@ -1,12 +1,87 @@
 import { Request, Response } from 'express';
+import { UserService } from '@services/UserService';
 
-const getAllUsers = (req: Request, res: Response) => {};
-const getUser = (req: Request, res: Response) => {};
-const createUser = (req: Request, res: Response) => {};
-const modifyUser = (req: Request, res: Response) => {};
-const removeUser = (req: Request, res: Response) => {};
-const getUserPets = (req: Request, res: Response) => {};
-const getUserComments = (req: Request, res: Response) => {};
+interface CreateUserBody {
+    username: string;
+}
+
+interface ModifyUserBody {
+    username: string;
+}
+
+const UserServiceInstance = new UserService();
+
+const getAllUsers = async (_: Request, res: Response): Promise<void> => {
+    const users = await UserServiceInstance.getAll();
+    res.json({ users });
+};
+
+const getUser = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const user = await UserServiceInstance.getSingleUser(id);
+    res.json({ user });
+};
+
+const createUser = async (
+    req: Request<
+        Record<string, never>,
+        Record<string, unknown>,
+        CreateUserBody
+    >,
+    res: Response
+): Promise<void> => {
+    const { username } = req.body;
+
+    const userExists = await UserServiceInstance.exists(username);
+
+    if (userExists) {
+        res.json({ success: false });
+        return;
+    }
+
+    await UserServiceInstance.createUser(username);
+    res.json({ success: true });
+};
+
+const modifyUser = async (
+    req: Request<
+        Record<string, string>,
+        Record<string, unknown>,
+        ModifyUserBody
+    >,
+    res: Response
+): Promise<void> => {
+    const { username: newUsername } = req.body;
+    const { id: oldUsername } = req.params;
+
+    // as of now, the only modifiable data in a user is the username
+    const success = await UserServiceInstance.modifyUsername(
+        oldUsername,
+        newUsername
+    );
+
+    res.json({ success });
+};
+
+const removeUser = async (
+    req: Request<
+        Record<string, string>,
+        Record<string, unknown>,
+        Record<string, never>
+    >,
+    res: Response
+): Promise<void> => {
+    const { id } = req.params;
+    const success = await UserServiceInstance.removeUser(id);
+    res.json({ success });
+};
+
+const getUserPets = async (req: Request, res: Response): Promise<void> => {};
+
+const getUserComments = async (
+    req: Request,
+    res: Response
+): Promise<void> => {};
 
 export {
     getAllUsers,

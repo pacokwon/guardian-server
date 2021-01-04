@@ -16,7 +16,8 @@
         "baseUrl": "./src", // for non-relative modules import
         "paths": {
             "@entities/*": ["entities/*"],
-            "@controllers/*": ["controllers/*"]
+            "@controllers/*": ["controllers/*"],
+            "@services/*": ["services/*"]
         }
     }
 }
