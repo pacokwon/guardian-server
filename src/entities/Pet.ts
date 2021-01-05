@@ -7,14 +7,14 @@ import {
 } from 'typeorm';
 import User from './User';
 
-@Entity({ name: 'pets' })
+@Entity({ name: 'pet' })
 export default class Pet {
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({
         type: 'varchar',
-        length: 20,
+        length: 10,
         nullable: false
     })
     species: string;
@@ -33,7 +33,7 @@ export default class Pet {
     @Column({
         type: 'tinytext'
     })
-    image_url: string;
+    imageUrl: string;
 
     @Column({
         type: 'tinyint',

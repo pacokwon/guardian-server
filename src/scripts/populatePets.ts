@@ -22,9 +22,9 @@ const populateDogs = async (
     await Promise.all(
         nicknames.map(async (nickname, index) => {
             const species = 'dog';
-            const image_url = dogImageUrls[index];
+            const imageUrl = dogImageUrls[index];
 
-            const user = petRepository.create({ species, image_url, nickname });
+            const user = petRepository.create({ species, imageUrl, nickname });
             await petRepository.save(user);
         })
     );
@@ -56,9 +56,9 @@ const populateCats = async (
     await Promise.all(
         nicknames.map(async (nickname, index) => {
             const species = 'cat';
-            const image_url = catImageUrls[index];
+            const imageUrl = catImageUrls[index];
 
-            const user = petRepository.create({ species, image_url, nickname });
+            const user = petRepository.create({ species, imageUrl, nickname });
             return await petRepository.save(user);
         })
     );

@@ -8,7 +8,7 @@ import {
 import User from './User';
 import Pet from './Pet';
 
-@Entity({ name: 'comments' })
+@Entity({ name: 'comment' })
 export default class Comment {
     @PrimaryGeneratedColumn()
     id: number;
