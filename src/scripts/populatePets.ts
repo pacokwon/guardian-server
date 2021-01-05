@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getConnection } from 'typeorm';
-import Pet from '@entities/Pet';
+import { Pet } from '@entities/Pet';
 
 type DogAPIResponse = {
     status: boolean;

@@ -5,11 +5,11 @@ import {
     ManyToOne,
     JoinColumn
 } from 'typeorm';
-import User from './User';
-import Pet from './Pet';
+import { User } from './User';
+import { Pet } from './Pet';
 
 @Entity({ name: 'comment' })
-export default class Comment {
+export class Comment {
     @PrimaryGeneratedColumn()
     id: number;
 

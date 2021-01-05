@@ -1,8 +1,8 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'user' })
-export default class User {
     @PrimaryColumn({
+export class User {
         type: 'varchar',
         length: 20,
         nullable: false
