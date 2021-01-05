@@ -18,8 +18,8 @@ export default async (numberOfUsers: number): Promise<void> => {
     );
 
     await Promise.all(
-        result.data.map(async username => {
-            const user = userRepository.create({ username });
+        result.data.map(async nickname => {
+            const user = userRepository.create({ nickname });
             await userRepository.save(user);
         })
     );
