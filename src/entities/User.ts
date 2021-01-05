@@ -1,13 +1,16 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'user' })
-    @PrimaryColumn({
+@Entity({ name: 'User' })
 export class User {
+    @PrimaryGeneratedColumn()
+    id: number;
+
+    @Column({
         type: 'varchar',
         length: 20,
         nullable: false
     })
-    username: string;
+    nickname: string;
 
     @Column({
         type: 'tinyint',
