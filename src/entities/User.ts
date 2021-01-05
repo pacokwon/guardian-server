@@ -1,10 +1,10 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'users' })
+@Entity({ name: 'user' })
 export default class User {
     @PrimaryColumn({
         type: 'varchar',
-        length: 30,
+        length: 20,
         nullable: false
     })
     username: string;
