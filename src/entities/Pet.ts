@@ -1,14 +1,7 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    ManyToOne,
-    JoinColumn
-} from 'typeorm';
-import User from './User';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'pet' })
-export default class Pet {
+@Entity({ name: 'Pet' })
+export class Pet {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -18,10 +11,6 @@ export default class Pet {
         nullable: false
     })
     species: string;
-
-    @ManyToOne(() => User, { cascade: ['update'] })
-    @JoinColumn({ name: 'guardian' })
-    guardian: User;
 
     @Column({
         type: 'varchar',
