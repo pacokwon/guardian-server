@@ -14,7 +14,6 @@ const models: TsoaRoute.Models = {
         "properties": {
             "id": {"dataType":"integer","required":true},
             "nickname": {"dataType":"string","required":true,"validators":{"maxLength":{"value":30}}},
-            "deleted": {"dataType":"integer","required":true},
         },
         "additionalProperties": false,
     },
@@ -31,6 +30,14 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "nickname": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SuccessStatusResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
         },
         "additionalProperties": false,
     },
