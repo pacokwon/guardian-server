@@ -28,7 +28,7 @@ export class UserController extends Controller {
     async getUser(@Path() id: number): Promise<SingleUserReadResponse> {
         const user = await UserService.getSingleUser(id);
 
-        const statusCode = user ? 200 : 400;
+        const statusCode = user ? 200 : 404;
         this.setStatus(statusCode);
 
         return { user };
@@ -53,7 +53,7 @@ export class UserController extends Controller {
         // as of now, the only modifiable data in a user is the nickname
         const success = await UserService.modifyNickname(id, nickname);
 
-        const statusCode = success ? 200 : 400;
+        const statusCode = success ? 200 : 404;
         this.setStatus(statusCode);
         return { success };
     }
@@ -62,7 +62,7 @@ export class UserController extends Controller {
     async removeUser(@Path() id: number): Promise<{ success: boolean }> {
         const success = await UserService.removeUser(id);
 
-        const statusCode = success ? 200 : 400;
+        const statusCode = success ? 200 : 404;
         this.setStatus(statusCode);
 
         return { success };
