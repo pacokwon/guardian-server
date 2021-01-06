@@ -5,6 +5,10 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
  */
 export interface IUser {
     /**
+     * @isInt
+     */
+    id: number;
+    /**
      * @maxLength 30
      */
     nickname: string;

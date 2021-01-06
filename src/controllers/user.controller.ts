@@ -1,94 +1,53 @@
-import { Request, Response } from 'express';
+import { Controller, Route, Get, Post, Put, Delete, Path, Body } from 'tsoa';
+import { IUser } from '@/entities/User';
 import * as UserService from '@/services/UserService';
 
-interface CreateUserBody {
-    username: string;
-}
+@Route('user')
+export class UserController extends Controller {
+    @Get()
+    async getAllUsers(): Promise<IUser[]> {
+        const users = await UserService.getAll();
 
-interface ModifyUserBody {
-    username: string;
-}
-
-const getAllUsers = async (_: Request, res: Response): Promise<void> => {
-    const users = await UserService.getAll();
-    res.json({ users });
-};
-
-const getUser = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
-    const user = await UserService.getSingleUser(id);
-
-    const statusCode = user ? 200 : 400;
-    res.status(statusCode).json({ user });
-};
-
-const createUser = async (
-    req: Request<
-        Record<string, never>,
-        Record<string, unknown>,
-        CreateUserBody
-    >,
-    res: Response
-): Promise<void> => {
-    const { username } = req.body;
-
-    const userExists = await UserService.exists(username);
-
-    if (userExists) {
-        res.status(400).json({ success: false });
-        return;
+        this.setStatus(200);
+        return users;
     }
 
-    await UserService.createUser(username);
-    res.json({ success: true });
-};
+    @Get('{id}')
+    async getUser(@Path() id: number): Promise<IUser | null> {
+        const user = await UserService.getSingleUser(id);
 
-const modifyUser = async (
-    req: Request<
-        Record<string, string>,
-        Record<string, unknown>,
-        ModifyUserBody
-    >,
-    res: Response
-): Promise<void> => {
-    const { username: newUsername } = req.body;
-    const { id: oldUsername } = req.params;
+        const statusCode = user ? 200 : 400;
+        this.setStatus(statusCode);
 
-    // as of now, the only modifiable data in a user is the username
-    const success = await UserService.modifyUsername(oldUsername, newUsername);
+        return user;
+    }
 
-    const statusCode = success ? 200 : 400;
-    res.status(statusCode).json({ success });
-};
+    @Post()
+    async createUser(@Body() nickname: string): Promise<void> {
+        await UserService.createUser(nickname);
+        this.setStatus(200);
+    }
 
-const removeUser = async (
-    req: Request<
-        Record<string, string>,
-        Record<string, unknown>,
-        Record<string, never>
-    >,
-    res: Response
-): Promise<void> => {
-    const { id } = req.params;
-    const success = await UserService.removeUser(id);
+    @Put('{id}')
+    async modifyUser(
+        @Body() nickname: string,
+        @Path() id: number
+    ): Promise<{ success: boolean }> {
+        // as of now, the only modifiable data in a user is the nickname
+        const success = await UserService.modifyNickname(id, nickname);
 
-    const statusCode = success ? 200 : 400;
-    res.status(statusCode).json({ success });
-};
+        const statusCode = success ? 200 : 400;
+        this.setStatus(statusCode);
+        return { success };
+    }
 
-const getUserPets = async (req: Request, res: Response): Promise<void> => {};
+    async removeUser(@Path() id: number): Promise<{ success: boolean }> {
+        const success = await UserService.removeUser(id);
 
-const getUserComments = async (
-    req: Request,
-    res: Response
-): Promise<void> => {};
+        const statusCode = success ? 200 : 400;
+        this.setStatus(statusCode);
+        return { success };
+    }
 
-export {
-    getAllUsers,
-    getUser,
-    createUser,
-    modifyUser,
-    removeUser,
-    getUserPets,
-    getUserComments
-};
+    async getUserPets(): Promise<void> {}
+}
