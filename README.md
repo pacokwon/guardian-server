@@ -15,22 +15,16 @@ This project uses:
 
 After cloning this repository, run:
 
-```bash
-npm install
-```
+`npm install`
 
+To run the development server, run:
 
+`npm run dev`
 
+To run testing, run:
 
+`npm test`
 
-To run the development server:
+To generate swagger documentation only (to `docs/swagger.json`), run:
 
-```bash
-npm run dev
-```
-
-To run testing:
-
-```bash
-npm test
-```
+`npm run tsoa`
