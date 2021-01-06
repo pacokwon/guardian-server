@@ -2,11 +2,15 @@ import { getRepository } from 'typeorm';
 import { User } from '@/entities/User';
 
 const getAll = async (): Promise<User[]> => {
-    return await getRepository(User).find({ where: { deleted: 0 } });
+    return await getRepository(User).find({
+        select: ['id', 'nickname'],
+        where: { deleted: 0 }
+    });
 };
 
 const getSingleUser = async (id: number): Promise<User | null> => {
     const user = await getRepository(User).findOne({
+        select: ['id', 'nickname'],
         where: { id, deleted: 0 }
     });
 

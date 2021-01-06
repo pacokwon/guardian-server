@@ -38,8 +38,8 @@ describe('/api/user endpoint test', () => {
         expect(status).toBe(200);
         expect(users).toHaveLength(2);
 
-        expect(users).toContainEqual({ id: 1, nickname: 'foo', deleted: 0 });
-        expect(users).toContainEqual({ id: 2, nickname: 'bar', deleted: 0 });
+        expect(users).toContainEqual({ id: 1, nickname: 'foo' });
+        expect(users).toContainEqual({ id: 2, nickname: 'bar' });
     });
 
     it('should retrieve the desired user', async () => {
