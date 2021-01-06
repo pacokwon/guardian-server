@@ -61,6 +61,7 @@ export class UserController extends Controller {
             nickname: 'lacey'
         }
     ])
+    @Example<IUser[]>([])
     @Get('/')
     async getAllUsers(): Promise<IUser[]> {
         const users = await UserService.getAll();
@@ -70,7 +71,7 @@ export class UserController extends Controller {
     }
 
     /**
-     * Retrieve the information of a single user
+     * Retrieve the information of a single user by its id.
      *
      * @param id the user's identifier
      * @example id 4
