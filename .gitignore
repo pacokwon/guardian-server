@@ -191,5 +191,8 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vim,macos,windows
 
-ormconfig.json
-ormconfig.js
+# ignore typeorm config files
+ormconfig.js*
+
+# ignore swagger docs
+docs
