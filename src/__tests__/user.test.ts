@@ -71,7 +71,7 @@ describe('/api/user endpoint test', () => {
 
     it('should not retreive information of a deleted user "bar"', async () => {
         const response = await request(app).get('/api/user/1');
-        expect(response.status).toBe(400);
+        expect(response.status).toBe(404);
         expect(response.body.user).toBeNull();
     });
 });
