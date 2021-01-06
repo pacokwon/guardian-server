@@ -16,7 +16,7 @@ interface UserModificationRequestBody {
 
 @Route('api/user')
 export class UserController extends Controller {
-    @Get()
+    @Get('/')
     async getAllUsers(): Promise<IUser[]> {
         const users = await UserService.getAll();
 
@@ -34,7 +34,7 @@ export class UserController extends Controller {
         return { user };
     }
 
-    @Post()
+    @Post('/')
     async createUser(
         @Body() requestBody: UserCreationRequestBody
     ): Promise<void> {
@@ -49,6 +49,7 @@ export class UserController extends Controller {
         @Path() id: number
     ): Promise<{ success: boolean }> {
         const { nickname } = requestBody;
+
         // as of now, the only modifiable data in a user is the nickname
         const success = await UserService.modifyNickname(id, nickname);
 
@@ -66,6 +67,4 @@ export class UserController extends Controller {
 
         return { success };
     }
-
-    async getUserPets(): Promise<void> {}
 }
