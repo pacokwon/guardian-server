@@ -38,8 +38,10 @@
     "eslint": "^7.16.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.0",
+    "husky": "^4.3.6",
     "jest": "^26.6.3",
     "nodemon": "^2.0.6",
+    "pretty-quick": "^3.1.0",
     "supertest": "^6.0.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
@@ -56,5 +58,10 @@
     "swagger-ui-express": "^4.1.6",
     "tsoa": "^3.4.0",
     "typeorm": "^0.2.29"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
   }
 }

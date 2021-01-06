@@ -9,7 +9,5 @@
   "routes": {
     "routesDir": "./src"
   },
-  "ignore": [
-    "**/node_modules/**"
-  ]
+  "ignore": ["**/node_modules/**"]
 }
