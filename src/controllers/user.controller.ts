@@ -2,7 +2,6 @@ import { Controller, Route, Get, Post, Put, Delete, Path, Body } from 'tsoa';
 import { IUser } from '@/entities/User';
 import * as UserService from '@/services/UserService';
 
-@Route('user')
 interface UserCreationRequestBody {
     nickname: string;
 }
@@ -11,6 +10,7 @@ interface UserModificationRequestBody {
     nickname: string;
 }
 
+@Route('api/user')
 export class UserController extends Controller {
     @Get()
     async getAllUsers(): Promise<IUser[]> {
@@ -53,11 +53,13 @@ export class UserController extends Controller {
         return { success };
     }
 
+    @Delete('{id}')
     async removeUser(@Path() id: number): Promise<{ success: boolean }> {
         const success = await UserService.removeUser(id);
 
         const statusCode = success ? 200 : 400;
         this.setStatus(statusCode);
+
         return { success };
     }
 
