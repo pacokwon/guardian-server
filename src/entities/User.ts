@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 /**
- * @tsoaModel
+ * JSON object containing user information
  */
 export interface IUser {
     /**
@@ -12,10 +12,6 @@ export interface IUser {
      * @maxLength 30
      */
     nickname: string;
-    /**
-     * @isInt
-     */
-    deleted: number;
 }
 
 @Entity({ name: 'User' })
