@@ -1,5 +1,16 @@
 # Guardian
 
+Guardian is an API server for a toy project, where users can register themselves as guardians (for a temporary period of time) to pets that are registered in the service.
+
+This project uses:
+
+- [Typescript](https://github.com/microsoft/TypeScript) as the main language
+- [Express](https://github.com/expressjs/express) as server framework
+- [MySQL](https://www.mysql.com/) as database
+- [TypeORM](https://github.com/typeorm/typeorm/) as ORM
+- [tsoa](https://github.com/lukeautry/tsoa) for automated routes & swagger specification generation
+- [Jest](https://jestjs.io/) as testing framework
+
 ## Getting Started
 
 After cloning this repository, run:
@@ -8,7 +19,7 @@ After cloning this repository, run:
 npm install
 ```
 
-This project contains scripts to initialize(a.k.a. populate) the MYSQL database with a handful of random data beforehand. In order to use this feature, one must register and retrieve an API key from the (Cat API)[https://docs.thecatapi.com/authentication] and use the key by creating an `.env` file at the project root(refer to `.env.example`). One also must create an `ormconfig.json` from the example configuration `ormconfig.example.json`. At least the password of the database must be filled in.
+This project contains scripts to initialize(a.k.a. populate) the MYSQL database with a handful of random data beforehand. In order to use this feature, one must register and retrieve an API key from the [Cat API](https://docs.thecatapi.com/authentication) and use the key by creating an `.env` file at the project root(refer to `.env.example`). One also must create an `ormconfig.json` from the example configuration `ormconfig.example.json`. At least the password of the database must be filled in.
 
 Once the above two requirements are met, one can run:
 
@@ -17,3 +28,15 @@ npm run populate
 ```
 
 to populate the database.
+
+To run the development server:
+
+```bash
+npm run dev
+```
+
+To run testing:
+
+```bash
+npm test
+```
