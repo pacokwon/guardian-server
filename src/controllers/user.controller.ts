@@ -2,6 +2,10 @@ import { Controller, Route, Get, Post, Put, Delete, Path, Body } from 'tsoa';
 import { IUser } from '@/entities/User';
 import * as UserService from '@/services/UserService';
 
+interface SingleUserReadResponse {
+    user: IUser | null;
+}
+
 interface UserCreationRequestBody {
     nickname: string;
 }
@@ -21,13 +25,13 @@ export class UserController extends Controller {
     }
 
     @Get('{id}')
-    async getUser(@Path() id: number): Promise<IUser | null> {
+    async getUser(@Path() id: number): Promise<SingleUserReadResponse> {
         const user = await UserService.getSingleUser(id);
 
         const statusCode = user ? 200 : 400;
         this.setStatus(statusCode);
 
-        return user;
+        return { user };
     }
 
     @Post()
