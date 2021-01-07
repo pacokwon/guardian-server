@@ -64,7 +64,7 @@ export class UserController extends Controller {
     @Example<UserModel[]>([])
     @Get('/')
     async getAllUsers(): Promise<UserModel[]> {
-        const users = await UserService.getAll();
+        const users = await UserService.getAllUsers();
 
         this.setStatus(200);
         return users;
