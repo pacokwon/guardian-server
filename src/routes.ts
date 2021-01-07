@@ -21,7 +21,7 @@ const models: TsoaRoute.Models = {
     "SingleUserReadResponse": {
         "dataType": "refObject",
         "properties": {
-            "user": {"dataType":"union","subSchemas":[{"ref":"IUser"},{"dataType":"enum","enums":[null]}],"required":true},
+            "user": {"ref":"IUser"},
         },
         "additionalProperties": false,
     },
@@ -84,7 +84,7 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/user/:id',
             function (request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -129,7 +129,7 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UserModificationRequestBody"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -151,7 +151,7 @@ export function RegisterRoutes(app: express.Router) {
         app.delete('/api/user/:id',
             function (request: any, response: any, next: any) {
             const args = {
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

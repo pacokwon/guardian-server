@@ -8,13 +8,12 @@ const getAll = async (): Promise<User[]> => {
     });
 };
 
-const getSingleUser = async (id: number): Promise<User | null> => {
+const getSingleUser = async (id: number): Promise<User | undefined> => {
     const user = await getRepository(User).findOne({
         select: ['id', 'nickname'],
         where: { id, deleted: 0 }
     });
 
-    if (!user) return null;
     return user;
 };
 
