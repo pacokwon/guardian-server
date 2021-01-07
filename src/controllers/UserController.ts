@@ -11,7 +11,7 @@ import {
     SuccessResponse,
     Example
 } from 'tsoa';
-import { IUser } from '@/entities/User';
+import { UserModel } from '@/entities/User';
 import * as UserService from '@/services/UserService';
 
 /**
@@ -32,7 +32,7 @@ interface UserModificationRequestBody {
  * Response containing requested user information
  */
 interface SingleUserReadResponse {
-    user?: IUser;
+    user?: UserModel;
 }
 
 /**
@@ -47,7 +47,7 @@ export class UserController extends Controller {
     /**
      * Retrieve all users' information
      */
-    @Example<IUser[]>([
+    @Example<UserModel[]>([
         {
             id: 2,
             nickname: 'bently'
@@ -61,9 +61,9 @@ export class UserController extends Controller {
             nickname: 'lacey'
         }
     ])
-    @Example<IUser[]>([])
+    @Example<UserModel[]>([])
     @Get('/')
-    async getAllUsers(): Promise<IUser[]> {
+    async getAllUsers(): Promise<UserModel[]> {
         const users = await UserService.getAll();
 
         this.setStatus(200);
