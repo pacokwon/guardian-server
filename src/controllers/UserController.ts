@@ -32,7 +32,7 @@ interface UserModificationRequestBody {
  * Response containing requested user information
  */
 interface SingleUserReadResponse {
-    user: IUser | null;
+    user?: IUser;
 }
 
 /**
@@ -75,6 +75,7 @@ export class UserController extends Controller {
      *
      * @param id the user's identifier
      * @example id 4
+     * @isInt id
      */
     @Example<SingleUserReadResponse>({
         user: {
@@ -82,7 +83,7 @@ export class UserController extends Controller {
             nickname: 'max'
         }
     })
-    @Response<SingleUserReadResponse>(404, 'Resource Not Found', { user: null })
+    @Response<SingleUserReadResponse>(404, 'Resource Not Found', {})
     @Get('{id}')
     async getUser(@Path() id: number): Promise<SingleUserReadResponse> {
         const user = await UserService.getSingleUser(id);
@@ -114,8 +115,10 @@ export class UserController extends Controller {
      * Currently, a user only has a nickname as information.
      *
      * @param id the user's identifier
-     * @param requestBody json object that contains the user's desired new nickname
      * @example id 2
+     * @isInt id
+     *
+     * @param requestBody json object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
     @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
@@ -141,6 +144,7 @@ export class UserController extends Controller {
      *
      * @param id the user's identifier
      * @example id 2
+     * @isInt id
      */
     @Delete('{id}')
     @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
