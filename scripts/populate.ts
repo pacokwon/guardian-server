@@ -1,12 +1,9 @@
 import 'dotenv/config';
-import { createConnection } from 'typeorm';
+import { getPool } from '@/common/db';
 import populateUsers from './populateUsers';
 import populatePets from './populatePets';
 
 (async () => {
-    const connection = await createConnection();
-    await connection.synchronize(true);
-
     console.log('👱 Creating Users...');
     await populateUsers(15);
 
@@ -15,5 +12,5 @@ import populatePets from './populatePets';
 
     console.log('🎉 Done!');
 
-    await connection.close();
+    await getPool().end();
 })();
