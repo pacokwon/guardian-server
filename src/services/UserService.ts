@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import { User } from '@/entities/User';
 
-const getAll = async (): Promise<User[]> => {
+const getAllUsers = async (): Promise<User[]> => {
     return await getRepository(User).find({
         select: ['id', 'nickname'],
         where: { deleted: 0 }
@@ -48,4 +48,4 @@ const removeUser = async (id: number): Promise<boolean> => {
     return true;
 };
 
-export { getAll, getSingleUser, createUser, modifyNickname, removeUser };
+export { getAllUsers, getSingleUser, createUser, modifyNickname, removeUser };
