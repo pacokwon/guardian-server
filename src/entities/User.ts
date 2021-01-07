@@ -1,9 +1,9 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 /**
- * JSON object containing user information
+ * JSON object containing user information.
  */
-export interface IUser {
+export interface UserModel {
     /**
      * @isInt
      */
