@@ -63,13 +63,13 @@ describe('/api/user endpoint test', () => {
         expect(getBazResponse.body.user.nickname).toBe('baz');
     });
 
-    it('should successfully delete an existing user "bar"', async () => {
+    it('should successfully delete an existing user "baz"', async () => {
         const response = await request(app).delete('/api/user/1');
         expect(response.status).toBe(200);
         expect(response.body.success).toBe(true);
     });
 
-    it('should not retreive information of a deleted user "bar"', async () => {
+    it('should not retreive information of a deleted user "baz"', async () => {
         const response = await request(app).get('/api/user/1');
         expect(response.status).toBe(404);
         expect(response.body.user).toBeNull();
