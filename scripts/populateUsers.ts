@@ -1,10 +1,8 @@
 import axios from 'axios';
-import { getConnection } from 'typeorm';
-import { User } from '@/entities/User';
+import { getPool } from '@/common/db';
 
 export default async (numberOfUsers: number): Promise<void> => {
-    const connection = getConnection();
-    const userRepository = connection.getRepository(User);
+    const pool = getPool();
 
     const result: { data: string[] } = await axios.get(
         `http://names.drycodes.com/${numberOfUsers}`,
@@ -19,8 +17,14 @@ export default async (numberOfUsers: number): Promise<void> => {
 
     await Promise.all(
         result.data.map(async nickname => {
-            const user = userRepository.create({ nickname });
-            await userRepository.save(user);
+            const [_, err] = await pool.query(
+                `INSERT INTO User (nickname) VALUES ('${nickname}')`
+            );
+
+            if (err)
+                console.log(
+                    `Error occurred while inserting ${nickname}: ${err}`
+                );
         })
     );
 };
