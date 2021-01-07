@@ -1,15 +1,14 @@
-import { getRepository } from 'typeorm';
 import { User } from '@/entities/User';
 
 const getAllUsers = async (): Promise<User[]> => {
-    return await getRepository(User).find({
+    return await User.find({
         select: ['id', 'nickname'],
         where: { deleted: 0 }
     });
 };
 
 const getSingleUser = async (id: number): Promise<User | undefined> => {
-    const user = await getRepository(User).findOne({
+    const user = await User.findOne({
         select: ['id', 'nickname'],
         where: { id, deleted: 0 }
     });
@@ -18,9 +17,8 @@ const getSingleUser = async (id: number): Promise<User | undefined> => {
 };
 
 const createUser = async (nickname: string): Promise<void> => {
-    const repository = getRepository(User);
-    const user = repository.create({ nickname });
-    await repository.save(user);
+    const user = User.create({ nickname });
+    await user.save();
 };
 
 const modifyNickname = async (
@@ -32,7 +30,7 @@ const modifyNickname = async (
     if (!user) return false;
 
     user.nickname = newNickname;
-    await getRepository(User).save(user);
+    await user.save();
     return true;
 };
 
@@ -43,7 +41,7 @@ const removeUser = async (id: number): Promise<boolean> => {
     if (!user || user.deleted === 1) return false;
 
     user.deleted = 1;
-    await getRepository(User).save(user);
+    await user.save();
 
     return true;
 };
