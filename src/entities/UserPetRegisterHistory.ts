@@ -27,4 +27,11 @@ export default class UserPetRegisterHistory {
 
     @Column({ type: 'timestamp', nullable: true })
     releasedAt: Date;
+
+    // whether this registration has ended or not
+    @Column({
+        type: 'tinyint',
+        default: 0
+    })
+    released: number;
 }
