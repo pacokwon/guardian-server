@@ -5,6 +5,7 @@ import populatePets from './populatePets';
 
 (async () => {
     const connection = await createConnection();
+    await connection.synchronize(true);
 
     console.log('👱 Creating Users...');
     await populateUsers(15);
