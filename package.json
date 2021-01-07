@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run tsoa:watch\" \"nodemon\"",
-    "populate": "ts-node -r tsconfig-paths/register ./src/scripts/populate.ts",
+    "populate": "ts-node -r tsconfig-paths/register ./scripts/populate.ts",
     "build": "tsc",
     "lint": "eslint ./src --ext .ts",
     "tsoa": "npx tsoa spec-and-routes",
