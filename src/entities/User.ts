@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 /**
  * JSON object containing user information.
@@ -15,7 +15,7 @@ export interface UserModel {
 }
 
 @Entity({ name: 'User' })
-export class User {
+export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 

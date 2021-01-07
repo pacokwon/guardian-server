@@ -1,4 +1,5 @@
 import {
+    BaseEntity,
     Entity,
     Column,
     PrimaryGeneratedColumn,
@@ -10,7 +11,7 @@ import { User } from './User';
 import { Pet } from './Pet';
 
 @Entity({ name: 'UserPetRegisterHistory' })
-export default class UserPetRegisterHistory {
+export class UserPetRegisterHistory extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
