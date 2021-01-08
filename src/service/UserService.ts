@@ -20,13 +20,25 @@ const modifyNickname = async (
     id: number,
     newNickname: string
 ): Promise<boolean> => {
-    const error = await userRepository.updateOne(id, newNickname);
-    return error;
+    try {
+        await userRepository.updateOne(id, {
+            nickname: newNickname
+        });
+    } catch {
+        return false;
+    }
+
+    return true;
 };
 
 const removeUser = async (id: number): Promise<boolean> => {
-    const error = await userRepository.removeOne(id);
-    return error;
+    try {
+        await userRepository.removeOne(id);
+    } catch {
+        return false;
+    }
+
+    return true;
 };
 
 export { getAllUsers, getSingleUser, createUser, modifyNickname, removeUser };
