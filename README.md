@@ -7,7 +7,6 @@ This project uses:
 - [Typescript](https://github.com/microsoft/TypeScript) as the main language
 - [Express](https://github.com/expressjs/express) as server framework
 - [MySQL](https://www.mysql.com/) as database
-- [TypeORM](https://github.com/typeorm/typeorm/) as ORM
 - [tsoa](https://github.com/lukeautry/tsoa) for automated routes & swagger specification generation
 - [Jest](https://jestjs.io/) as testing framework
 

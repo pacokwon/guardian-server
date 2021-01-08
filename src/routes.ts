@@ -9,7 +9,7 @@ import * as express from 'express';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-    "UserModel": {
+    "User": {
         "dataType": "refObject",
         "properties": {
             "id": {"dataType":"integer","required":true},
@@ -21,7 +21,7 @@ const models: TsoaRoute.Models = {
     "SingleUserReadResponse": {
         "dataType": "refObject",
         "properties": {
-            "user": {"ref":"UserModel"},
+            "user": {"ref":"User"},
         },
         "additionalProperties": false,
     },
