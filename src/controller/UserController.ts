@@ -12,7 +12,7 @@ import {
     Example
 } from 'tsoa';
 import { User } from '@/model/User';
-import * as UserService from '@/services/UserService';
+import * as UserService from '@/service/UserService';
 
 /**
  * Request body to be sent on user creation
