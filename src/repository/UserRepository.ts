@@ -9,17 +9,24 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(): Promise<User[]> {
+    async findAll(select: string[] = ['id', 'nickname']): Promise<User[]> {
+        const selectedColumns = select.join(', ');
+
         const [rows] = await this.pool.query<UserRow[]>(
-            `SELECT id, nickname FROM User WHERE deleted=0`
+            `SELECT ${selectedColumns} FROM User WHERE deleted=0`
         );
 
         return rows;
     }
 
-    async findOne(id: number): Promise<User | undefined> {
+    async findOne(
+        id: number,
+        select: string[] = ['id', 'nickname']
+    ): Promise<User | undefined> {
+        const selectedColumns = select.join(', ');
+
         const [rows] = await this.pool.query<UserRow[]>(
-            `SELECT id, nickname FROM User WHERE id='${id}' AND deleted=0`
+            `SELECT ${selectedColumns} FROM User WHERE id='${id}' AND deleted=0`
         );
 
         return rows[0];
