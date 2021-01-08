@@ -42,7 +42,7 @@ interface SuccessStatusResponse {
     success: boolean;
 }
 
-@Route('api/user')
+@Route('api/users')
 export class UserController extends Controller {
     /**
      * Retrieve all users' information
