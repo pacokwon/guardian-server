@@ -18,7 +18,7 @@ export default async (numberOfUsers: number): Promise<void> => {
     await Promise.all(
         result.data.map(async nickname => {
             await pool
-                .query(`INSERT ITO User (nickname) VALUES ('${nickname}')`)
+                .query(`INSERT INTO User (nickname) VALUES ('${nickname}')`)
                 .catch(console.error);
         })
     );
