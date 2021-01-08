@@ -1,15 +1,10 @@
-import { createConnection, getConnection } from 'typeorm';
-import request from 'supertest';
 import app from '@/app';
+import { getPool } from '@/common/db';
+import request from 'supertest';
 
 describe('/api/user endpoint test', () => {
-    beforeAll(async () => {
-        const connection = await createConnection();
-        await connection.synchronize(true);
-    });
-
     afterAll(async () => {
-        await getConnection().close();
+        getPool().end();
     });
 
     it('should retrieve an empty list of users', async () => {

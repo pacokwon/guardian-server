@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { getConnection } from 'typeorm';
-import { Pet } from '@/entities/Pet';
+import { getPool } from '@/common/db';
 
 type DogAPIResponse = {
     status: boolean;
@@ -11,8 +10,7 @@ const populateDogs = async (
     numberOfDogs: number,
     nicknames: string[]
 ): Promise<void> => {
-    const connection = getConnection();
-    const petRepository = connection.getRepository(Pet);
+    const pool = getPool();
 
     const { data: dogResponse }: { data: DogAPIResponse } = await axios.get(
         `https://dog.ceo/api/breeds/image/random/${numberOfDogs}`
@@ -24,8 +22,14 @@ const populateDogs = async (
             const species = 'dog';
             const imageUrl = dogImageUrls[index];
 
-            const user = petRepository.create({ species, imageUrl, nickname });
-            await petRepository.save(user);
+            const [_, err] = await pool.query(
+                `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
+            );
+
+            if (err)
+                console.log(
+                    `Error occurred while inserting ${species} ${nickname}: ${err}`
+                );
         })
     );
 };
@@ -40,8 +44,7 @@ const populateCats = async (
     numberOfCats: number,
     nicknames: string[]
 ): Promise<void> => {
-    const connection = getConnection();
-    const petRepository = connection.getRepository(Pet);
+    const pool = getPool();
 
     const { data: catResponse }: { data: CatAPIResponse } = await axios.get(
         `https://api.thecatapi.com/v1/images/search?limit=${numberOfCats}`,
@@ -58,8 +61,14 @@ const populateCats = async (
             const species = 'cat';
             const imageUrl = catImageUrls[index];
 
-            const user = petRepository.create({ species, imageUrl, nickname });
-            return await petRepository.save(user);
+            const [_, err] = await pool.query(
+                `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
+            );
+
+            if (err)
+                console.log(
+                    `Error occurred while inserting ${species} ${nickname}: ${err}`
+                );
         })
     );
 };
