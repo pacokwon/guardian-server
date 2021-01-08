@@ -17,12 +17,12 @@ describe('/api/users endpoint test', () => {
         const createFooResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'foo' });
-        expect(createFooResponse.status).toBe(200);
+        expect(createFooResponse.status).toBe(201);
 
         const createBarResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'bar' });
-        expect(createBarResponse.status).toBe(200);
+        expect(createBarResponse.status).toBe(201);
     });
 
     it('should retrieve a list with two users "foo" and "bar"', async () => {

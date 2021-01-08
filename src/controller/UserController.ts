@@ -100,14 +100,14 @@ export class UserController extends Controller {
      * @param requestBody json object that contains the new user's nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @SuccessResponse(200, 'Ok')
     @Post('/')
+    @SuccessResponse(201)
     async createUser(
         @Body() requestBody: UserCreationRequestBody
     ): Promise<void> {
         const { nickname } = requestBody;
         await UserService.createUser(nickname);
-        this.setStatus(200);
+        this.setStatus(201);
     }
 
     /**
