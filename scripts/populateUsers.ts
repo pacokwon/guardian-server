@@ -17,14 +17,9 @@ export default async (numberOfUsers: number): Promise<void> => {
 
     await Promise.all(
         result.data.map(async nickname => {
-            const [_, err] = await pool.query(
-                `INSERT INTO User (nickname) VALUES ('${nickname}')`
-            );
-
-            if (err)
-                console.log(
-                    `Error occurred while inserting ${nickname}: ${err}`
-                );
+            await pool
+                .query(`INSERT ITO User (nickname) VALUES ('${nickname}')`)
+                .catch(console.error);
         })
     );
 };
