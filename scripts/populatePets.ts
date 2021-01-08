@@ -22,14 +22,11 @@ const populateDogs = async (
             const species = 'dog';
             const imageUrl = dogImageUrls[index];
 
-            const [_, err] = await pool.query(
-                `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
-            );
-
-            if (err)
-                console.log(
-                    `Error occurred while inserting ${species} ${nickname}: ${err}`
-                );
+            await pool
+                .query(
+                    `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
+                )
+                .catch(console.error);
         })
     );
 };
@@ -61,14 +58,11 @@ const populateCats = async (
             const species = 'cat';
             const imageUrl = catImageUrls[index];
 
-            const [_, err] = await pool.query(
-                `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
-            );
-
-            if (err)
-                console.log(
-                    `Error occurred while inserting ${species} ${nickname}: ${err}`
-                );
+            await pool
+                .query(
+                    `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
+                )
+                .catch(console.error);
         })
     );
 };
