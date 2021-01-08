@@ -2,6 +2,8 @@ import { Pool } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { UserRow, User } from '@/model/User';
 
+type ModifiableUserFields = Omit<Partial<User>, 'id'>;
+
 export class UserRepository {
     pool: Pool;
 
@@ -33,28 +35,34 @@ export class UserRepository {
     }
 
     async insertOne(nickname: string): Promise<void> {
-        const [_, error] = await this.pool.query<UserRow[]>(
+        await this.pool.query<UserRow[]>(
             `INSERT INTO User (nickname) VALUES ('${nickname}')`
         );
     }
 
-    async updateOne(id: number, nickname: string): Promise<boolean> {
-        const [_, error] = await this.pool.query<UserRow[]>(
-            `UPDATE User SET nickname='${nickname}' WHERE id='${id}' AND deleted=0`
-        );
+    async updateOne(id: number, fields: ModifiableUserFields): Promise<void> {
+        // implementation is incomplete since it does not support numerical types
+        // it is left as is since the only modifiable field as of now is the nickname
+        const columnValueMapping = Object.entries(fields)
+            .map(([key, value]) => `${key}='${value}'`)
+            .join(', ');
 
-        if (error) console.log(error);
-
-        return error ? false : true;
+        await this.pool
+            .query<UserRow[]>(
+                `UPDATE User SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
+            )
+            .catch(error => {
+                throw Error(error);
+            });
     }
 
-    async removeOne(id: number): Promise<boolean> {
-        const [_, error] = await this.pool.query<UserRow[]>(
-            `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
-        );
-
-        if (error) console.log(error);
-
-        return error ? false : true;
+    async removeOne(id: number): Promise<void> {
+        await this.pool
+            .query<UserRow[]>(
+                `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
+            )
+            .catch(error => {
+                throw Error(error);
+            });
     }
 }
