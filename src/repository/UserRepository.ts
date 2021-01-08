@@ -2,7 +2,7 @@ import { Pool } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { UserRow, User } from '@/model/User';
 
-type ModifiableUserFields = Omit<Partial<User>, 'id'>;
+type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
 export class UserRepository {
     pool: Pool;
@@ -40,7 +40,7 @@ export class UserRepository {
         );
     }
 
-    async updateOne(id: number, fields: ModifiableUserFields): Promise<void> {
+    async updateOne(id: number, fields: UserModifiableFields): Promise<void> {
         // implementation is incomplete since it does not support numerical types
         // it is left as is since the only modifiable field as of now is the nickname
         const columnValueMapping = Object.entries(fields)
