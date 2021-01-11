@@ -48,14 +48,14 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Partial_Pick_PetCreationRequestBody.nickname-or-imageUrl__": {
+    "Partial_Omit_PetCreationRequestBody.species__": {
         "dataType": "refAlias",
         "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"nickname":{"dataType":"string"},"imageUrl":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PetModificationRequestBody": {
         "dataType": "refAlias",
-        "type": {"ref":"Partial_Pick_PetCreationRequestBody.nickname-or-imageUrl__","validators":{}},
+        "type": {"ref":"Partial_Omit_PetCreationRequestBody.species__","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "User": {

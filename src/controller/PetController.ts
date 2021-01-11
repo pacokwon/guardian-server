@@ -7,6 +7,7 @@ import {
     Delete,
     Path,
     Body,
+    Example,
     Response,
     SuccessResponse
 } from 'tsoa';
@@ -15,7 +16,7 @@ import * as PetService from '@/service/PetService';
 import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
- * Request body to be sent on user creation
+ * Request body to be sent on pet creation
  */
 interface PetCreationRequestBody {
     species: string;
@@ -24,14 +25,14 @@ interface PetCreationRequestBody {
 }
 
 /**
- * Request body to be sent on user information modificiation
+ * Request body to be sent on pet information modificiation
  */
 type PetModificationRequestBody = Partial<
-    Pick<PetCreationRequestBody, 'nickname' | 'imageUrl'>
+    Omit<PetCreationRequestBody, 'species'>
 >;
 
 /**
- * Response containing requested user information
+ * Response containing requested pet information
  */
 interface SinglePetReadResponse {
     pet?: Pet;
@@ -40,8 +41,29 @@ interface SinglePetReadResponse {
 @Route('api/pets')
 export class PetController extends Controller {
     /**
-     * Retrieve all users' information
+     * Retrieve all pets' information
      */
+    @Example<Pet[]>([
+        {
+            id: 2,
+            species: 'dog',
+            nickname: 'bently',
+            imageUrl: 'https://placedog.net/300/300'
+        },
+        {
+            id: 8,
+            species: 'cat',
+            nickname: 'leonard',
+            imageUrl: 'https://placecat.com/300/300'
+        },
+        {
+            id: 13,
+            species: 'cat',
+            nickname: 'lacey',
+            imageUrl: 'https://placedog.net/500/500'
+        }
+    ])
+    @Example<Pet[]>([])
     @Get('/')
     async getAllPets(): Promise<Pet[]> {
         const pets = await PetService.getAllPets();
@@ -51,12 +73,21 @@ export class PetController extends Controller {
     }
 
     /**
-     * Retrieve the information of a single user by its id.
+     * Retrieve the information of a single pet by its id.
      *
-     * @param id the user's identifier
+     * @param id the pet's identifier
      * @example id 4
      * @isInt id
      */
+    @Example<SinglePetReadResponse>({
+        pet: {
+            id: 13,
+            species: 'cat',
+            nickname: 'lacey',
+            imageUrl: 'https://placedog.net/500/500'
+        }
+    })
+    @Example<SinglePetReadResponse>({})
     @Get('{id}')
     async getPet(@Path() id: number): Promise<SinglePetReadResponse> {
         const pet = await PetService.getSinglePet(id);
@@ -68,13 +99,14 @@ export class PetController extends Controller {
     }
 
     /**
-     * Create a new user from a nickname
+     * Create a new pet from its nickname, species and image
      *
-     * @param requestBody json object that contains the new user's nickname
-     * @example requestBody { "nickname": "foo" }
+     * @param requestBody json object that contains the new pet's information
+     * @example requestBody { "nickname": "foo", "species": "dog", "imageUrl": "https://placedog.net/400/400" }
+     * @example requestBody { "nickname": "bar", "species": "cat", "imageUrl": "https://placekitten.com/400/400" }
      */
     @Post('/')
-    @SuccessResponse(201)
+    @SuccessResponse(201, 'Created')
     async createPet(
         @Body() requestBody: PetCreationRequestBody
     ): Promise<void> {
@@ -84,15 +116,17 @@ export class PetController extends Controller {
     }
 
     /**
-     * Modify a specific user's information by its id.
-     * Currently, a user only has a nickname as information.
+     * Modify a specific pet's information by its id.
+     * The modifiable fields are nickname and imageUrl
      *
-     * @param id the user's identifier
+     * @param id the pet's identifier
      * @example id 2
      * @isInt id
      *
-     * @param requestBody json object that contains the user's desired new nickname
-     * @example requestBody { "nickname": "foo" }
+     * @param requestBody json object that contains the pet's desired new information
+     * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400" }
+     * @example requestBody { "nickname": "bar" }
+     * @example requestBody { "imageUrl": "https://placekitten.com/400/400" }
      */
     @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
         success: false
@@ -102,7 +136,6 @@ export class PetController extends Controller {
         @Body() requestBody: PetModificationRequestBody,
         @Path() id: number
     ): Promise<SuccessStatusResponse> {
-        // as of now, the only modifiable data in a user is the nickname
         const success = await PetService.modifyPet(id, requestBody);
 
         const statusCode = success ? 200 : 404;
@@ -111,9 +144,9 @@ export class PetController extends Controller {
     }
 
     /**
-     * Delete a user by its id
+     * Delete a pet by its id
      *
-     * @param id the user's identifier
+     * @param id the pet's identifier
      * @example id 2
      * @isInt id
      */
