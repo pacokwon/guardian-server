@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getPool } from '@/common/db';
 
-export default async (numberOfUsers: number): Promise<void> => {
+export const populateUsers = async (numberOfUsers: number): Promise<void> => {
     const pool = getPool();
 
     const result: { data: string[] } = await axios.get(

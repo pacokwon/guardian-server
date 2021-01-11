@@ -67,7 +67,7 @@ const populateCats = async (
     );
 };
 
-export default async (
+export const populatePets = async (
     numberOfDogs: number,
     numberOfCats: number
 ): Promise<void> => {
