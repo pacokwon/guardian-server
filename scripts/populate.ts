@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import { getPool } from '@/common/db';
-import populateUsers from './populateUsers';
-import populatePets from './populatePets';
+import { populateUsers } from './populateUsers';
+import { populatePets } from './populatePets';
+import { populateHistories } from './populateHistories';
 
 (async () => {
     console.log('👱 Creating Users...');
@@ -9,6 +10,9 @@ import populatePets from './populatePets';
 
     console.log('🐶 Creating Pets...');
     await populatePets(20, 20);
+
+    console.log('📖 Creating History...');
+    await populateHistories(10);
 
     console.log('🎉 Done!');
 
