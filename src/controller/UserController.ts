@@ -36,6 +36,11 @@ interface SingleUserReadResponse {
     user?: User;
 }
 
+/**
+ * Response containing requested user information
+ */
+type SingleUserUpdateResponse = SingleUserReadResponse;
+
 @Route('api/users')
 export class UserController extends Controller {
     /**
@@ -115,14 +120,12 @@ export class UserController extends Controller {
      * @param requestBody json object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
-        success: false
-    })
+    @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyUser(
         @Body() requestBody: UserModificationRequestBody,
         @Path() id: number
-    ): Promise<SuccessStatusResponse> {
+    ): Promise<SingleUserUpdateResponse> {
         const { nickname } = requestBody;
 
         // as of now, the only modifiable data in a user is the nickname
