@@ -7,40 +7,35 @@ import {
 
 const petRepository = new PetRepository();
 
-const getAllPets = async (): Promise<Pet[]> => {
+const findAll = async (): Promise<Pet[]> => {
     return await petRepository.findAll();
 };
 
-const getSinglePet = async (id: number): Promise<Pet | undefined> => {
+const findOne = async (id: number): Promise<Pet | undefined> => {
     const user = await petRepository.findOne(id);
     return user;
 };
 
-const createPet = async (fields: PetCreationFields): Promise<void> => {
+const createOne = async (fields: PetCreationFields): Promise<void> => {
     await petRepository.insertOne(fields);
 };
 
-const modifyPet = async (
+const updateOne = async (
     id: number,
     fields: PetModifiableFields
-): Promise<boolean> => {
+): Promise<Pet | undefined> => {
     try {
         await petRepository.updateOne(id, fields);
-    } catch {
-        return false;
-    }
 
-    return true;
+        // return modified row
+        return { id, ...fields };
+    } catch {
+        return undefined;
+    }
 };
 
-const removePet = async (id: number): Promise<boolean> => {
-    try {
-        await petRepository.removeOne(id);
-    } catch {
-        return false;
-    }
-
-    return true;
+const removeOne = async (id: number): Promise<void> => {
+    await petRepository.removeOne(id);
 };
 
-export { getAllPets, getSinglePet, createPet, modifyPet, removePet };
+export { findAll, findOne, createOne, updateOne, removeOne };

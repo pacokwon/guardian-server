@@ -66,11 +66,17 @@ describe('/api/pets endpoint test', () => {
     it("should successfully modify foo's information", async () => {
         const modifyFooResponse = await request(app).put('/api/pets/1').send({
             nickname: 'baz',
-            imageUrl: 'https://placekitten.com/600/600'
+            imageUrl: 'https://placekitten.com/600/600',
+            species: 'cat'
         });
 
         expect(modifyFooResponse.status).toBe(200);
-        expect(modifyFooResponse.body.success).toBe(true);
+        expect(modifyFooResponse.body.pet).toStrictEqual({
+            id: 1,
+            species: 'cat',
+            nickname: 'baz',
+            imageUrl: 'https://placekitten.com/600/600'
+        });
 
         // "foo" is now "baz"
 
@@ -85,31 +91,9 @@ describe('/api/pets endpoint test', () => {
         });
     });
 
-    it('should reject attempts to modify the species of a pet', async () => {
-        const modifyBarResponse = await request(app).put('/api/pets/2').send({
-            species: 'cat',
-            imageUrl: 'https://placedog.net/600/600'
-        });
-
-        expect(modifyBarResponse.status).toBe(400);
-    });
-
-    it('should not modify any information for rejected request', async () => {
-        const getBarResponse = await request(app).get('/api/pets/2');
-
-        expect(getBarResponse.status).toBe(200);
-        expect(getBarResponse.body.pet).toStrictEqual({
-            id: 2,
-            species: 'dog',
-            nickname: 'bar',
-            imageUrl: 'https://placedog.net/640/640'
-        });
-    });
-
     it('should successfully delete an existing pet "baz"', async () => {
         const response = await request(app).delete('/api/pets/1');
         expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
     });
 
     it('should not retreive information of a deleted pet "baz"', async () => {

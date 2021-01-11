@@ -3,42 +3,35 @@ import { UserRepository } from '@/repository/UserRepository';
 
 const userRepository = new UserRepository();
 
-const getAllUsers = async (): Promise<User[]> => {
+const findAll = async (): Promise<User[]> => {
     return await userRepository.findAll();
 };
 
-const getSingleUser = async (id: number): Promise<User | undefined> => {
+const findOne = async (id: number): Promise<User | undefined> => {
     const user = await userRepository.findOne(id);
     return user;
 };
 
-const createUser = async (nickname: string): Promise<void> => {
+const createOne = async (nickname: string): Promise<void> => {
     await userRepository.insertOne(nickname);
 };
 
-const modifyNickname = async (
+const updateOne = async (
     id: number,
     newNickname: string
-): Promise<boolean> => {
+): Promise<User | undefined> => {
     try {
-        await userRepository.updateOne(id, {
-            nickname: newNickname
-        });
-    } catch {
-        return false;
-    }
+        await userRepository.updateOne(id, { nickname: newNickname });
 
-    return true;
+        // return modified entry
+        return { id, nickname: newNickname };
+    } catch {
+        return undefined;
+    }
 };
 
-const removeUser = async (id: number): Promise<boolean> => {
-    try {
-        await userRepository.removeOne(id);
-    } catch {
-        return false;
-    }
-
-    return true;
+const removeOne = async (id: number): Promise<void> => {
+    await userRepository.removeOne(id);
 };
 
-export { getAllUsers, getSingleUser, createUser, modifyNickname, removeUser };
+export { findAll, findOne, createOne, updateOne, removeOne };
