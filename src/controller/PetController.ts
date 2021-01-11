@@ -12,6 +12,7 @@ import {
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
+import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
  * Request body to be sent on user creation
@@ -35,13 +36,6 @@ type PetModificationRequestBody = Partial<
 interface SinglePetReadResponse {
     pet?: Pet;
 }
-
-/**
- * Indicates whether a request has been successfully handled or not
- */
-// interface SuccessStatusResponse {
-//     success: boolean;
-// }
 
 @Route('api/pets')
 export class PetController extends Controller {
@@ -100,14 +94,14 @@ export class PetController extends Controller {
      * @param requestBody json object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Response<{ success: boolean }>(404, 'Resource Not Found', {
+    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
         success: false
     })
     @Put('{id}')
     async modifyPet(
         @Body() requestBody: PetModificationRequestBody,
         @Path() id: number
-    ): Promise<{ success: boolean }> {
+    ): Promise<SuccessStatusResponse> {
         // as of now, the only modifiable data in a user is the nickname
         const success = await PetService.modifyPet(id, requestBody);
 
@@ -124,10 +118,10 @@ export class PetController extends Controller {
      * @isInt id
      */
     @Delete('{id}')
-    @Response<{ success: boolean }>(404, 'Resource Not Found', {
+    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
         success: false
     })
-    async removePet(@Path() id: number): Promise<{ success: boolean }> {
+    async removePet(@Path() id: number): Promise<SuccessStatusResponse> {
         const success = await PetService.removePet(id);
 
         const statusCode = success ? 200 : 404;
