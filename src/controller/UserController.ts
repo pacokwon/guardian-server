@@ -13,6 +13,7 @@ import {
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
+import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
  * Request body to be sent on user creation
@@ -33,13 +34,6 @@ interface UserModificationRequestBody {
  */
 interface SingleUserReadResponse {
     user?: User;
-}
-
-/**
- * Indicates whether a request has been successfully handled or not
- */
-interface SuccessStatusResponse {
-    success: boolean;
 }
 
 @Route('api/users')
