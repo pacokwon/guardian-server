@@ -95,7 +95,7 @@ export class UserController extends Controller {
      * @example requestBody { "nickname": "foo" }
      */
     @Post('/')
-    @SuccessResponse(201)
+    @SuccessResponse(201, 'Created')
     async createUser(
         @Body() requestBody: UserCreationRequestBody
     ): Promise<void> {
