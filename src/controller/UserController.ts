@@ -13,7 +13,6 @@ import {
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
-import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
  * Request body to be sent on user creation
@@ -35,6 +34,11 @@ interface UserModificationRequestBody {
 interface SingleUserReadResponse {
     user?: User;
 }
+
+/**
+ * Response containing requested user information
+ */
+type SingleUserUpdateResponse = SingleUserReadResponse;
 
 @Route('api/users')
 export class UserController extends Controller {
@@ -58,7 +62,7 @@ export class UserController extends Controller {
     @Example<User[]>([])
     @Get('/')
     async getAllUsers(): Promise<User[]> {
-        const users = await UserService.getAllUsers();
+        const users = await UserService.findAll();
 
         this.setStatus(200);
         return users;
@@ -80,7 +84,7 @@ export class UserController extends Controller {
     @Response<SingleUserReadResponse>(404, 'Resource Not Found', {})
     @Get('{id}')
     async getUser(@Path() id: number): Promise<SingleUserReadResponse> {
-        const user = await UserService.getSingleUser(id);
+        const user = await UserService.findOne(id);
 
         const statusCode = user ? 200 : 404;
         this.setStatus(statusCode);
@@ -100,7 +104,7 @@ export class UserController extends Controller {
         @Body() requestBody: UserCreationRequestBody
     ): Promise<void> {
         const { nickname } = requestBody;
-        await UserService.createUser(nickname);
+        await UserService.createOne(nickname);
         this.setStatus(201);
     }
 
@@ -115,22 +119,19 @@ export class UserController extends Controller {
      * @param requestBody json object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
-        success: false
-    })
+    @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyUser(
         @Body() requestBody: UserModificationRequestBody,
         @Path() id: number
-    ): Promise<SuccessStatusResponse> {
+    ): Promise<SingleUserUpdateResponse> {
         const { nickname } = requestBody;
-
         // as of now, the only modifiable data in a user is the nickname
-        const success = await UserService.modifyNickname(id, nickname);
+        const modifiedUser = await UserService.updateOne(id, nickname);
 
-        const statusCode = success ? 200 : 404;
+        const statusCode = modifiedUser ? 200 : 404;
         this.setStatus(statusCode);
-        return { success };
+        return { user: modifiedUser };
     }
 
     /**
@@ -141,15 +142,13 @@ export class UserController extends Controller {
      * @isInt id
      */
     @Delete('{id}')
-    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
-        success: false
-    })
-    async removeUser(@Path() id: number): Promise<SuccessStatusResponse> {
-        const success = await UserService.removeUser(id);
-
-        const statusCode = success ? 200 : 404;
-        this.setStatus(statusCode);
-
-        return { success };
+    @Response<void>(404, 'Resource Not Found')
+    async removeUser(@Path() id: number): Promise<void> {
+        try {
+            await UserService.removeOne(id);
+            this.setStatus(200);
+        } catch {
+            this.setStatus(404);
+        }
     }
 }

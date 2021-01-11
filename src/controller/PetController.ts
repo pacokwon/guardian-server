@@ -13,7 +13,6 @@ import {
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
-import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
  * Request body to be sent on pet creation
@@ -27,9 +26,7 @@ interface PetCreationRequestBody {
 /**
  * Request body to be sent on pet information modificiation
  */
-type PetModificationRequestBody = Partial<
-    Omit<PetCreationRequestBody, 'species'>
->;
+type PetModificationRequestBody = PetCreationRequestBody;
 
 /**
  * Response containing requested pet information
@@ -37,6 +34,11 @@ type PetModificationRequestBody = Partial<
 interface SinglePetReadResponse {
     pet?: Pet;
 }
+
+/**
+ * Response containing updated pet information
+ */
+type SinglePetUpdateResponse = SinglePetReadResponse;
 
 @Route('api/pets')
 export class PetController extends Controller {
@@ -66,7 +68,7 @@ export class PetController extends Controller {
     @Example<Pet[]>([])
     @Get('/')
     async getAllPets(): Promise<Pet[]> {
-        const pets = await PetService.getAllPets();
+        const pets = await PetService.findAll();
 
         this.setStatus(200);
         return pets;
@@ -90,7 +92,7 @@ export class PetController extends Controller {
     @Example<SinglePetReadResponse>({})
     @Get('{id}')
     async getPet(@Path() id: number): Promise<SinglePetReadResponse> {
-        const pet = await PetService.getSinglePet(id);
+        const pet = await PetService.findOne(id);
 
         const statusCode = pet ? 200 : 404;
         this.setStatus(statusCode);
@@ -111,7 +113,7 @@ export class PetController extends Controller {
         @Body() requestBody: PetCreationRequestBody
     ): Promise<void> {
         const { species, nickname, imageUrl } = requestBody;
-        await PetService.createPet({ species, nickname, imageUrl });
+        await PetService.createOne({ species, nickname, imageUrl });
         this.setStatus(201);
     }
 
@@ -124,23 +126,36 @@ export class PetController extends Controller {
      * @isInt id
      *
      * @param requestBody json object that contains the pet's desired new information
-     * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400" }
-     * @example requestBody { "nickname": "bar" }
-     * @example requestBody { "imageUrl": "https://placekitten.com/400/400" }
+     * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400", "species": "dog" }
+     * @example requestBody { "nickname": "baz", "imageUrl": "https://placekitten.com/400/400", "species": "cat" }
      */
-    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
-        success: false
+    @Example<SinglePetUpdateResponse>({
+        pet: {
+            id: 4,
+            nickname: 'foo',
+            imageUrl: 'https://placedog.net/400/400',
+            species: 'dog'
+        }
     })
+    @Example<SinglePetUpdateResponse>({
+        pet: {
+            id: 5,
+            nickname: 'foo',
+            imageUrl: 'https://placedog.net/400/400',
+            species: 'dog'
+        }
+    })
+    @Response<SinglePetUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyPet(
         @Body() requestBody: PetModificationRequestBody,
         @Path() id: number
-    ): Promise<SuccessStatusResponse> {
-        const success = await PetService.modifyPet(id, requestBody);
+    ): Promise<SinglePetUpdateResponse> {
+        const modifiedPet = await PetService.updateOne(id, requestBody);
 
-        const statusCode = success ? 200 : 404;
+        const statusCode = modifiedPet ? 200 : 404;
         this.setStatus(statusCode);
-        return { success };
+        return { pet: modifiedPet };
     }
 
     /**
@@ -151,15 +166,13 @@ export class PetController extends Controller {
      * @isInt id
      */
     @Delete('{id}')
-    @Response<SuccessStatusResponse>(404, 'Resource Not Found', {
-        success: false
-    })
-    async removePet(@Path() id: number): Promise<SuccessStatusResponse> {
-        const success = await PetService.removePet(id);
-
-        const statusCode = success ? 200 : 404;
-        this.setStatus(statusCode);
-
-        return { success };
+    @Response<void>(404, 'Resource Not Found')
+    async removePet(@Path() id: number): Promise<void> {
+        try {
+            await PetService.removeOne(id);
+            this.setStatus(200);
+        } catch {
+            this.setStatus(404);
+        }
     }
 }

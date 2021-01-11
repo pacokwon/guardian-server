@@ -50,7 +50,7 @@ describe('/api/users endpoint test', () => {
             .send({ nickname: 'baz' });
 
         expect(modifyFooResponse.status).toBe(200);
-        expect(modifyFooResponse.body.success).toBe(true);
+        expect(modifyFooResponse.body.user.nickname).toBe('baz');
 
         const getBazResponse = await request(app).get('/api/users/1');
 
@@ -61,7 +61,6 @@ describe('/api/users endpoint test', () => {
     it('should successfully delete an existing user "baz"', async () => {
         const response = await request(app).delete('/api/users/1');
         expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
     });
 
     it('should not retreive information of a deleted user "baz"', async () => {
