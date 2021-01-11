@@ -25,7 +25,9 @@ interface PetCreationRequestBody {
 /**
  * Request body to be sent on user information modificiation
  */
-type PetModificationRequestBody = Partial<PetCreationRequestBody>;
+type PetModificationRequestBody = Partial<
+    Pick<PetCreationRequestBody, 'nickname' | 'imageUrl'>
+>;
 
 /**
  * Response containing requested user information
