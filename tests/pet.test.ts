@@ -92,7 +92,6 @@ describe('/api/pets endpoint test', () => {
         });
 
         expect(modifyBarResponse.status).toBe(400);
-        expect(modifyBarResponse.body.success).toBe(false);
     });
 
     it('should not modify any information for rejected request', async () => {
