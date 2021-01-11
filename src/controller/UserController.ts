@@ -13,6 +13,7 @@ import {
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
+import { SuccessStatusResponse } from './schema/SuccessStatusResponse';
 
 /**
  * Request body to be sent on user creation
@@ -33,13 +34,6 @@ interface UserModificationRequestBody {
  */
 interface SingleUserReadResponse {
     user?: User;
-}
-
-/**
- * Indicates whether a request has been successfully handled or not
- */
-interface SuccessStatusResponse {
-    success: boolean;
 }
 
 @Route('api/users')
@@ -101,7 +95,7 @@ export class UserController extends Controller {
      * @example requestBody { "nickname": "foo" }
      */
     @Post('/')
-    @SuccessResponse(201)
+    @SuccessResponse(201, 'Created')
     async createUser(
         @Body() requestBody: UserCreationRequestBody
     ): Promise<void> {
