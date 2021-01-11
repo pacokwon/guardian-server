@@ -47,22 +47,14 @@ export class UserRepository {
             .map(([key, value]) => `${key}='${value}'`)
             .join(', ');
 
-        await this.pool
-            .query<UserRow[]>(
-                `UPDATE User SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
-            )
-            .catch(error => {
-                throw Error(error);
-            });
+        await this.pool.query<UserRow[]>(
+            `UPDATE User SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
+        );
     }
 
     async removeOne(id: number): Promise<void> {
-        await this.pool
-            .query<UserRow[]>(
-                `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
-            )
-            .catch(error => {
-                throw Error(error);
-            });
+        await this.pool.query<UserRow[]>(
+            `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
+        );
     }
 }

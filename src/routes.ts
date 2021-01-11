@@ -40,22 +40,14 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "SuccessStatusResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "success": {"dataType":"boolean","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "Partial_Omit_PetCreationRequestBody.species__": {
+    "SinglePetUpdateResponse": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"nickname":{"dataType":"string"},"imageUrl":{"dataType":"string"}},"validators":{}},
+        "type": {"ref":"SinglePetReadResponse","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "PetModificationRequestBody": {
         "dataType": "refAlias",
-        "type": {"ref":"Partial_Omit_PetCreationRequestBody.species__","validators":{}},
+        "type": {"ref":"PetCreationRequestBody","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "User": {
@@ -81,6 +73,11 @@ const models: TsoaRoute.Models = {
             "nickname": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "SingleUserUpdateResponse": {
+        "dataType": "refAlias",
+        "type": {"ref":"SingleUserReadResponse","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserModificationRequestBody": {

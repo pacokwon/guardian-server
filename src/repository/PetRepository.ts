@@ -2,7 +2,7 @@ import { Pool } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { PetRow, Pet } from '@/model/Pet';
 
-export type PetModifiableFields = Omit<Partial<Pet>, 'id'>;
+export type PetModifiableFields = Omit<Pet, 'id'>;
 export type PetCreationFields = Pick<
     Pet,
     'species' | 'nickname' | 'imageUrl'
