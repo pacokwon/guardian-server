@@ -26,7 +26,7 @@ interface PetCreationRequestBody {
 /**
  * Request body to be sent on pet information modificiation
  */
-type PetModificationRequestBody = PetCreationRequestBody;
+type ModifyPetRequestBody = CreatePetRequestBody;
 
 /**
  * Response containing requested pet information
@@ -109,9 +109,7 @@ export class PetController extends Controller {
      */
     @Post('/')
     @SuccessResponse(201, 'Created')
-    async createPet(
-        @Body() requestBody: PetCreationRequestBody
-    ): Promise<void> {
+    async createPet(@Body() requestBody: CreatePetRequestBody): Promise<void> {
         const { species, nickname, imageUrl } = requestBody;
         await PetService.createOne({ species, nickname, imageUrl });
         this.setStatus(201);
@@ -148,7 +146,7 @@ export class PetController extends Controller {
     @Response<SinglePetUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyPet(
-        @Body() requestBody: PetModificationRequestBody,
+        @Body() requestBody: ModifyPetRequestBody,
         @Path() id: number
     ): Promise<SinglePetUpdateResponse> {
         const modifiedPet = await PetService.updateOne(id, requestBody);
