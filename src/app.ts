@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
