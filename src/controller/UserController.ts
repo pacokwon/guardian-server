@@ -17,14 +17,14 @@ import * as UserService from '@/service/UserService';
 /**
  * Request body to be sent on user creation
  */
-interface UserCreationRequestBody {
+interface CreateUserRequestBody {
     nickname: string;
 }
 
 /**
  * Request body to be sent on user information modificiation
  */
-interface UserModificationRequestBody {
+interface ModifyUserRequestBody {
     nickname: string;
 }
 
@@ -101,7 +101,7 @@ export class UserController extends Controller {
     @Post('/')
     @SuccessResponse(201, 'Created')
     async createUser(
-        @Body() requestBody: UserCreationRequestBody
+        @Body() requestBody: CreateUserRequestBody
     ): Promise<void> {
         const { nickname } = requestBody;
         await UserService.createOne(nickname);
@@ -122,7 +122,7 @@ export class UserController extends Controller {
     @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyUser(
-        @Body() requestBody: UserModificationRequestBody,
+        @Body() requestBody: ModifyUserRequestBody,
         @Path() id: number
     ): Promise<SingleUserUpdateResponse> {
         const { nickname } = requestBody;
