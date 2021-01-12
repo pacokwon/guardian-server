@@ -102,6 +102,8 @@ export const populateHistories = async (
                 releasedAt: checkPointTimestamp,
                 released: 1
             });
+
+            petRegisteredStatusMap[petID] = false;
         });
 
         // fetch currently unregistered pets
@@ -129,12 +131,16 @@ export const populateHistories = async (
             randomSelectCount
         );
 
-        randomSelectedUserIDs.forEach((userID, index) =>
+        randomSelectedUserIDs.forEach((userID, index) => {
+            const petID = randomSelectedPetIDs[index];
+
             userRegisteredPetsMap[userID].push({
-                petID: randomSelectedPetIDs[index],
+                petID,
                 registeredAt: checkPointTimestamp
-            })
-        );
+            });
+
+            petRegisteredStatusMap[petID] = true;
+        });
     });
 
     Object.keys(userRegisteredPetsMap).forEach(userID => {
