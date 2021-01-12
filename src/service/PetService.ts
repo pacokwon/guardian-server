@@ -4,9 +4,11 @@ import {
     PetCreationFields,
     PetModifiableFields
 } from '@/repository/PetRepository';
+import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
 
 const petRepository = new PetRepository();
+const userPetHistoryRepository = new UserPetHistoryRepository();
 
 const findAll = async (): Promise<Pet[]> => {
     return await petRepository.findAll();
@@ -43,39 +45,48 @@ const registerUser = async (
     petID: number,
     userID: number
 ): Promise<CustomError> => {
-    const isPetRegistered = await petRepository.isPetRegistered(petID);
+    const unreleasedPetRows = await userPetHistoryRepository.find({
+        select: ['id'],
+        where: { petID, released: 0 }
+    });
+
+    const isPetRegistered = unreleasedPetRows.length !== 0;
 
     // pet is already taken
     if (isPetRegistered)
         return { message: 'Pet is already registered to a user!', status: 400 };
 
     // the database takes care of foreign key constraints
-    return await petRepository
-        .insertUserRegistration(petID, userID)
-        .then(_ => ({}))
+    return await userPetHistoryRepository
+        .insertOne(petID, userID)
+        .then(() => ({}))
         .catch(_ => ({
             message: 'Pet or User does not exist!',
             status: 404
         }));
 };
 
-// check for already existing reservation
 const unregisterUser = async (
     petID: number,
     userID: number
 ): Promise<CustomError> => {
-    const isPetRegistered = petRepository.isPetRegistered(petID);
+    const unreleasedPetRows = await userPetHistoryRepository.find({
+        select: ['id'],
+        where: { petID, released: 0 }
+    });
 
-    // pet is already taken
-    if (isPetRegistered)
+    const isPetRegistered = unreleasedPetRows.length !== 0;
+
+    // attempt to unregister an invalid pet
+    if (!isPetRegistered)
         return {
-            message: 'Pet is already registered!',
+            message: 'Pet is not registered!',
             status: 400
         };
 
     // the database takes care of foreign key constraints
-    const error = await petRepository
-        .removeUserRegistrationAndGetChangedRows(petID, userID)
+    const error = await userPetHistoryRepository
+        .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
         .then(changedRows => {
             if (changedRows === 0)
                 return {
