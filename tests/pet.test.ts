@@ -4,7 +4,7 @@ import { getPool } from '@/common/db';
 
 describe('/api/pets endpoint test', () => {
     afterAll(async () => {
-        getPool().end();
+        await getPool().end();
     });
 
     it('should retrieve an empty list of pets', async () => {
