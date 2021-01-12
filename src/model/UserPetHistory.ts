@@ -1,6 +1,6 @@
 import { RowDataPacket } from 'mysql2';
 
-export interface UserPetRegisterHistory {
+export interface UserPetHistory {
     /**
      * @isInt
      */
@@ -32,4 +32,4 @@ export interface UserPetRegisterHistory {
     released: number;
 }
 
-export type UserPetRegisterHistoryRow = UserPetRegisterHistory & RowDataPacket;
+export type UserPetHistoryRow = UserPetHistory & RowDataPacket;

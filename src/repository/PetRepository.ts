@@ -72,7 +72,7 @@ export class PetRepository {
 
     async insertUserRegistration(petID: number, userID: number): Promise<void> {
         await this.pool.query(
-            `INSERT INTO UserPetRegisterHistory (userID, petID) VALUES (${userID}, ${petID})`
+            `INSERT INTO UserPetHistory (userID, petID) VALUES (${userID}, ${petID})`
         );
     }
 
@@ -81,7 +81,7 @@ export class PetRepository {
         userID: number
     ): Promise<number> {
         const [result] = await this.pool.query<OkPacket>(`
-            UPDATE UserPetRegisterHistory
+            UPDATE UserPetHistory
                 SET released=1
                 WHERE petID=${petID}
                 AND userID=${userID}
@@ -93,7 +93,7 @@ export class PetRepository {
 
     async isPetRegistered(petID: number): Promise<boolean> {
         const [rows] = await this.pool.query<RowDataPacket[]>(
-            `SELECT id from UserPetRegisterHistory WHERE petID=${petID} AND released=0`
+            `SELECT id from UserPetHistory WHERE petID=${petID} AND released=0`
         );
 
         // if `rows` has an entry, it is registered

@@ -1,10 +1,10 @@
 import { getPool } from '@/common/db';
 import { UserRow } from '@/model/User';
 import { PetRow } from '@/model/Pet';
-import { UserPetRegisterHistory as _UserPetRegisterHistory } from '@/model/UserPetRegisterHistory';
+import { UserPetHistory as _UserPetHistory } from '@/model/UserPetHistory';
 
-// UserPetRegisterHistory without id field
-type UserPetRegisterHistory = Omit<_UserPetRegisterHistory, 'id'>;
+// UserPetHistory without id field
+type UserPetHistory = Omit<_UserPetHistory, 'id'>;
 
 interface PetRegistration {
     petID: number;
@@ -43,13 +43,13 @@ function getDateStringFromTimestamp(timestamp: number) {
  *   5-1. Randomly unregister a pet from a user with a threshold probability (denoted by unregisterProbability). Then push an object to the registerHistoryArray.
  *   5-2. Randomly register a pet to a user (also randomly)
  * 6. After exiting from 4, push all currently valid registrations to the registerHistoryArray
- * 7. Populate the UserPetRegisterHistory table with the elemtns of registerHistoryArray
+ * 7. Populate the UserPetHistory table with the elemtns of registerHistoryArray
  */
 export const populateHistories = async (
     checkPointCount: number,
     options?: PopulateHistoriesOptions
 ): Promise<void> => {
-    const { petCountLimit = 5, unregisterProbability = 0.6 } = options || {};
+    const { petCountLimit = 3, unregisterProbability = 0.6 } = options || {};
 
     const pool = getPool();
 
@@ -78,7 +78,7 @@ export const populateHistories = async (
         {}
     );
 
-    const registerHistoryArray: UserPetRegisterHistory[] = [];
+    const registerHistoryArray: UserPetHistory[] = [];
 
     checkPoints.forEach(checkPointTimestamp => {
         // unregister pets with probability
@@ -178,7 +178,7 @@ export const populateHistories = async (
                 );
 
                 await pool.query(
-                    `INSERT INTO UserPetRegisterHistory (userID, petID, registeredAt, releasedAt, released) VALUES (${userID}, ${petID}, '${registerDateString}', '${releaseDateString}', ${released})`
+                    `INSERT INTO UserPetHistory (userID, petID, registeredAt, releasedAt, released) VALUES (${userID}, ${petID}, '${registerDateString}', '${releaseDateString}', ${released})`
                 );
             }
         )
