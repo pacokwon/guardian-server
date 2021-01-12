@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket, OkPacket } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { PetRow, Pet } from '@/model/Pet';
 
@@ -68,5 +68,35 @@ export class PetRepository {
         await this.pool.query(
             `UPDATE Pet SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
+    }
+
+    async insertUserRegistration(petID: number, userID: number): Promise<void> {
+        await this.pool.query(
+            `INSERT INTO UserPetRegisterHistory (userID, petID) VALUES (${userID}, ${petID})`
+        );
+    }
+
+    async removeUserRegistrationAndGetChangedRows(
+        petID: number,
+        userID: number
+    ): Promise<number> {
+        const [result] = await this.pool.query<OkPacket>(`
+            UPDATE UserPetRegisterHistory
+                SET released=1
+                WHERE petID=${petID}
+                AND userID=${userID}
+                AND released=0
+        `);
+
+        return result.changedRows;
+    }
+
+    async isPetRegistered(petID: number): Promise<boolean> {
+        const [rows] = await this.pool.query<RowDataPacket[]>(
+            `SELECT id from UserPetRegisterHistory WHERE petID=${petID} AND released=0`
+        );
+
+        // if `rows` has an entry, it is registered
+        return rows.length !== 0;
     }
 }
