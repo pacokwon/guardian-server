@@ -35,7 +35,7 @@ export class UserRepository {
     }
 
     async insertOne(nickname: string): Promise<void> {
-        await this.pool.query<UserRow[]>(
+        await this.pool.query(
             `INSERT INTO User (nickname) VALUES ('${nickname}')`
         );
     }
@@ -47,13 +47,13 @@ export class UserRepository {
             .map(([key, value]) => `${key}='${value}'`)
             .join(', ');
 
-        await this.pool.query<UserRow[]>(
+        await this.pool.query(
             `UPDATE User SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
         );
     }
 
     async removeOne(id: number): Promise<void> {
-        await this.pool.query<UserRow[]>(
+        await this.pool.query(
             `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
     }

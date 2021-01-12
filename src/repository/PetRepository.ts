@@ -49,7 +49,7 @@ export class PetRepository {
         const columns = columnsList.join(', ');
         const values = valuesList.join(', ');
 
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `INSERT INTO Pet (${columns}) VALUES (${values})`
         );
     }
@@ -59,13 +59,13 @@ export class PetRepository {
             .map(([key, value]) => `${key}='${value}'`)
             .join(', ');
 
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `UPDATE Pet SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
         );
     }
 
     async removeOne(id: number): Promise<void> {
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `UPDATE Pet SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
     }
