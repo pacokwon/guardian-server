@@ -4,7 +4,7 @@ import request from 'supertest';
 
 describe('/api/users endpoint test', () => {
     afterAll(async () => {
-        getPool().end();
+        await getPool().end();
     });
 
     it('should retrieve an empty list of users', async () => {
