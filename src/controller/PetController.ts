@@ -13,14 +13,29 @@ import {
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
+import { ApiError } from '@/common/error';
 
 /**
- * Request body to be sent on pet creation
+ * Request body to be received on pet creation
  */
-interface PetCreationRequestBody {
+interface CreatePetRequestBody {
     species: string;
     nickname: string;
     imageUrl: string;
+}
+
+/**
+ * Request body to be received on user registration for certain pet
+ */
+interface RegisterUserRequestBody {
+    userID: number;
+}
+
+/**
+ * Request body to be received on user unregistration for certain pet
+ */
+interface UnregisterUserRequestBody {
+    userID: number;
 }
 
 /**
@@ -172,5 +187,35 @@ export class PetController extends Controller {
         } catch {
             this.setStatus(404);
         }
+    }
+
+    @Post('{id}/users')
+    async registerUser(
+        @Body() requestBody: RegisterUserRequestBody,
+        @Path() id: number
+    ): Promise<void> {
+        const petID = id;
+        const { userID } = requestBody;
+
+        const error = await PetService.registerUser(petID, userID);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(201);
+    }
+
+    @Put('{id}/users')
+    async unregisterUser(
+        @Body() requestBody: UnregisterUserRequestBody,
+        @Path() id: number
+    ): Promise<void> {
+        const petID = id;
+        const { userID } = requestBody;
+
+        const error = await PetService.unregisterUser(petID, userID);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(200);
     }
 }
