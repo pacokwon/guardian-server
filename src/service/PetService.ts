@@ -76,7 +76,7 @@ const unregisterUser = async (
         .then(changedRows => {
             if (changedRows === 0)
                 return {
-                    message: 'Match not found. 0 rows changed',
+                    message: 'Match not found',
                     status: 404
                 };
             else if (changedRows > 1)
