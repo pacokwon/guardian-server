@@ -162,9 +162,9 @@ export class UserController extends Controller {
     /**
      * Retrieve a list of pets that a specific user has registered to (past to present)
      *
-     * @param petID the pet's identifier
-     * @isInt petID
-     * @example petID 2
+     * @param userID the pet's identifier
+     * @isInt userID
+     * @example userID 2
      */
     @Get('{userID}/pets')
     async listPetsHistory(@Path() userID: number): Promise<PetHistoryOfUser[]> {
