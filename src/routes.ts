@@ -428,7 +428,7 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/users/:userID/pets',
             function (request: any, response: any, next: any) {
             const args = {
-                    userID: {"in":"path","name":"userID","required":true,"dataType":"double"},
+                    userID: {"in":"path","name":"userID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"userID"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
