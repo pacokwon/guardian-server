@@ -6,6 +6,7 @@ import {
 } from '@/repository/PetRepository';
 import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
+import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
@@ -38,6 +39,10 @@ const updateOne = async (
 
 const removeOne = async (id: number): Promise<void> => {
     await petRepository.removeOne(id);
+};
+
+const findUsersHistory = async (petID: number): Promise<UserHistoryOfPet[]> => {
+    return await userPetHistoryRepository.findUsersHistoryFromPetID(petID);
 };
 
 // check for already existing reservation
@@ -97,6 +102,7 @@ const unregisterUser = async (
 export {
     findAll,
     findOne,
+    findUsersHistory,
     createOne,
     updateOne,
     removeOne,
