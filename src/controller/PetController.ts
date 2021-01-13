@@ -9,7 +9,8 @@ import {
     Body,
     Example,
     Response,
-    SuccessResponse
+    SuccessResponse,
+    Tags
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
@@ -49,6 +50,7 @@ interface SinglePetReadResponse {
 type SinglePetUpdateResponse = SinglePetReadResponse;
 
 @Route('api/pets')
+@Tags('Pet')
 export class PetController extends Controller {
     /**
      * Retrieve all pets' information
@@ -189,13 +191,13 @@ export class PetController extends Controller {
      * @isInt petID
      * @example petID 2
      */
-    @Post('{petID}/users')
     @Response<ErrorResponse>(400, 'Bad Request', {
         message: 'Pet is already registered to a user!'
     })
     @Response<ErrorResponse>(404, 'Not Found', {
         message: 'Pet or User does not exist!'
     })
+    @Post('{petID}/users')
     async registerUser(
         @Body() requestBody: RegisterUserToPetRequestBody,
         @Path() petID: number

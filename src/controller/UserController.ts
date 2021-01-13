@@ -9,7 +9,8 @@ import {
     Body,
     Response,
     SuccessResponse,
-    Example
+    Example,
+    Tags
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
@@ -41,6 +42,7 @@ interface SingleUserReadResponse {
 type SingleUserUpdateResponse = SingleUserReadResponse;
 
 @Route('api/users')
+@Tags('User')
 export class UserController extends Controller {
     /**
      * Retrieve all users' information
