@@ -32,13 +32,6 @@ interface RegisterUserRequestBody {
 }
 
 /**
- * Request body to be received on user unregistration for certain pet
- */
-interface UnregisterUserRequestBody {
-    userID: number;
-}
-
-/**
  * Request body to be sent on pet information modificiation
  */
 type ModifyPetRequestBody = CreatePetRequestBody;
@@ -204,14 +197,11 @@ export class PetController extends Controller {
         this.setStatus(201);
     }
 
-    @Put('{id}/users')
+    @Delete('{petID}/users/{userID}')
     async unregisterUser(
-        @Body() requestBody: UnregisterUserRequestBody,
-        @Path() id: number
+        @Path() petID: number,
+        @Path() userID: number
     ): Promise<void> {
-        const petID = id;
-        const { userID } = requestBody;
-
         const error = await PetService.unregisterUser(petID, userID);
 
         if (error.message) throw new ApiError(error.status, error.message);

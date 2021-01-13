@@ -70,20 +70,6 @@ const unregisterUser = async (
     petID: number,
     userID: number
 ): Promise<CustomError> => {
-    const unreleasedPetRows = await userPetHistoryRepository.find({
-        select: ['id'],
-        where: { petID, released: 0 }
-    });
-
-    const isPetRegistered = unreleasedPetRows.length !== 0;
-
-    // attempt to unregister an invalid pet
-    if (!isPetRegistered)
-        return {
-            message: 'Pet is not registered!',
-            status: 400
-        };
-
     // the database takes care of foreign key constraints
     const error = await userPetHistoryRepository
         .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
