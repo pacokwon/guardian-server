@@ -19,20 +19,24 @@ import * as UserService from '@/service/UserService';
  * Request body to be sent on user creation
  */
 interface CreateUserRequestBody {
+    /**
+     * User's nickname
+     */
     nickname: string;
 }
 
 /**
  * Request body to be sent on user information modificiation
  */
-interface ModifyUserRequestBody {
-    nickname: string;
-}
+type ModifyUserRequestBody = CreateUserRequestBody;
 
 /**
  * Response containing requested user information
  */
 interface SingleUserReadResponse {
+    /**
+     * JSON object containing user information. Could be undefined.
+     */
     user?: User;
 }
 
@@ -97,7 +101,7 @@ export class UserController extends Controller {
     /**
      * Create a new user from a nickname
      *
-     * @param requestBody json object that contains the new user's nickname
+     * @param requestBody JSON object that contains the new user's nickname
      * @example requestBody { "nickname": "foo" }
      */
     @Post('/')
@@ -118,7 +122,7 @@ export class UserController extends Controller {
      * @example id 2
      * @isInt id
      *
-     * @param requestBody json object that contains the user's desired new nickname
+     * @param requestBody JSON object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
     @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})

@@ -61,7 +61,7 @@ const models: TsoaRoute.Models = {
     "RegisterUserToPetRequestBody": {
         "dataType": "refObject",
         "properties": {
-            "userID": {"dataType":"double","required":true},
+            "userID": {"dataType":"integer","required":true},
         },
         "additionalProperties": false,
     },
@@ -97,11 +97,8 @@ const models: TsoaRoute.Models = {
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ModifyUserRequestBody": {
-        "dataType": "refObject",
-        "properties": {
-            "nickname": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
+        "dataType": "refAlias",
+        "type": {"ref":"CreateUserRequestBody","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };

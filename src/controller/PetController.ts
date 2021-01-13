@@ -20,8 +20,17 @@ import { ApiError, ErrorResponse } from '@/common/error';
  * Request body to be received on pet creation
  */
 interface CreatePetRequestBody {
+    /**
+     * The pet's species (e.g. cat, dog)
+     */
     species: string;
+    /**
+     * The pet's nickname
+     */
     nickname: string;
+    /**
+     * A public url hosting the pet's image
+     */
     imageUrl: string;
 }
 
@@ -29,6 +38,10 @@ interface CreatePetRequestBody {
  * Request body to be received on user registration for certain pet
  */
 interface RegisterUserToPetRequestBody {
+    /**
+     * User's identification number
+     * @isInt
+     */
     userID: number;
 }
 
@@ -41,6 +54,9 @@ type ModifyPetRequestBody = CreatePetRequestBody;
  * Response containing requested pet information
  */
 interface SinglePetReadResponse {
+    /**
+     * JSON object containing pet information. Could be undefined.
+     */
     pet?: Pet;
 }
 
@@ -113,7 +129,7 @@ export class PetController extends Controller {
     /**
      * Create a new pet from its nickname, species and image
      *
-     * @param requestBody json object that contains the new pet's information
+     * @param requestBody JSON object that contains the new pet's information
      * @example requestBody { "nickname": "foo", "species": "dog", "imageUrl": "https://placedog.net/400/400" }
      * @example requestBody { "nickname": "bar", "species": "cat", "imageUrl": "https://placekitten.com/400/400" }
      */
@@ -133,7 +149,7 @@ export class PetController extends Controller {
      * @isInt id
      * @example id 2
      *
-     * @param requestBody json object that contains the pet's desired new information
+     * @param requestBody JSON object that contains the pet's desired new information
      * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400", "species": "dog" }
      * @example requestBody { "nickname": "baz", "imageUrl": "https://placekitten.com/400/400", "species": "cat" }
      */
@@ -190,6 +206,9 @@ export class PetController extends Controller {
      * @param petID the pet's identifier
      * @isInt petID
      * @example petID 2
+     *
+     * @param requestBody JSON object that contains the registrating user's identification number
+     * @example requestBody { "userID": 13 }
      */
     @Response<ErrorResponse>(400, 'Bad Request', {
         message: 'Pet is already registered to a user!'
