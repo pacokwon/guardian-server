@@ -1,7 +1,10 @@
 import { User } from '@/model/User';
 import { UserRepository } from '@/repository/UserRepository';
+import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
+import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
 
 const userRepository = new UserRepository();
+const userPetHistoryRepository = new UserPetHistoryRepository();
 
 const findAll = async (): Promise<User[]> => {
     return await userRepository.findAll();
@@ -10,6 +13,10 @@ const findAll = async (): Promise<User[]> => {
 const findOne = async (id: number): Promise<User | undefined> => {
     const user = await userRepository.findOne(id);
     return user;
+};
+
+const findPetsHistory = async (userID: number): Promise<PetHistoryOfUser[]> => {
+    return await userPetHistoryRepository.findPetsHistoryFromUserID(userID);
 };
 
 const createOne = async (nickname: string): Promise<void> => {
@@ -34,4 +41,4 @@ const removeOne = async (id: number): Promise<void> => {
     await userRepository.removeOne(id);
 };
 
-export { findAll, findOne, createOne, updateOne, removeOne };
+export { findAll, findOne, findPetsHistory, createOne, updateOne, removeOne };

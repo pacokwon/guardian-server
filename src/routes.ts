@@ -66,6 +66,18 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "UserHistoryOfPet": {
+        "dataType": "refObject",
+        "properties": {
+            "userID": {"dataType":"integer","required":true},
+            "petID": {"dataType":"integer","required":true},
+            "registeredAt": {"dataType":"integer","required":true},
+            "releasedAt": {"dataType":"integer","required":true},
+            "nickname": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "User": {
         "dataType": "refObject",
         "properties": {
@@ -99,6 +111,20 @@ const models: TsoaRoute.Models = {
     "ModifyUserRequestBody": {
         "dataType": "refAlias",
         "type": {"ref":"CreateUserRequestBody","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PetHistoryOfUser": {
+        "dataType": "refObject",
+        "properties": {
+            "userID": {"dataType":"integer","required":true},
+            "petID": {"dataType":"integer","required":true},
+            "registeredAt": {"dataType":"integer","required":true},
+            "releasedAt": {"dataType":"integer","required":true},
+            "species": {"dataType":"string"},
+            "nickname": {"dataType":"string"},
+            "imageUrl": {"dataType":"string"},
+        },
+        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -244,6 +270,28 @@ export function RegisterRoutes(app: express.Router) {
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/pets/:petID/users',
+            function (request: any, response: any, next: any) {
+            const args = {
+                    petID: {"in":"path","name":"petID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"petID"}}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = new PetController();
+
+
+            const promise = controller.listUsersHistory.apply(controller, validatedArgs as any);
+            promiseHandler(controller, promise, response, next);
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.delete('/api/pets/:petID/users/:userID',
             function (request: any, response: any, next: any) {
             const args = {
@@ -374,6 +422,28 @@ export function RegisterRoutes(app: express.Router) {
 
 
             const promise = controller.removeUser.apply(controller, validatedArgs as any);
+            promiseHandler(controller, promise, response, next);
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/users/:userID/pets',
+            function (request: any, response: any, next: any) {
+            const args = {
+                    userID: {"in":"path","name":"userID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"userID"}}},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+            } catch (err) {
+                return next(err);
+            }
+
+            const controller = new UserController();
+
+
+            const promise = controller.listPetsHistory.apply(controller, validatedArgs as any);
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
