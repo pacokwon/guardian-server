@@ -12,6 +12,10 @@ export interface CustomError {
     status?: number;
 }
 
+export interface ErrorResponse {
+    message: string;
+}
+
 export class ApiError extends Error {
     public status: number;
 

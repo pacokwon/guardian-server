@@ -50,7 +50,15 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"CreatePetRequestBody","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "RegisterUserRequestBody": {
+    "ErrorResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "message": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "RegisterUserToPetRequestBody": {
         "dataType": "refObject",
         "properties": {
             "userID": {"dataType":"double","required":true},
@@ -216,11 +224,11 @@ export function RegisterRoutes(app: express.Router) {
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/api/pets/:id/users',
+        app.post('/api/pets/:petID/users',
             function (request: any, response: any, next: any) {
             const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RegisterUserRequestBody"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"RegisterUserToPetRequestBody"},
+                    petID: {"in":"path","name":"petID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"petID"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -242,8 +250,8 @@ export function RegisterRoutes(app: express.Router) {
         app.delete('/api/pets/:petID/users/:userID',
             function (request: any, response: any, next: any) {
             const args = {
-                    petID: {"in":"path","name":"petID","required":true,"dataType":"double"},
-                    userID: {"in":"path","name":"userID","required":true,"dataType":"double"},
+                    petID: {"in":"path","name":"petID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"petID"}}},
+                    userID: {"in":"path","name":"userID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"userID"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

@@ -13,7 +13,7 @@ import {
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
-import { ApiError } from '@/common/error';
+import { ApiError, ErrorResponse } from '@/common/error';
 
 /**
  * Request body to be received on pet creation
@@ -27,7 +27,7 @@ interface CreatePetRequestBody {
 /**
  * Request body to be received on user registration for certain pet
  */
-interface RegisterUserRequestBody {
+interface RegisterUserToPetRequestBody {
     userID: number;
 }
 
@@ -86,8 +86,8 @@ export class PetController extends Controller {
      * Retrieve the information of a single pet by its id.
      *
      * @param id the pet's identifier
-     * @example id 4
      * @isInt id
+     * @example id 4
      */
     @Example<SinglePetReadResponse>({
         pet: {
@@ -128,8 +128,8 @@ export class PetController extends Controller {
      * The modifiable fields are nickname and imageUrl
      *
      * @param id the pet's identifier
-     * @example id 2
      * @isInt id
+     * @example id 2
      *
      * @param requestBody json object that contains the pet's desired new information
      * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400", "species": "dog" }
@@ -168,8 +168,8 @@ export class PetController extends Controller {
      * Delete a pet by its id
      *
      * @param id the pet's identifier
-     * @example id 2
      * @isInt id
+     * @example id 2
      */
     @Delete('{id}')
     @Response<void>(404, 'Resource Not Found')
@@ -182,12 +182,24 @@ export class PetController extends Controller {
         }
     }
 
-    @Post('{id}/users')
+    /**
+     * Register a user to a pet
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     */
+    @Post('{petID}/users')
+    @Response<ErrorResponse>(400, 'Bad Request', {
+        message: 'Pet is already registered to a user!'
+    })
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Pet or User does not exist!'
+    })
     async registerUser(
-        @Body() requestBody: RegisterUserRequestBody,
-        @Path() id: number
+        @Body() requestBody: RegisterUserToPetRequestBody,
+        @Path() petID: number
     ): Promise<void> {
-        const petID = id;
         const { userID } = requestBody;
 
         const error = await PetService.registerUser(petID, userID);
@@ -197,6 +209,20 @@ export class PetController extends Controller {
         this.setStatus(201);
     }
 
+    /**
+     * Delete a pet by its id
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     *
+     * @param userID the user's identifier
+     * @isInt userID
+     * @example userID 3
+     */
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Match not found'
+    })
     @Delete('{petID}/users/{userID}')
     async unregisterUser(
         @Path() petID: number,
