@@ -8,7 +8,11 @@
   ],
   "spec": {
     "outputDirectory": "./docs",
-    "specVersion": 3
+    "specVersion": 3,
+    "host": "localhost:3000",
+    "name": "Guardian",
+    "description": "Swagger docs for guardian REST API",
+    "license": "MIT"
   },
   "routes": {
     "routesDir": "./src"
