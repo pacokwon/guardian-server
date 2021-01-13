@@ -9,8 +9,7 @@ export const errorHandler: ErrorRequestHandler = (
     res: Response,
     _next: NextFunction
 ) => {
-    res.json({
-        status: error.status,
+    res.status(error.status).json({
         message: error.message
     });
 };
