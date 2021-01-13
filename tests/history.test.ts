@@ -19,14 +19,16 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
             `INSERT INTO User (nickname) VALUES ('bob'), ('joe'), ('max'), ('jay')`
         );
 
-        // create 5 pets
+        // create 7 pets
         await pool.query(`
             INSERT INTO Pet (species, nickname, imageUrl) VALUES
             ('cat', 'foo', 'https://placekitten.com/300/300'),
             ('dog', 'bar', 'https://placedog.net/300/300'),
             ('cat', 'baz', 'https://placekitten.com/300/300'),
             ('dog', 'ham', 'https://placedog.net/300/300'),
-            ('cat', 'egg', 'https://placekitten.com/300/300')
+            ('cat', 'egg', 'https://placekitten.com/300/300'),
+            ('dog', 'spam', 'https://placedog.net/300/300'),
+            ('cat', 'bacon', 'https://placekitten.com/300/300')
         `);
     });
 
@@ -34,7 +36,7 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         await getPool().end();
     });
 
-    it('should successfully register bob, joe, max as guardians for baz, ham, egg respectively', async () => {
+    it('should successfully register users bob, joe, max as guardians for pets baz, ham, egg respectively', async () => {
         const registerBobToBazResponse = await request(app)
             .post('/api/pets/3/users')
             .send({
@@ -123,5 +125,38 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
             '/api/pets/4/users/4'
         );
         expect(unregisterJayResponse.status).toBe(404);
+    });
+
+    it('should successfully register user "jay" to a released pet', async () => {
+        const jayToBazResponse = await request(app)
+            .post('/api/pets/3/users')
+            .send({ userID: 4 });
+        expect(jayToBazResponse.status).toBe(201);
+    });
+
+    it('should successfully register user "bob" as guardian for multiple pets', async () => {
+        const bobToFooResponse = await request(app)
+            .post('/api/pets/1/users')
+            .send({ userID: 1 });
+        expect(bobToFooResponse.status).toBe(201);
+
+        const bobToBarResponse = await request(app)
+            .post('/api/pets/2/users')
+            .send({ userID: 1 });
+        expect(bobToBarResponse.status).toBe(201);
+    });
+
+    it('should correctly retrieve the list of guardians that pet "baz" has been registered to', async () => {
+        const guardiansListOfBaz = await request(app).get('/api/pets/3/users');
+        expect(guardiansListOfBaz.body).toHaveLength(2);
+    });
+
+    it('should correctly retrieve the list of pets that are registered to user "bob"', async () => {
+        const petsListOfBob = await request(app).get('/api/users/1/pets');
+        expect(petsListOfBob.body).toHaveLength(3);
+        const petNames = petsListOfBob.body
+            .map((pet: { nickname: string }) => pet.nickname)
+            .sort();
+        expect(petNames).toEqual(['baz', 'foo', 'bar'].sort());
     });
 });
