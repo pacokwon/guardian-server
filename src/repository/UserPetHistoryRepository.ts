@@ -114,7 +114,7 @@ export class UserPetHistoryRepository {
         const sql = `
             SELECT History.*, Pet.nickname
             FROM UserPetHistory History INNER JOIN Pet
-            ON History.userID=${userID} History.petID=Pet.id
+            ON History.userID=${userID} AND History.petID=Pet.id
         `;
 
         const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql);
