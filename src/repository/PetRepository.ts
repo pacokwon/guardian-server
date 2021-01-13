@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, RowDataPacket, OkPacket } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { PetRow, Pet } from '@/model/Pet';
 
@@ -49,7 +49,7 @@ export class PetRepository {
         const columns = columnsList.join(', ');
         const values = valuesList.join(', ');
 
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `INSERT INTO Pet (${columns}) VALUES (${values})`
         );
     }
@@ -59,14 +59,44 @@ export class PetRepository {
             .map(([key, value]) => `${key}='${value}'`)
             .join(', ');
 
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `UPDATE Pet SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
         );
     }
 
     async removeOne(id: number): Promise<void> {
-        await this.pool.query<PetRow[]>(
+        await this.pool.query(
             `UPDATE Pet SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
+    }
+
+    async insertUserRegistration(petID: number, userID: number): Promise<void> {
+        await this.pool.query(
+            `INSERT INTO UserPetHistory (userID, petID) VALUES (${userID}, ${petID})`
+        );
+    }
+
+    async removeUserRegistrationAndGetChangedRows(
+        petID: number,
+        userID: number
+    ): Promise<number> {
+        const [result] = await this.pool.query<OkPacket>(`
+            UPDATE UserPetHistory
+                SET released=1
+                WHERE petID=${petID}
+                AND userID=${userID}
+                AND released=0
+        `);
+
+        return result.changedRows;
+    }
+
+    async isPetRegistered(petID: number): Promise<boolean> {
+        const [rows] = await this.pool.query<RowDataPacket[]>(
+            `SELECT id from UserPetHistory WHERE petID=${petID} AND released=0`
+        );
+
+        // if `rows` has an entry, it is registered
+        return rows.length !== 0;
     }
 }

@@ -1,10 +1,18 @@
 {
   "entryFile": "src/app.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/controller/**/*.ts", "src/model/*.ts"],
+  "controllerPathGlobs": [
+    "src/controller/**/*.ts",
+    "src/model/*.ts",
+    "src/common/error.ts"
+  ],
   "spec": {
     "outputDirectory": "./docs",
-    "specVersion": 3
+    "specVersion": 3,
+    "host": "localhost:3000",
+    "name": "Guardian",
+    "description": "Swagger docs for guardian REST API",
+    "license": "MIT"
   },
   "routes": {
     "routesDir": "./src"

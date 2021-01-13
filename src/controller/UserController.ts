@@ -9,7 +9,8 @@ import {
     Body,
     Response,
     SuccessResponse,
-    Example
+    Example,
+    Tags
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
@@ -17,21 +18,25 @@ import * as UserService from '@/service/UserService';
 /**
  * Request body to be sent on user creation
  */
-interface UserCreationRequestBody {
+interface CreateUserRequestBody {
+    /**
+     * User's nickname
+     */
     nickname: string;
 }
 
 /**
  * Request body to be sent on user information modificiation
  */
-interface UserModificationRequestBody {
-    nickname: string;
-}
+type ModifyUserRequestBody = CreateUserRequestBody;
 
 /**
  * Response containing requested user information
  */
 interface SingleUserReadResponse {
+    /**
+     * JSON object containing user information. Could be undefined.
+     */
     user?: User;
 }
 
@@ -41,6 +46,7 @@ interface SingleUserReadResponse {
 type SingleUserUpdateResponse = SingleUserReadResponse;
 
 @Route('api/users')
+@Tags('User')
 export class UserController extends Controller {
     /**
      * Retrieve all users' information
@@ -95,13 +101,13 @@ export class UserController extends Controller {
     /**
      * Create a new user from a nickname
      *
-     * @param requestBody json object that contains the new user's nickname
+     * @param requestBody JSON object that contains the new user's nickname
      * @example requestBody { "nickname": "foo" }
      */
     @Post('/')
     @SuccessResponse(201, 'Created')
     async createUser(
-        @Body() requestBody: UserCreationRequestBody
+        @Body() requestBody: CreateUserRequestBody
     ): Promise<void> {
         const { nickname } = requestBody;
         await UserService.createOne(nickname);
@@ -116,13 +122,13 @@ export class UserController extends Controller {
      * @example id 2
      * @isInt id
      *
-     * @param requestBody json object that contains the user's desired new nickname
+     * @param requestBody JSON object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
     @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyUser(
-        @Body() requestBody: UserModificationRequestBody,
+        @Body() requestBody: ModifyUserRequestBody,
         @Path() id: number
     ): Promise<SingleUserUpdateResponse> {
         const { nickname } = requestBody;
