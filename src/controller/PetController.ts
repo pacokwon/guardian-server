@@ -14,6 +14,7 @@ import {
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
+import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 import { ApiError, ErrorResponse } from '@/common/error';
 
 /**
@@ -228,6 +229,20 @@ export class PetController extends Controller {
         if (error.message) throw new ApiError(error.status, error.message);
 
         this.setStatus(201);
+    }
+
+    /**
+     * Retrieve a list of users that a specific pet has been registered to (past to present)
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     */
+    @Get('{petID}/users')
+    async listUsersHistory(@Path() petID: number): Promise<UserHistoryOfPet[]> {
+        const usersHistory = PetService.findUsersHistory(petID);
+        this.setStatus(200);
+        return usersHistory;
     }
 
     /**

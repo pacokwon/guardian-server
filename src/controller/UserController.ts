@@ -14,6 +14,7 @@ import {
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
+import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
 
 /**
  * Request body to be sent on user creation
@@ -156,5 +157,19 @@ export class UserController extends Controller {
         } catch {
             this.setStatus(404);
         }
+    }
+
+    /**
+     * Retrieve a list of pets that a specific user has registered to (past to present)
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     */
+    @Get('{userID}/pets')
+    async listPetsHistory(@Path() userID: number): Promise<PetHistoryOfUser[]> {
+        const petsHistory = UserService.findPetsHistory(userID);
+        this.setStatus(200);
+        return petsHistory;
     }
 }
