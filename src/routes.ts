@@ -58,14 +58,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UnregisterUserRequestBody": {
-        "dataType": "refObject",
-        "properties": {
-            "userID": {"dataType":"double","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "User": {
         "dataType": "refObject",
         "properties": {
@@ -83,7 +75,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserCreationRequestBody": {
+    "CreateUserRequestBody": {
         "dataType": "refObject",
         "properties": {
             "nickname": {"dataType":"string","required":true},
@@ -96,7 +88,7 @@ const models: TsoaRoute.Models = {
         "type": {"ref":"SingleUserReadResponse","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserModificationRequestBody": {
+    "ModifyUserRequestBody": {
         "dataType": "refObject",
         "properties": {
             "nickname": {"dataType":"string","required":true},
@@ -247,11 +239,11 @@ export function RegisterRoutes(app: express.Router) {
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.put('/api/pets/:id/users',
+        app.delete('/api/pets/:petID/users/:userID',
             function (request: any, response: any, next: any) {
             const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UnregisterUserRequestBody"},
-                    id: {"in":"path","name":"id","required":true,"dataType":"double"},
+                    petID: {"in":"path","name":"petID","required":true,"dataType":"double"},
+                    userID: {"in":"path","name":"userID","required":true,"dataType":"double"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -316,7 +308,7 @@ export function RegisterRoutes(app: express.Router) {
         app.post('/api/users',
             function (request: any, response: any, next: any) {
             const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UserCreationRequestBody"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"CreateUserRequestBody"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -338,7 +330,7 @@ export function RegisterRoutes(app: express.Router) {
         app.put('/api/users/:id',
             function (request: any, response: any, next: any) {
             const args = {
-                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"UserModificationRequestBody"},
+                    requestBody: {"in":"body","name":"requestBody","required":true,"ref":"ModifyUserRequestBody"},
                     id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
             };
 
