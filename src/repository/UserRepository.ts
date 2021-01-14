@@ -43,16 +43,18 @@ export class UserRepository {
         return result.affectedRows;
     }
 
-    async updateOne(id: number, fields: UserModifiableFields): Promise<void> {
+    async updateOne(id: number, fields: UserModifiableFields): Promise<number> {
         // implementation is incomplete since it does not support numerical types
         // it is left as is since the only modifiable field as of now is the nickname
         const columnValueMapping = Object.entries(fields)
             .map(([key, value]) => `${key}='${value}'`)
             .join(', ');
 
-        await this.pool.query(
+        const [result] = await this.pool.query<OkPacket>(
             `UPDATE User SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
         );
+
+        return result.changedRows;
     }
 
     async removeOne(id: number): Promise<number> {

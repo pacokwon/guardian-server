@@ -35,12 +35,12 @@ const updateOne = async (
 ): Promise<User | undefined> => {
     try {
         await userRepository.updateOne(id, { nickname: newNickname });
-
-        // return modified entry
-        return { id, nickname: newNickname };
     } catch {
         return undefined;
     }
+
+    // return modified entry
+    return { id, nickname: newNickname };
 };
 
 const removeOne = async (id: number): Promise<CustomError> => {
