@@ -1,6 +1,7 @@
 import { getPool } from '@/common/db';
-import { UserRow } from '@/model/User';
-import { PetRow } from '@/model/Pet';
+import { SQLRow } from '@/common/type';
+import { User } from '@/model/User';
+import { Pet } from '@/model/Pet';
 import { UserPetHistory as _UserPetHistory } from '@/model/UserPetHistory';
 
 // UserPetHistory without id field
@@ -60,11 +61,11 @@ export const populateHistories = async (
         .map((_, index) => now - index * day)
         .reverse();
 
-    const [userRows] = await pool.query<UserRow[]>(
+    const [userRows] = await pool.query<SQLRow<User>[]>(
         `SELECT id FROM User WHERE deleted=0 LIMIT 15`
     );
 
-    const [petRows] = await pool.query<PetRow[]>(
+    const [petRows] = await pool.query<SQLRow<Pet>[]>(
         `SELECT id FROM Pet WHERE deleted=0 LIMIT 20`
     );
 
@@ -154,18 +155,6 @@ export const populateHistories = async (
             });
         });
     });
-
-    // registerHistoryArray.forEach(
-    //     ({ userID, petID, registeredAt, releasedAt, released }) => {
-    //         console.log(
-    //             `user ${userID}\t\tpet ${petID}\t:from ${new Date(registeredAt)
-    //                 .toISOString()
-    //                 .slice(5, 10)} ~ ${new Date(releasedAt)
-    //                 .toISOString()
-    //                 .slice(5, 10)} (${released ? 'invalid' : 'valid'})`
-    //         );
-    //     }
-    // );
 
     await Promise.all(
         registerHistoryArray.map(

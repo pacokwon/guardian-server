@@ -1,6 +1,7 @@
-import { Pool, RowDataPacket, OkPacket } from 'mysql2/promise';
+import { Pool, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '@/common/db';
-import { PetRow, Pet } from '@/model/Pet';
+import { SQLRow } from '@/common/type';
+import { Pet } from '@/model/Pet';
 
 export type PetModifiableFields = Omit<Pet, 'id'>;
 export type PetCreationFields = Pick<
@@ -22,7 +23,7 @@ export class PetRepository {
     ): Promise<Pet[]> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<PetRow[]>(
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `SELECT ${selectedColumns} FROM Pet WHERE deleted=0`
         );
 
@@ -35,23 +36,25 @@ export class PetRepository {
     ): Promise<Pet | undefined> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<PetRow[]>(
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `SELECT ${selectedColumns} FROM Pet WHERE id='${id}' AND deleted=0`
         );
 
         return rows[0];
     }
 
-    async insertOne(fields: PetCreationFields): Promise<void> {
+    async insertOne(fields: PetCreationFields): Promise<number> {
         const columnsList = Object.keys(fields);
         const valuesList = columnsList.map(column => `'${fields[column]}'`);
 
         const columns = columnsList.join(', ');
         const values = valuesList.join(', ');
 
-        await this.pool.query(
+        const [result] = await this.pool.query<ResultSetHeader>(
             `INSERT INTO Pet (${columns}) VALUES (${values})`
         );
+
+        return result.affectedRows;
     }
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
@@ -64,10 +67,12 @@ export class PetRepository {
         );
     }
 
-    async removeOne(id: number): Promise<void> {
-        await this.pool.query(
+    async removeOne(id: number): Promise<number> {
+        const [result] = await this.pool.query<OkPacket>(
             `UPDATE Pet SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
+
+        return result.changedRows;
     }
 
     async insertUserRegistration(petID: number, userID: number): Promise<void> {
