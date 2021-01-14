@@ -1,6 +1,7 @@
 import { Pool, RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '@/common/db';
-import { PetRow, Pet } from '@/model/Pet';
+import { SQLRow } from '@/common/type';
+import { Pet } from '@/model/Pet';
 
 export type PetModifiableFields = Omit<Pet, 'id'>;
 export type PetCreationFields = Pick<
@@ -22,7 +23,7 @@ export class PetRepository {
     ): Promise<Pet[]> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<PetRow[]>(
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `SELECT ${selectedColumns} FROM Pet WHERE deleted=0`
         );
 
@@ -35,7 +36,7 @@ export class PetRepository {
     ): Promise<Pet | undefined> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<PetRow[]>(
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `SELECT ${selectedColumns} FROM Pet WHERE id='${id}' AND deleted=0`
         );
 
