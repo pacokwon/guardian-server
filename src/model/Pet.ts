@@ -1,5 +1,3 @@
-import { RowDataPacket } from 'mysql2';
-
 /**
  * JSON object containing pet information.
  */
@@ -18,5 +16,3 @@ export interface Pet {
     nickname: string;
     imageUrl: string;
 }
-
-export type PetRow = Pet & RowDataPacket;

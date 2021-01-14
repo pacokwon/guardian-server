@@ -1,6 +1,7 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '@/common/db';
-import { UserRow, User } from '@/model/User';
+import { SQLRow } from '@/common/type';
+import { User } from '@/model/User';
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
@@ -14,7 +15,7 @@ export class UserRepository {
     async findAll(select: string[] = ['id', 'nickname']): Promise<User[]> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<UserRow[]>(
+        const [rows] = await this.pool.query<SQLRow<User>[]>(
             `SELECT ${selectedColumns} FROM User WHERE deleted=0`
         );
 
@@ -27,7 +28,7 @@ export class UserRepository {
     ): Promise<User | undefined> {
         const selectedColumns = select.join(', ');
 
-        const [rows] = await this.pool.query<UserRow[]>(
+        const [rows] = await this.pool.query<SQLRow<User>[]>(
             `SELECT ${selectedColumns} FROM User WHERE id='${id}' AND deleted=0`
         );
 

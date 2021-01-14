@@ -13,5 +13,3 @@ export interface User {
      */
     nickname: string;
 }
-
-export type UserRow = User & RowDataPacket;

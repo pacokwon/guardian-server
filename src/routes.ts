@@ -69,10 +69,12 @@ const models: TsoaRoute.Models = {
     "UserHistoryOfPet": {
         "dataType": "refObject",
         "properties": {
+            "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
             "registeredAt": {"dataType":"integer","required":true},
             "releasedAt": {"dataType":"integer","required":true},
+            "released": {"dataType":"integer","required":true},
             "nickname": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
@@ -116,10 +118,12 @@ const models: TsoaRoute.Models = {
     "PetHistoryOfUser": {
         "dataType": "refObject",
         "properties": {
+            "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
             "registeredAt": {"dataType":"integer","required":true},
             "releasedAt": {"dataType":"integer","required":true},
+            "released": {"dataType":"integer","required":true},
             "species": {"dataType":"string"},
             "nickname": {"dataType":"string"},
             "imageUrl": {"dataType":"string"},

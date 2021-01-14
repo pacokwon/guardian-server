@@ -1,7 +1,7 @@
 import { Pool, OkPacket } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { SQLRow } from '@/common/type';
-import { UserPetHistory, UserPetHistoryRow } from '@/model/UserPetHistory';
+import { UserPetHistory } from '@/model/UserPetHistory';
 
 interface FindQuery {
     select: (keyof UserPetHistory)[];
@@ -15,40 +15,14 @@ interface UpdateQuery {
     where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
 }
 
-interface BaseHistoryRecord {
-    /**
-     * The pet's id
-     * @isInt
-     */
-    userID: number;
-
-    /**
-     * The pet's id
-     * @isInt
-     */
-    petID: number;
-
-    /**
-     * Date of registration
-     * @isInt
-     */
-    registeredAt: number;
-
-    /**
-     * Date of unregistration. If pet is not unregistered yet, it will be equal to `registeredAt`
-     * @isInt
-     */
-    releasedAt: number;
-}
-
-export interface UserHistoryOfPet extends BaseHistoryRecord {
+export interface UserHistoryOfPet extends UserPetHistory {
     /**
      * The user's nickname
      */
     nickname: string;
 }
 
-export interface PetHistoryOfUser extends BaseHistoryRecord {
+export interface PetHistoryOfUser extends UserPetHistory {
     /**
      * The pet's species (e.g. cat, dog)
      */
@@ -89,7 +63,7 @@ export class UserPetHistoryRepository {
             ${whereQuery}
         `;
 
-        const [rows] = await this.pool.query<UserPetHistoryRow[]>(sql);
+        const [rows] = await this.pool.query<SQLRow<UserPetHistory>[]>(sql);
 
         return rows;
     }
