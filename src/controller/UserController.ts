@@ -64,6 +64,21 @@ interface RegisterUserToPetRequestBody {
 export class UserController extends Controller {
     /**
      * Retrieve all users' information
+     *
+     * @param page Page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize The number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
+     *
+     * @param field Properties available for User information. Usable fields are 'nickname' and 'id'. Can be used multiple times
+     * @default 'id', 'nickname'
+     * @example 'id'
+     * @example 'nickname'
      */
     @Example<User[]>([
         {
@@ -169,7 +184,6 @@ export class UserController extends Controller {
      * @example id 2
      * @isInt id
      */
-    @Response<void>(404, 'Resource Not Found')
     @Response<ErrorResponse>(404, 'Not Found', {
         message: 'Match not found'
     })
@@ -188,7 +202,38 @@ export class UserController extends Controller {
      * @param userID the pet's identifier
      * @isInt userID
      * @example userID 2
+     *
+     * @param page page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize the number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
      */
+    @Example<PetHistoryOfUser[]>([
+        {
+            id: 3,
+            userID: 1,
+            petID: 7,
+            registeredAt: '2021-01-04T21:45:30.000Z',
+            releasedAt: '2021-01-05T21:45:30.000Z',
+            released: 1,
+            nickname: 'sutton'
+        },
+        {
+            id: 12,
+            userID: 1,
+            petID: 16,
+            registeredAt: '2021-01-05T21:45:30.000Z',
+            releasedAt: '2021-01-06T21:45:30.000Z',
+            released: 1,
+            nickname: 'loran'
+        }
+    ])
+    @Example<PetHistoryOfUser[]>([])
     @Get('{userID}/pets')
     async listPetsHistory(
         @Path() userID: number,

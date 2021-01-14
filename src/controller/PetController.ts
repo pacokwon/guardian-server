@@ -61,6 +61,21 @@ type SinglePetUpdateResponse = SinglePetReadResponse;
 export class PetController extends Controller {
     /**
      * Retrieve all pets' information
+     *
+     * @param page page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize the number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
+     *
+     * @param field properties available for Pet information. Usable fields are `id`, `nickname`, `species`, `imageUrl`. Can be used multiple times.
+     * @default 'id', 'nickname', 'species', 'imageUrl'
+     * @example 'id'
+     * @example 'nickname'
      */
     @Example<Pet[]>([
         {
@@ -209,7 +224,38 @@ export class PetController extends Controller {
      * @param petID the pet's identifier
      * @isInt petID
      * @example petID 2
+     *
+     * @param page page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize the number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
      */
+    @Example<UserHistoryOfPet[]>([
+        {
+            id: 33,
+            userID: 8,
+            petID: 1,
+            registeredAt: '2021-01-07T21:45:30.000Z',
+            releasedAt: '2021-01-10T21:45:30.000Z',
+            released: 1,
+            nickname: 'charlie'
+        },
+        {
+            id: 48,
+            userID: 15,
+            petID: 1,
+            registeredAt: '2021-01-11T21:45:30.000Z',
+            releasedAt: '2021-01-12T21:45:30.000Z',
+            released: 1,
+            nickname: 'luther'
+        }
+    ])
+    @Example<UserHistoryOfPet[]>([])
     @Get('{petID}/users')
     async listUsersHistory(
         @Path() petID: number,
