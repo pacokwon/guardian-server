@@ -6,7 +6,7 @@ describe('/api/users endpoint test', () => {
     afterAll(async () => {
         const pool = getPool();
 
-        // reset tables
+        // cleanup
         await pool.query(`DELETE FROM User`);
         await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
 
@@ -19,7 +19,7 @@ describe('/api/users endpoint test', () => {
         expect(response.body).toStrictEqual([]);
     });
 
-    it('should successfully create two new users "foo" and "bar"', async () => {
+    it('should successfully create multiple new users', async () => {
         const createFooResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'foo' });
@@ -29,18 +29,59 @@ describe('/api/users endpoint test', () => {
             .post('/api/users')
             .send({ nickname: 'bar' });
         expect(createBarResponse.status).toBe(201);
+
+        const createBazResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: 'baz' });
+        expect(createBazResponse.status).toBe(201);
+
+        const createHamResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: 'ham' });
+        expect(createHamResponse.status).toBe(201);
     });
 
-    it('should retrieve a list with two users "foo" and "bar"', async () => {
+    it('should retrieve a list with 4 users', async () => {
         const response = await request(app).get('/api/users');
-        const { status } = response;
         const users = response.body;
 
-        expect(status).toBe(200);
-        expect(users).toHaveLength(2);
+        expect(response.status).toBe(200);
+        expect(users).toHaveLength(4);
 
         expect(users).toContainEqual({ id: 1, nickname: 'foo' });
         expect(users).toContainEqual({ id: 2, nickname: 'bar' });
+        expect(users).toContainEqual({ id: 3, nickname: 'baz' });
+        expect(users).toContainEqual({ id: 4, nickname: 'ham' });
+    });
+
+    it('should retrieve a list with two users "baz" and "ham" through pagination', async () => {
+        const response = await request(app).get('/api/users?page=2&pageSize=2');
+        const users = response.body;
+
+        expect(response.status).toBe(200);
+        expect(users).toHaveLength(2);
+
+        expect(users).toContainEqual({ id: 3, nickname: 'baz' });
+        expect(users).toContainEqual({ id: 4, nickname: 'ham' });
+    });
+
+    it('should retrieve a list of ids through field selection', async () => {
+        const response = await request(app).get('/api/users?field=id');
+        const users = response.body;
+
+        expect(response.status).toBe(200);
+        expect(users).toHaveLength(4);
+
+        const sortedIDs = users.map((user: { id: number }) => user.id).sort();
+        expect(sortedIDs).toEqual([1, 2, 3, 4]);
+    });
+
+    it('should retrieve an empty result for out of range pagination', async () => {
+        const response = await request(app).get('/api/users?page=10');
+        const users = response.body;
+
+        expect(response.status).toBe(200);
+        expect(users).toHaveLength(0);
     });
 
     it('should retrieve the desired user', async () => {
