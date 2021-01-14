@@ -2,21 +2,29 @@ import { Pet } from '@/model/Pet';
 import {
     PetRepository,
     PetCreationFields,
-    PetModifiableFields
+    PetModifiableFields,
+    PetFindAllOptions,
+    PetFindOneOptions
 } from '@/repository/PetRepository';
-import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
+import {
+    UserPetHistoryRepository,
+    FindHistoryOptions
+} from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (): Promise<Pet[]> => {
-    return await petRepository.findAll();
+const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
+    return await petRepository.findAll(options);
 };
 
-const findOne = async (id: number): Promise<Pet | undefined> => {
-    return await petRepository.findOne(id);
+const findOne = async (
+    id: number,
+    options: PetFindOneOptions
+): Promise<Pet | undefined> => {
+    return await petRepository.findOne(id, options);
 };
 
 const createOne = async (fields: PetCreationFields): Promise<CustomError> => {
@@ -51,8 +59,14 @@ const removeOne = async (id: number): Promise<CustomError> => {
     return {};
 };
 
-const findUsersHistory = async (petID: number): Promise<UserHistoryOfPet[]> => {
-    return await userPetHistoryRepository.findUsersHistoryFromPetID(petID);
+const findUsersHistory = async (
+    petID: number,
+    options: FindHistoryOptions
+): Promise<UserHistoryOfPet[]> => {
+    return await userPetHistoryRepository.findUsersHistoryFromPetID(
+        petID,
+        options
+    );
 };
 
 export { findAll, findOne, findUsersHistory, createOne, updateOne, removeOne };

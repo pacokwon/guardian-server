@@ -11,6 +11,16 @@ export type PetCreationFields = Pick<
     [index: string]: string;
 };
 
+export interface PetFindAllOptions {
+    field?: string[];
+    page?: number;
+    pageSize?: number;
+}
+
+export interface PetFindOneOptions {
+    field?: string[];
+}
+
 export class PetRepository {
     pool: Pool;
 
@@ -18,23 +28,31 @@ export class PetRepository {
         this.pool = getPool();
     }
 
-    async findAll(
-        select: string[] = ['id', 'nickname', 'species', 'imageUrl']
-    ): Promise<Pet[]> {
-        const selectedColumns = select.join(', ');
+    async findAll(options: PetFindAllOptions = {}): Promise<Pet[]> {
+        const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
+        const selectedColumns = field.join(', ');
 
-        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
-            `SELECT ${selectedColumns} FROM Pet WHERE deleted=0`
-        );
+        const { page = 1, pageSize = 10 } = options;
+        const limit = Math.min(pageSize, 100);
+        const offset = (page - 1) * pageSize;
+
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(`
+            SELECT ${selectedColumns}
+            FROM Pet
+            WHERE deleted=0
+            LIMIT ${limit}
+            OFFSET ${offset}
+        `);
 
         return rows;
     }
 
     async findOne(
         id: number,
-        select: string[] = ['id', 'nickname', 'species', 'imageUrl']
+        options: PetFindOneOptions = {}
     ): Promise<Pet | undefined> {
-        const selectedColumns = select.join(', ');
+        const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
+        const selectedColumns = field.join(', ');
 
         const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `SELECT ${selectedColumns} FROM Pet WHERE id='${id}' AND deleted=0`

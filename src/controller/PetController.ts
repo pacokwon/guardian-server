@@ -7,6 +7,7 @@ import {
     Delete,
     Path,
     Body,
+    Query,
     Example,
     Response,
     SuccessResponse,
@@ -60,6 +61,21 @@ type SinglePetUpdateResponse = SinglePetReadResponse;
 export class PetController extends Controller {
     /**
      * Retrieve all pets' information
+     *
+     * @param page page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize the number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
+     *
+     * @param field properties available for Pet information. Usable fields are `id`, `nickname`, `species`, `imageUrl`. Can be used multiple times.
+     * @default 'id', 'nickname', 'species', 'imageUrl'
+     * @example 'id'
+     * @example 'nickname'
      */
     @Example<Pet[]>([
         {
@@ -83,8 +99,12 @@ export class PetController extends Controller {
     ])
     @Example<Pet[]>([])
     @Get('/')
-    async getAllPets(): Promise<Pet[]> {
-        const pets = await PetService.findAll();
+    async getAllPets(
+        @Query() page?: number,
+        @Query() pageSize?: number,
+        @Query() field?: string[]
+    ): Promise<Pet[]> {
+        const pets = await PetService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return pets;
     }
@@ -106,8 +126,11 @@ export class PetController extends Controller {
     })
     @Example<SinglePetReadResponse>({})
     @Get('{id}')
-    async getPet(@Path() id: number): Promise<SinglePetReadResponse> {
-        const pet = await PetService.findOne(id);
+    async getPet(
+        @Path() id: number,
+        @Query() field?: string[]
+    ): Promise<SinglePetReadResponse> {
+        const pet = await PetService.findOne(id, { field });
 
         const statusCode = pet ? 200 : 404;
         this.setStatus(statusCode);
@@ -201,10 +224,48 @@ export class PetController extends Controller {
      * @param petID the pet's identifier
      * @isInt petID
      * @example petID 2
+     *
+     * @param page page number used for pagination. Assumes that pageSize exists. Starts from 1.
+     * @isInt page
+     * @default 1
+     * @example 5
+     *
+     * @param pageSize the number of items that will be fetched with a single response.
+     * @isInt pageSize
+     * @default 10
+     * @example 5
      */
+    @Example<UserHistoryOfPet[]>([
+        {
+            id: 33,
+            userID: 8,
+            petID: 1,
+            registeredAt: '2021-01-07T21:45:30.000Z',
+            releasedAt: '2021-01-10T21:45:30.000Z',
+            released: 1,
+            nickname: 'charlie'
+        },
+        {
+            id: 48,
+            userID: 15,
+            petID: 1,
+            registeredAt: '2021-01-11T21:45:30.000Z',
+            releasedAt: '2021-01-12T21:45:30.000Z',
+            released: 1,
+            nickname: 'luther'
+        }
+    ])
+    @Example<UserHistoryOfPet[]>([])
     @Get('{petID}/users')
-    async listUsersHistory(@Path() petID: number): Promise<UserHistoryOfPet[]> {
-        const usersHistory = PetService.findUsersHistory(petID);
+    async listUsersHistory(
+        @Path() petID: number,
+        @Query() page?: number,
+        @Query() pageSize?: number
+    ): Promise<UserHistoryOfPet[]> {
+        const usersHistory = PetService.findUsersHistory(petID, {
+            page,
+            pageSize
+        });
         this.setStatus(200);
         return usersHistory;
     }

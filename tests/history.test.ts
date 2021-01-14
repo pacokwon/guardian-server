@@ -27,6 +27,7 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     afterAll(async () => {
         const pool = getPool();
 
+        // cleanup
         await pool.query(`DELETE FROM UserPetHistory`);
         await pool.query(`DELETE FROM Pet`);
         await pool.query(`DELETE FROM User`);
@@ -38,7 +39,7 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         await pool.end();
     });
 
-    it('should successfully register users bob, joe, max as guardians for pets baz, ham, egg respectively', async () => {
+    it('should successfully register 3 users as guardians for 3 pets respectively', async () => {
         const registerBobToBazResponse = await request(app)
             .post('/api/users/1/pets')
             .send({
@@ -153,6 +154,14 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         expect(guardiansListOfBaz.body).toHaveLength(2);
     });
 
+    it('should correctly retrieve the list of guardians that pet "baz" has been registered to, with pagination', async () => {
+        const guardiansListOfBaz = await request(app).get(
+            '/api/pets/3/users?page=2&pageSize=1'
+        );
+        expect(guardiansListOfBaz.body).toHaveLength(1);
+        expect(guardiansListOfBaz.body[0].nickname).toBe('jay');
+    });
+
     it('should correctly retrieve the list of pets that are registered to user "bob"', async () => {
         const petsListOfBob = await request(app).get('/api/users/1/pets');
         expect(petsListOfBob.body).toHaveLength(3);
@@ -160,5 +169,13 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
             .map((pet: { nickname: string }) => pet.nickname)
             .sort();
         expect(petNames).toEqual(['baz', 'foo', 'bar'].sort());
+    });
+
+    it('should correctly retrieve the list of pets that are registered to user "bob", with pagination', async () => {
+        const petsListOfBob = await request(app).get(
+            '/api/users/1/pets?page=2&pageSize=2'
+        );
+        expect(petsListOfBob.body).toHaveLength(1);
+        expect(petsListOfBob.body[0].nickname).toBe('bar');
     });
 });

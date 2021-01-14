@@ -64,8 +64,8 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
-            "registeredAt": {"dataType":"integer","required":true},
-            "releasedAt": {"dataType":"integer","required":true},
+            "registeredAt": {"dataType":"string","required":true},
+            "releasedAt": {"dataType":"string","required":true},
             "released": {"dataType":"integer","required":true},
             "nickname": {"dataType":"string","required":true},
         },
@@ -113,8 +113,8 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
-            "registeredAt": {"dataType":"integer","required":true},
-            "releasedAt": {"dataType":"integer","required":true},
+            "registeredAt": {"dataType":"string","required":true},
+            "releasedAt": {"dataType":"string","required":true},
             "released": {"dataType":"integer","required":true},
             "species": {"dataType":"string"},
             "nickname": {"dataType":"string"},
@@ -144,6 +144,9 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/pets',
             function (request: any, response: any, next: any) {
             const args = {
+                    page: {"in":"query","name":"page","dataType":"integer","validators":{"isInt":{"errorMsg":"page"}}},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"integer","validators":{"isInt":{"errorMsg":"pageSize"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -166,6 +169,7 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -255,6 +259,8 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     petID: {"in":"path","name":"petID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"petID"}}},
+                    page: {"in":"query","name":"page","dataType":"integer","validators":{"isInt":{"errorMsg":"page"}}},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"integer","validators":{"isInt":{"errorMsg":"pageSize"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -276,6 +282,9 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/users',
             function (request: any, response: any, next: any) {
             const args = {
+                    page: {"in":"query","name":"page","dataType":"integer","validators":{"isInt":{"errorMsg":"page"}}},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"integer","validators":{"isInt":{"errorMsg":"pageSize"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -298,6 +307,7 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -387,6 +397,8 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     userID: {"in":"path","name":"userID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"userID"}}},
+                    page: {"in":"query","name":"page","dataType":"integer","validators":{"isInt":{"errorMsg":"page"}}},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"integer","validators":{"isInt":{"errorMsg":"pageSize"}}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

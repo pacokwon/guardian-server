@@ -1,23 +1,39 @@
 import { User } from '@/model/User';
-import { UserRepository } from '@/repository/UserRepository';
-import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
+import {
+    UserRepository,
+    FindAllOptions,
+    FindOneOptions
+} from '@/repository/UserRepository';
+import {
+    UserPetHistoryRepository,
+    FindHistoryOptions
+} from '@/repository/UserPetHistoryRepository';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (): Promise<User[]> => {
-    return await userRepository.findAll();
+const findAll = async (options?: FindAllOptions): Promise<User[]> => {
+    return await userRepository.findAll(options);
 };
 
-const findOne = async (id: number): Promise<User | undefined> => {
-    const user = await userRepository.findOne(id);
+const findOne = async (
+    id: number,
+    options?: FindOneOptions
+): Promise<User | undefined> => {
+    const user = await userRepository.findOne(id, options);
     return user;
 };
 
-const findPetsHistory = async (userID: number): Promise<PetHistoryOfUser[]> => {
-    return await userPetHistoryRepository.findPetsHistoryFromUserID(userID);
+const findPetsHistory = async (
+    userID: number,
+    options: FindHistoryOptions
+): Promise<PetHistoryOfUser[]> => {
+    return await userPetHistoryRepository.findPetsHistoryFromUserID(
+        userID,
+        options
+    );
 };
 
 const createOne = async (nickname: string): Promise<CustomError> => {
