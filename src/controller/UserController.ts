@@ -15,7 +15,7 @@ import {
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
-import { ApiError } from '@/common/error';
+import { ApiError, ErrorResponse } from '@/common/error';
 
 /**
  * Request body to be sent on user creation
@@ -46,6 +46,17 @@ interface SingleUserReadResponse {
  * Response containing requested user information
  */
 type SingleUserUpdateResponse = SingleUserReadResponse;
+
+/**
+ * Request body to be received on user registration for certain pet
+ */
+interface RegisterUserToPetRequestBody {
+    /**
+     * Pet's identification number
+     * @isInt
+     */
+    petID: number;
+}
 
 @Route('api/users')
 @Tags('User')
@@ -105,8 +116,8 @@ export class UserController extends Controller {
      * @param requestBody JSON object that contains the new user's nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Post('/')
     @SuccessResponse(201, 'Created')
+    @Post('/')
     async createUser(
         @Body() requestBody: CreateUserRequestBody
     ): Promise<void> {
@@ -150,8 +161,11 @@ export class UserController extends Controller {
      * @example id 2
      * @isInt id
      */
-    @Delete('{id}')
     @Response<void>(404, 'Resource Not Found')
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Match not found'
+    })
+    @Delete('{id}')
     async removeUser(@Path() id: number): Promise<void> {
         const error = await UserService.removeOne(id);
 
@@ -172,5 +186,61 @@ export class UserController extends Controller {
         const petsHistory = UserService.findPetsHistory(userID);
         this.setStatus(200);
         return petsHistory;
+    }
+
+    /**
+     * Register a user to a pet
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     *
+     * @param requestBody JSON object that contains the registrating user's identification number
+     * @example requestBody { "userID": 13 }
+     */
+    @Response<ErrorResponse>(400, 'Bad Request', {
+        message: 'Pet is already registered to a user!'
+    })
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Pet or User does not exist!'
+    })
+    @Post('{userID}/pets')
+    async registerUser(
+        @Body() requestBody: RegisterUserToPetRequestBody,
+        @Path() userID: number
+    ): Promise<void> {
+        const { petID } = requestBody;
+
+        const error = await UserService.registerUser(petID, userID);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(201);
+    }
+
+    /**
+     * Delete a pet by its id
+     *
+     * @param petID the pet's identifier
+     * @isInt petID
+     * @example petID 2
+     *
+     * @param userID the user's identifier
+     * @isInt userID
+     * @example userID 3
+     */
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Match not found'
+    })
+    @Delete('{userID}/pets/{petID}')
+    async unregisterUser(
+        @Path() userID: number,
+        @Path() petID: number
+    ): Promise<void> {
+        const error = await UserService.unregisterUser(petID, userID);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(200);
     }
 }

@@ -36,17 +36,6 @@ interface CreatePetRequestBody {
 }
 
 /**
- * Request body to be received on user registration for certain pet
- */
-interface RegisterUserToPetRequestBody {
-    /**
-     * User's identification number
-     * @isInt
-     */
-    userID: number;
-}
-
-/**
  * Request body to be sent on pet information modificiation
  */
 type ModifyPetRequestBody = CreatePetRequestBody;
@@ -176,7 +165,7 @@ export class PetController extends Controller {
             species: 'dog'
         }
     })
-    @Response<SinglePetUpdateResponse>(404, 'Resource Not Found', {})
+    @Response<SinglePetUpdateResponse>(404, 'Not Found', {})
     @Put('{id}')
     async modifyPet(
         @Body() requestBody: ModifyPetRequestBody,
@@ -196,44 +185,14 @@ export class PetController extends Controller {
      * @isInt id
      * @example id 2
      */
+    @Response<ErrorResponse>(404, 'Not Found', { message: 'Match not found' })
     @Delete('{id}')
-    @Response<void>(404, 'Resource Not Found')
     async removePet(@Path() id: number): Promise<void> {
         const error = await PetService.removeOne(id);
 
         if (error.message) throw new ApiError(error.status, error.message);
 
         this.setStatus(200);
-    }
-
-    /**
-     * Register a user to a pet
-     *
-     * @param petID the pet's identifier
-     * @isInt petID
-     * @example petID 2
-     *
-     * @param requestBody JSON object that contains the registrating user's identification number
-     * @example requestBody { "userID": 13 }
-     */
-    @Response<ErrorResponse>(400, 'Bad Request', {
-        message: 'Pet is already registered to a user!'
-    })
-    @Response<ErrorResponse>(404, 'Not Found', {
-        message: 'Pet or User does not exist!'
-    })
-    @Post('{petID}/users')
-    async registerUser(
-        @Body() requestBody: RegisterUserToPetRequestBody,
-        @Path() petID: number
-    ): Promise<void> {
-        const { userID } = requestBody;
-
-        const error = await PetService.registerUser(petID, userID);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
-        this.setStatus(201);
     }
 
     /**
@@ -248,31 +207,5 @@ export class PetController extends Controller {
         const usersHistory = PetService.findUsersHistory(petID);
         this.setStatus(200);
         return usersHistory;
-    }
-
-    /**
-     * Delete a pet by its id
-     *
-     * @param petID the pet's identifier
-     * @isInt petID
-     * @example petID 2
-     *
-     * @param userID the user's identifier
-     * @isInt userID
-     * @example userID 3
-     */
-    @Response<ErrorResponse>(404, 'Not Found', {
-        message: 'Match not found'
-    })
-    @Delete('{petID}/users/{userID}')
-    async unregisterUser(
-        @Path() petID: number,
-        @Path() userID: number
-    ): Promise<void> {
-        const error = await PetService.unregisterUser(petID, userID);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
-        this.setStatus(200);
     }
 }
