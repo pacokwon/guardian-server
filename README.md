@@ -27,3 +27,7 @@ To run testing, run:
 To generate swagger documentation only (to `docs/swagger.json`), run:
 
 `npm run tsoa`
+
+## Swagger Docs
+
+To view swagger docs, run `npm run dev` and visit `localhost:3000/docs` in your browser.
