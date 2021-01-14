@@ -6,7 +6,10 @@ import {
     PetFindAllOptions,
     PetFindOneOptions
 } from '@/repository/PetRepository';
-import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
+import {
+    UserPetHistoryRepository,
+    FindHistoryOptions
+} from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 
@@ -56,8 +59,14 @@ const removeOne = async (id: number): Promise<CustomError> => {
     return {};
 };
 
-const findUsersHistory = async (petID: number): Promise<UserHistoryOfPet[]> => {
-    return await userPetHistoryRepository.findUsersHistoryFromPetID(petID);
+const findUsersHistory = async (
+    petID: number,
+    options: FindHistoryOptions
+): Promise<UserHistoryOfPet[]> => {
+    return await userPetHistoryRepository.findUsersHistoryFromPetID(
+        petID,
+        options
+    );
 };
 
 export { findAll, findOne, findUsersHistory, createOne, updateOne, removeOne };

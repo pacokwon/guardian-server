@@ -39,6 +39,11 @@ export interface PetHistoryOfUser extends UserPetHistory {
     imageUrl?: string;
 }
 
+export interface FindHistoryOptions {
+    page?: number;
+    pageSize?: number;
+}
+
 export class UserPetHistoryRepository {
     pool: Pool;
 
@@ -64,34 +69,6 @@ export class UserPetHistoryRepository {
         `;
 
         const [rows] = await this.pool.query<SQLRow<UserPetHistory>[]>(sql);
-
-        return rows;
-    }
-
-    async findUsersHistoryFromPetID(
-        petID: number
-    ): Promise<UserHistoryOfPet[]> {
-        const sql = `
-            SELECT History.*, User.nickname
-            FROM UserPetHistory History INNER JOIN User
-            ON History.petID=${petID} AND History.userID=User.id
-        `;
-
-        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql);
-
-        return rows;
-    }
-
-    async findPetsHistoryFromUserID(
-        userID: number
-    ): Promise<PetHistoryOfUser[]> {
-        const sql = `
-            SELECT History.*, Pet.nickname
-            FROM UserPetHistory History INNER JOIN Pet
-            ON History.userID=${userID} AND History.petID=Pet.id
-        `;
-
-        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql);
 
         return rows;
     }
@@ -125,5 +102,47 @@ export class UserPetHistoryRepository {
         const [result] = await this.pool.query<OkPacket>(sql);
 
         return result.changedRows;
+    }
+
+    async findUsersHistoryFromPetID(
+        petID: number,
+        options: FindHistoryOptions = {}
+    ): Promise<UserHistoryOfPet[]> {
+        const { page = 1, pageSize = 10 } = options;
+        const limit = Math.min(pageSize, 100);
+        const offset = (page - 1) * pageSize;
+
+        const sql = `
+            SELECT History.*, User.nickname
+            FROM UserPetHistory History INNER JOIN User
+            ON History.petID=${petID} AND History.userID=User.id
+            LIMIT ${limit}
+            OFFSET ${offset}
+        `;
+
+        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql);
+
+        return rows;
+    }
+
+    async findPetsHistoryFromUserID(
+        userID: number,
+        options: FindHistoryOptions = {}
+    ): Promise<PetHistoryOfUser[]> {
+        const { page = 1, pageSize = 10 } = options;
+        const limit = Math.min(pageSize, 100);
+        const offset = (page - 1) * pageSize;
+
+        const sql = `
+            SELECT History.*, Pet.nickname
+            FROM UserPetHistory History INNER JOIN Pet
+            ON History.userID=${userID} AND History.petID=Pet.id
+            LIMIT ${limit}
+            OFFSET ${offset}
+        `;
+
+        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql);
+
+        return rows;
     }
 }
