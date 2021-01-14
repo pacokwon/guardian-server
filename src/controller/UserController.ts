@@ -15,6 +15,7 @@ import {
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
+import { ApiError } from '@/common/error';
 
 /**
  * Request body to be sent on user creation
@@ -70,7 +71,6 @@ export class UserController extends Controller {
     @Get('/')
     async getAllUsers(): Promise<User[]> {
         const users = await UserService.findAll();
-
         this.setStatus(200);
         return users;
     }
@@ -111,7 +111,9 @@ export class UserController extends Controller {
         @Body() requestBody: CreateUserRequestBody
     ): Promise<void> {
         const { nickname } = requestBody;
-        await UserService.createOne(nickname);
+        const error = await UserService.createOne(nickname);
+        if (error.message) throw new ApiError(error.status, error.message);
+
         this.setStatus(201);
     }
 
@@ -151,12 +153,11 @@ export class UserController extends Controller {
     @Delete('{id}')
     @Response<void>(404, 'Resource Not Found')
     async removeUser(@Path() id: number): Promise<void> {
-        try {
-            await UserService.removeOne(id);
-            this.setStatus(200);
-        } catch {
-            this.setStatus(404);
-        }
+        const error = await UserService.removeOne(id);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(200);
     }
 
     /**

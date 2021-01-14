@@ -19,8 +19,13 @@ const findOne = async (id: number): Promise<Pet | undefined> => {
     return await petRepository.findOne(id);
 };
 
-const createOne = async (fields: PetCreationFields): Promise<void> => {
-    await petRepository.insertOne(fields);
+const createOne = async (fields: PetCreationFields): Promise<CustomError> => {
+    const createdRowsCount = await petRepository.insertOne(fields);
+
+    if (createdRowsCount < 1)
+        return { status: 500, message: 'More than 1 row created' };
+
+    return {};
 };
 
 const updateOne = async (
@@ -29,16 +34,21 @@ const updateOne = async (
 ): Promise<Pet | undefined> => {
     try {
         await petRepository.updateOne(id, fields);
-
-        // return modified row
-        return { id, ...fields };
     } catch {
         return undefined;
     }
+
+    return { id, ...fields };
 };
 
-const removeOne = async (id: number): Promise<void> => {
-    await petRepository.removeOne(id);
+const removeOne = async (id: number): Promise<CustomError> => {
+    const deletedRowsCount = await petRepository.removeOne(id);
+    if (deletedRowsCount === 0)
+        return { status: 400, message: 'No match found' };
+    else if (deletedRowsCount > 1)
+        return { status: 500, message: 'More than 1 row has been deleted' };
+
+    return {};
 };
 
 const findUsersHistory = async (petID: number): Promise<UserHistoryOfPet[]> => {
@@ -86,7 +96,7 @@ const unregisterUser = async (
                 };
             else if (changedRows > 1)
                 return {
-                    message: 'More than 1 rows have been changed',
+                    message: 'More than 1 row have been changed',
                     status: 500
                 };
             return {};

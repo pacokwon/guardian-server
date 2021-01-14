@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
+import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { UserRow, User } from '@/model/User';
 
@@ -34,10 +34,12 @@ export class UserRepository {
         return rows[0];
     }
 
-    async insertOne(nickname: string): Promise<void> {
-        await this.pool.query(
+    async insertOne(nickname: string): Promise<number> {
+        const [result] = await this.pool.query<ResultSetHeader>(
             `INSERT INTO User (nickname) VALUES ('${nickname}')`
         );
+
+        return result.affectedRows;
     }
 
     async updateOne(id: number, fields: UserModifiableFields): Promise<void> {
@@ -52,9 +54,11 @@ export class UserRepository {
         );
     }
 
-    async removeOne(id: number): Promise<void> {
-        await this.pool.query(
+    async removeOne(id: number): Promise<number> {
+        const [result] = await this.pool.query<OkPacket>(
             `UPDATE User SET deleted=1 WHERE id='${id}' AND deleted=0`
         );
+
+        return result.changedRows;
     }
 }
