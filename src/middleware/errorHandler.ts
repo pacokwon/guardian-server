@@ -5,7 +5,7 @@ import { ApiError } from '@/common/error';
 // https://expressjs.com/en/guide/error-handling.html
 export const errorHandler: ErrorRequestHandler = (
     error: ApiError,
-    _request: Request,
+    _req: Request,
     res: Response,
     _next: NextFunction
 ) => {

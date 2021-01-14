@@ -2,7 +2,9 @@ import { Pet } from '@/model/Pet';
 import {
     PetRepository,
     PetCreationFields,
-    PetModifiableFields
+    PetModifiableFields,
+    PetFindAllOptions,
+    PetFindOneOptions
 } from '@/repository/PetRepository';
 import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
@@ -11,12 +13,15 @@ import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (): Promise<Pet[]> => {
-    return await petRepository.findAll();
+const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
+    return await petRepository.findAll(options);
 };
 
-const findOne = async (id: number): Promise<Pet | undefined> => {
-    return await petRepository.findOne(id);
+const findOne = async (
+    id: number,
+    options: PetFindOneOptions
+): Promise<Pet | undefined> => {
+    return await petRepository.findOne(id, options);
 };
 
 const createOne = async (fields: PetCreationFields): Promise<CustomError> => {

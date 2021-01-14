@@ -5,6 +5,16 @@ import { User } from '@/model/User';
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
+export interface FindAllOptions {
+    field?: string[];
+    page?: number;
+    pageSize?: number;
+}
+
+export interface FindOneOptions {
+    field?: string[];
+}
+
 export class UserRepository {
     pool: Pool;
 
@@ -12,21 +22,31 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(select: string[] = ['id', 'nickname']): Promise<User[]> {
-        const selectedColumns = select.join(', ');
+    async findAll(options: FindAllOptions = {}): Promise<User[]> {
+        const { field = ['id', 'nickname'] } = options;
+        const selectedColumns = field.join(', ');
 
-        const [rows] = await this.pool.query<SQLRow<User>[]>(
-            `SELECT ${selectedColumns} FROM User WHERE deleted=0`
-        );
+        const { page = 1, pageSize = 10 } = options;
+        const limit = Math.min(pageSize, 100);
+        const offset = (page - 1) * pageSize;
+
+        const [rows] = await this.pool.query<SQLRow<User>[]>(`
+            SELECT ${selectedColumns}
+            FROM User
+            WHERE deleted=0
+            LIMIT ${limit}
+            OFFSET ${offset}
+        `);
 
         return rows;
     }
 
     async findOne(
         id: number,
-        select: string[] = ['id', 'nickname']
+        options: FindOneOptions = {}
     ): Promise<User | undefined> {
-        const selectedColumns = select.join(', ');
+        const { field = ['id', 'nickname'] } = options;
+        const selectedColumns = field.join(', ');
 
         const [rows] = await this.pool.query<SQLRow<User>[]>(
             `SELECT ${selectedColumns} FROM User WHERE id='${id}' AND deleted=0`

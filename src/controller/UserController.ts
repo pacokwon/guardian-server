@@ -7,6 +7,7 @@ import {
     Delete,
     Path,
     Body,
+    Query,
     Response,
     SuccessResponse,
     Example,
@@ -80,8 +81,12 @@ export class UserController extends Controller {
     ])
     @Example<User[]>([])
     @Get('/')
-    async getAllUsers(): Promise<User[]> {
-        const users = await UserService.findAll();
+    async getAllUsers(
+        @Query() page?: number,
+        @Query() pageSize?: number,
+        @Query() field?: string[]
+    ): Promise<User[]> {
+        const users = await UserService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return users;
     }
@@ -101,8 +106,11 @@ export class UserController extends Controller {
     })
     @Response<SingleUserReadResponse>(404, 'Resource Not Found', {})
     @Get('{id}')
-    async getUser(@Path() id: number): Promise<SingleUserReadResponse> {
-        const user = await UserService.findOne(id);
+    async getUser(
+        @Path() id: number,
+        @Query() field?: string[]
+    ): Promise<SingleUserReadResponse> {
+        const user = await UserService.findOne(id, { field });
 
         const statusCode = user ? 200 : 404;
         this.setStatus(statusCode);
@@ -219,7 +227,7 @@ export class UserController extends Controller {
     }
 
     /**
-     * Delete a pet by its id
+     * Unregister a pet from a user by its id
      *
      * @param petID the pet's identifier
      * @isInt petID
