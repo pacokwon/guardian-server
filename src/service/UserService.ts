@@ -4,7 +4,10 @@ import {
     FindAllOptions,
     FindOneOptions
 } from '@/repository/UserRepository';
-import { UserPetHistoryRepository } from '@/repository/UserPetHistoryRepository';
+import {
+    UserPetHistoryRepository,
+    FindHistoryOptions
+} from '@/repository/UserPetHistoryRepository';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
 import { CustomError } from '@/common/error';
 
@@ -23,8 +26,14 @@ const findOne = async (
     return user;
 };
 
-const findPetsHistory = async (userID: number): Promise<PetHistoryOfUser[]> => {
-    return await userPetHistoryRepository.findPetsHistoryFromUserID(userID);
+const findPetsHistory = async (
+    userID: number,
+    options: FindHistoryOptions
+): Promise<PetHistoryOfUser[]> => {
+    return await userPetHistoryRepository.findPetsHistoryFromUserID(
+        userID,
+        options
+    );
 };
 
 const createOne = async (nickname: string): Promise<CustomError> => {
