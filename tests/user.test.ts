@@ -4,7 +4,13 @@ import request from 'supertest';
 
 describe('/api/users endpoint test', () => {
     afterAll(async () => {
-        await getPool().end();
+        const pool = getPool();
+
+        // reset tables
+        await pool.query(`DELETE FROM User`);
+        await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
+
+        await pool.end();
     });
 
     it('should retrieve an empty list of users', async () => {

@@ -6,14 +6,6 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     beforeAll(async () => {
         const pool = getPool();
 
-        // reset tables
-        await pool.query(`DELETE FROM UserPetHistory`);
-        await pool.query(`DELETE FROM Pet`);
-        await pool.query(`DELETE FROM User`);
-
-        await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
-        await pool.query(`ALTER TABLE Pet AUTO_INCREMENT=1`);
-
         // create 4 users
         await pool.query(
             `INSERT INTO User (nickname) VALUES ('bob'), ('joe'), ('max'), ('jay')`
@@ -33,7 +25,17 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     });
 
     afterAll(async () => {
-        await getPool().end();
+        const pool = getPool();
+
+        await pool.query(`DELETE FROM UserPetHistory`);
+        await pool.query(`DELETE FROM Pet`);
+        await pool.query(`DELETE FROM User`);
+
+        await pool.query(`ALTER TABLE UserPetHistory AUTO_INCREMENT=1`);
+        await pool.query(`ALTER TABLE Pet AUTO_INCREMENT=1`);
+        await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
+
+        await pool.end();
     });
 
     it('should successfully register users bob, joe, max as guardians for pets baz, ham, egg respectively', async () => {
@@ -105,7 +107,6 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
             '/api/users/1/pets/3'
         );
 
-        console.log(unregisterBobResponse);
         expect(unregisterBobResponse.status).toBe(200);
     });
 
