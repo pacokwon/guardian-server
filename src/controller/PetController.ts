@@ -96,7 +96,6 @@ export class PetController extends Controller {
     @Get('/')
     async getAllPets(): Promise<Pet[]> {
         const pets = await PetService.findAll();
-
         this.setStatus(200);
         return pets;
     }
@@ -138,7 +137,14 @@ export class PetController extends Controller {
     @SuccessResponse(201, 'Created')
     async createPet(@Body() requestBody: CreatePetRequestBody): Promise<void> {
         const { species, nickname, imageUrl } = requestBody;
-        await PetService.createOne({ species, nickname, imageUrl });
+        const error = await PetService.createOne({
+            species,
+            nickname,
+            imageUrl
+        });
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
         this.setStatus(201);
     }
 
@@ -193,12 +199,11 @@ export class PetController extends Controller {
     @Delete('{id}')
     @Response<void>(404, 'Resource Not Found')
     async removePet(@Path() id: number): Promise<void> {
-        try {
-            await PetService.removeOne(id);
-            this.setStatus(200);
-        } catch {
-            this.setStatus(404);
-        }
+        const error = await PetService.removeOne(id);
+
+        if (error.message) throw new ApiError(error.status, error.message);
+
+        this.setStatus(200);
     }
 
     /**
