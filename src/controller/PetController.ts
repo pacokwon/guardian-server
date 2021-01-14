@@ -7,6 +7,7 @@ import {
     Delete,
     Path,
     Body,
+    Query,
     Example,
     Response,
     SuccessResponse,
@@ -83,8 +84,12 @@ export class PetController extends Controller {
     ])
     @Example<Pet[]>([])
     @Get('/')
-    async getAllPets(): Promise<Pet[]> {
-        const pets = await PetService.findAll();
+    async getAllPets(
+        @Query() page?: number,
+        @Query() pageSize?: number,
+        @Query() field?: string[]
+    ): Promise<Pet[]> {
+        const pets = await PetService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return pets;
     }
@@ -106,8 +111,11 @@ export class PetController extends Controller {
     })
     @Example<SinglePetReadResponse>({})
     @Get('{id}')
-    async getPet(@Path() id: number): Promise<SinglePetReadResponse> {
-        const pet = await PetService.findOne(id);
+    async getPet(
+        @Path() id: number,
+        @Query() field?: string[]
+    ): Promise<SinglePetReadResponse> {
+        const pet = await PetService.findOne(id, { field });
 
         const statusCode = pet ? 200 : 404;
         this.setStatus(statusCode);

@@ -144,6 +144,9 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/pets',
             function (request: any, response: any, next: any) {
             const args = {
+                    page: {"in":"query","name":"page","dataType":"double"},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"double"},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -166,6 +169,7 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -276,6 +280,9 @@ export function RegisterRoutes(app: express.Router) {
         app.get('/api/users',
             function (request: any, response: any, next: any) {
             const args = {
+                    page: {"in":"query","name":"page","dataType":"double"},
+                    pageSize: {"in":"query","name":"pageSize","dataType":"double"},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -298,6 +305,7 @@ export function RegisterRoutes(app: express.Router) {
             function (request: any, response: any, next: any) {
             const args = {
                     id: {"in":"path","name":"id","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"id"}}},
+                    field: {"in":"query","name":"field","dataType":"array","array":{"dataType":"string"}},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
