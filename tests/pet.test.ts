@@ -4,7 +4,12 @@ import { getPool } from '@/common/db';
 
 describe('/api/pets endpoint test', () => {
     afterAll(async () => {
-        await getPool().end();
+        const pool = getPool();
+
+        await pool.query(`DELETE FROM Pet`);
+        await pool.query(`ALTER TABLE Pet AUTO_INCREMENT=1`);
+
+        await pool.end();
     });
 
     it('should retrieve an empty list of pets', async () => {
