@@ -12,13 +12,13 @@ export type PetCreationFields = Pick<
 };
 
 export interface PetFindAllOptions {
-    field?: string[];
+    field?: (keyof Pet)[];
     page?: number;
     pageSize?: number;
 }
 
 export interface PetFindOneOptions {
-    field?: string[];
+    field?: (keyof Pet)[];
 }
 
 export class PetRepository {

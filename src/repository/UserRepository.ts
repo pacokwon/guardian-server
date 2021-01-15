@@ -6,13 +6,13 @@ import { User } from '@/model/User';
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
 export interface FindAllOptions {
-    field?: string[];
+    field?: (keyof User)[];
     page?: number;
     pageSize?: number;
 }
 
 export interface FindOneOptions {
-    field?: string[];
+    field?: (keyof User)[];
 }
 
 export class UserRepository {
