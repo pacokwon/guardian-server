@@ -10,7 +10,7 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '@/repository/UserPetHistoryRepository';
-import { CustomError } from '@/common/error';
+import { ApiError, CustomError } from '@/common/error';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 
 const petRepository = new PetRepository();
@@ -27,13 +27,12 @@ const findOne = async (
     return await petRepository.findOne(id, options);
 };
 
-const createOne = async (fields: PetCreationFields): Promise<CustomError> => {
-    const createdRowsCount = await petRepository.insertOne(fields);
+const createOne = async (fields: PetCreationFields): Promise<number> => {
+    const insertID = await petRepository.insertOne(fields);
 
-    if (createdRowsCount < 1)
-        return { status: 500, message: 'Multiple rows created' };
+    if (insertID === null) throw new ApiError(500, 'Failed to create pet.');
 
-    return {};
+    return insertID;
 };
 
 const updateOne = async (

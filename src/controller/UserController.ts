@@ -46,7 +46,11 @@ interface SingleUserReadResponse {
 /**
  * Response containing requested user information
  */
-type SingleUserUpdateResponse = SingleUserReadResponse;
+type UserUpdateResponse = SingleUserReadResponse;
+
+interface CreateUserResponse {
+    id: number;
+}
 
 /**
  * Request body to be received on user registration for certain pet
@@ -143,12 +147,11 @@ export class UserController extends Controller {
     @Post('/')
     async createUser(
         @Body() requestBody: CreateUserRequestBody
-    ): Promise<void> {
+    ): Promise<CreateUserResponse> {
         const { nickname } = requestBody;
-        const error = await UserService.createOne(nickname);
-        if (error.message) throw new ApiError(error.status, error.message);
-
+        const insertID = await UserService.createOne(nickname);
         this.setStatus(201);
+        return { id: insertID };
     }
 
     /**
@@ -162,12 +165,12 @@ export class UserController extends Controller {
      * @param requestBody JSON object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Response<SingleUserUpdateResponse>(404, 'Resource Not Found', {})
+    @Response<UserUpdateResponse>(404, 'Resource Not Found', {})
     @Put('{id}')
     async modifyUser(
         @Body() requestBody: ModifyUserRequestBody,
         @Path() id: number
-    ): Promise<SingleUserUpdateResponse> {
+    ): Promise<UserUpdateResponse> {
         const { nickname } = requestBody;
         // as of now, the only modifiable data in a user is the nickname
         const modifiedUser = await UserService.updateOne(id, nickname);
