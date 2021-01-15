@@ -26,6 +26,7 @@ describe('/api/pets endpoint test', () => {
             imageUrl: 'https://placekitten.com/640/640'
         });
         expect(createFooResponse.status).toBe(201);
+        expect(createFooResponse.body?.id).toBe(1);
 
         const createBarResponse = await request(app).post('/api/pets').send({
             species: 'dog',
@@ -33,6 +34,7 @@ describe('/api/pets endpoint test', () => {
             imageUrl: 'https://placedog.net/640/640'
         });
         expect(createBarResponse.status).toBe(201);
+        expect(createBarResponse.body?.id).toBe(2);
 
         const createBazResponse = await request(app).post('/api/pets').send({
             species: 'cat',
@@ -40,6 +42,7 @@ describe('/api/pets endpoint test', () => {
             imageUrl: 'https://placekitten.com/540/540'
         });
         expect(createBazResponse.status).toBe(201);
+        expect(createBazResponse.body?.id).toBe(3);
 
         const createHamResponse = await request(app).post('/api/pets').send({
             species: 'dog',
@@ -47,6 +50,7 @@ describe('/api/pets endpoint test', () => {
             imageUrl: 'https://placedog.net/540/540'
         });
         expect(createHamResponse.status).toBe(201);
+        expect(createHamResponse.body?.id).toBe(4);
     });
 
     it('should retrieve a list with 4 pets', async () => {
