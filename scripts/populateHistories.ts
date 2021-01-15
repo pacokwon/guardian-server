@@ -79,7 +79,13 @@ export const populateHistories = async (
         {}
     );
 
-    const registerHistoryArray: UserPetHistory[] = [];
+    const registerHistoryArray: (Omit<
+        UserPetHistory,
+        'registeredAt' | 'releasedAt'
+    > & {
+        registeredAt: number;
+        releasedAt: number;
+    })[] = [];
 
     checkPoints.forEach(checkPointTimestamp => {
         // unregister pets with probability
