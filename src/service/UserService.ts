@@ -62,7 +62,7 @@ const removeOne = async (id: number): Promise<void> => {
 // check for already existing reservation
 const registerUser = async (petID: number, userID: number): Promise<void> => {
     const unreleasedPetRows = await userPetHistoryRepository.find({
-        select: ['id'],
+        field: ['id'],
         where: { petID, released: 0 }
     });
 

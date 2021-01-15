@@ -1,10 +1,10 @@
-import { Pool, OkPacket } from 'mysql2/promise';
+import { Pool, OkPacket, escape } from 'mysql2/promise';
 import { getPool } from '@/common/db';
 import { SQLRow } from '@/common/type';
 import { UserPetHistory } from '@/model/UserPetHistory';
 
 interface FindQuery {
-    select: (keyof UserPetHistory)[];
+    field: (keyof UserPetHistory)[];
     where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
 }
 
@@ -52,23 +52,26 @@ export class UserPetHistoryRepository {
     }
 
     async find(query: FindQuery): Promise<UserPetHistory[]> {
-        const { select, where = {} } = query;
-
-        const fields = select.join(', ');
+        const {
+            field = ['id', 'userID', 'petID', 'releasedAt', 'registeredAt'],
+            where = {}
+        } = query;
 
         // is empty string when `where` is empty
         const whereCondition = Object.entries(where)
-            .map(([field, value]) => `${field}=${value}`)
+            .map(([field, value]) => `${field}=${escape(value)}`)
             .join(' AND ');
 
-        const whereQuery = whereCondition ? `WHERE ${whereCondition}` : '';
+        const whereQuery = whereCondition ? whereCondition : '1';
 
         const sql = `
-            SELECT ${fields} FROM UserPetHistory
-            ${whereQuery}
+            SELECT ?? FROM UserPetHistory
+            WHERE ${whereQuery}
         `;
 
-        const [rows] = await this.pool.query<SQLRow<UserPetHistory>[]>(sql);
+        const [rows] = await this.pool.query<SQLRow<UserPetHistory>[]>(sql, [
+            field
+        ]);
 
         return rows;
     }
@@ -88,15 +91,15 @@ export class UserPetHistoryRepository {
 
         // is empty string when `where` is empty
         const whereCondition = Object.entries(where)
-            .map(([field, value]) => `${field}=${value}`)
+            .map(([field, value]) => `${field}=${escape(value)}`)
             .join(' AND ');
 
-        const whereQuery = whereCondition ? `WHERE ${whereCondition}` : '';
+        const whereQuery = whereCondition ? `${whereCondition}` : '1';
 
         const sql = `
             UPDATE UserPetHistory
             SET released=${set.released}
-            ${whereQuery}
+            WHERE ${whereQuery}
         `;
 
         const [result] = await this.pool.query<OkPacket>(sql);
@@ -115,12 +118,16 @@ export class UserPetHistoryRepository {
         const sql = `
             SELECT History.*, User.nickname
             FROM UserPetHistory History INNER JOIN User
-            ON History.petID=${petID} AND History.userID=User.id
-            LIMIT ${limit}
-            OFFSET ${offset}
+            ON History.petID=? AND History.userID=User.id
+            LIMIT ?
+            OFFSET ?
         `;
 
-        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql);
+        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql, [
+            petID,
+            limit,
+            offset
+        ]);
 
         return rows;
     }
@@ -136,12 +143,16 @@ export class UserPetHistoryRepository {
         const sql = `
             SELECT History.*, Pet.nickname
             FROM UserPetHistory History INNER JOIN Pet
-            ON History.userID=${userID} AND History.petID=Pet.id
-            LIMIT ${limit}
-            OFFSET ${offset}
+            ON History.userID=? AND History.petID=Pet.id
+            LIMIT ?
+            OFFSET ?
         `;
 
-        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql);
+        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql, [
+            userID,
+            limit,
+            offset
+        ]);
 
         return rows;
     }

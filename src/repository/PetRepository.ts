@@ -30,19 +30,21 @@ export class PetRepository {
 
     async findAll(options: PetFindAllOptions = {}): Promise<Pet[]> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
-        const selectedColumns = field.join(', ');
 
         const { page = 1, pageSize = 10 } = options;
         const limit = Math.min(pageSize, 100);
         const offset = (page - 1) * pageSize;
 
-        const [rows] = await this.pool.query<SQLRow<Pet>[]>(`
-            SELECT ${selectedColumns}
+        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
+            `
+            SELECT ??
             FROM Pet
             WHERE deleted=0
-            LIMIT ${limit}
-            OFFSET ${offset}
-        `);
+            LIMIT ?
+            OFFSET ?
+        `,
+            [field, limit, offset]
+        );
 
         return rows;
     }
@@ -52,42 +54,38 @@ export class PetRepository {
         options: PetFindOneOptions = {}
     ): Promise<Pet | undefined> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
-        const selectedColumns = field.join(', ');
 
         const [rows] = await this.pool.query<SQLRow<Pet>[]>(
-            `SELECT ${selectedColumns} FROM Pet WHERE id='${id}' AND deleted=0`
+            `SELECT ?? FROM Pet WHERE id=? AND deleted=0`,
+            [field, id]
         );
 
         return rows[0];
     }
 
     async insertOne(fields: PetCreationFields): Promise<number | null> {
-        const columnsList = Object.keys(fields);
-        const valuesList = columnsList.map(column => `'${fields[column]}'`);
-
-        const columns = columnsList.join(', ');
-        const values = valuesList.join(', ');
+        const columns = Object.keys(fields);
+        const values = columns.map(column => fields[column]);
 
         const [result] = await this.pool.query<ResultSetHeader>(
-            `INSERT INTO Pet (${columns}) VALUES (${values})`
+            `INSERT INTO Pet (??) VALUES (?)`,
+            [columns, values]
         );
 
         return result.insertId || null;
     }
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
-        const columnValueMapping = Object.entries(fields)
-            .map(([key, value]) => `${key}='${value}'`)
-            .join(', ');
-
-        await this.pool.query(
-            `UPDATE Pet SET ${columnValueMapping} WHERE id='${id}' AND deleted=0`
-        );
+        await this.pool.query(`UPDATE Pet SET ? WHERE id=? AND deleted=0`, [
+            fields,
+            id
+        ]);
     }
 
     async removeOne(id: number): Promise<number> {
         const [result] = await this.pool.query<OkPacket>(
-            `UPDATE Pet SET deleted=1 WHERE id='${id}' AND deleted=0`
+            `UPDATE Pet SET deleted=1 WHERE id=? AND deleted=0`,
+            [id]
         );
 
         return result.changedRows;
