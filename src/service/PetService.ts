@@ -10,7 +10,7 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '@/repository/UserPetHistoryRepository';
-import { ApiError, CustomError } from '@/common/error';
+import { ApiError } from '@/common/error';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 
 const petRepository = new PetRepository();
@@ -23,8 +23,10 @@ const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
 const findOne = async (
     id: number,
     options: PetFindOneOptions
-): Promise<Pet | undefined> => {
-    return await petRepository.findOne(id, options);
+): Promise<Pet> => {
+    const pet = await petRepository.findOne(id, options);
+    if (!pet) throw new ApiError(404, 'Pet not found');
+    return pet;
 };
 
 const createOne = async (fields: PetCreationFields): Promise<number> => {
@@ -38,24 +40,19 @@ const createOne = async (fields: PetCreationFields): Promise<number> => {
 const updateOne = async (
     id: number,
     fields: PetModifiableFields
-): Promise<Pet | undefined> => {
-    try {
-        await petRepository.updateOne(id, fields);
-    } catch {
-        return undefined;
-    }
+): Promise<Pet> => {
+    await petRepository.updateOne(id, fields).catch(_ => {
+        throw new ApiError(404, 'Pet not found');
+    });
 
     return { id, ...fields };
 };
 
-const removeOne = async (id: number): Promise<CustomError> => {
+const removeOne = async (id: number): Promise<void> => {
     const deletedRowsCount = await petRepository.removeOne(id);
-    if (deletedRowsCount === 0)
-        return { status: 404, message: 'Match not found' };
+    if (deletedRowsCount === 0) throw new ApiError(404, 'Match not found');
     else if (deletedRowsCount > 1)
-        return { status: 500, message: 'Multiple rows have been deleted' };
-
-    return {};
+        throw new ApiError(500, 'Multiple rows have been deleted');
 };
 
 const findUsersHistory = async (

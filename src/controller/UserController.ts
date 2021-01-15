@@ -16,7 +16,7 @@ import {
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
-import { ApiError, ErrorResponse } from '@/common/error';
+import { ErrorResponse } from '@/common/error';
 
 /**
  * Request body to be sent on user creation
@@ -42,11 +42,6 @@ interface SingleUserReadResponse {
      */
     user?: User;
 }
-
-/**
- * Response containing requested user information
- */
-type UserUpdateResponse = SingleUserReadResponse;
 
 interface CreateUserResponse {
     id: number;
@@ -117,24 +112,21 @@ export class UserController extends Controller {
      * @example id 4
      * @isInt id
      */
-    @Example<SingleUserReadResponse>({
-        user: {
-            id: 4,
-            nickname: 'max'
-        }
+    @Example<User>({
+        id: 4,
+        nickname: 'max'
     })
-    @Response<SingleUserReadResponse>(404, 'Resource Not Found', {})
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'User not found'
+    })
     @Get('{id}')
     async getUser(
         @Path() id: number,
         @Query() field?: string[]
-    ): Promise<SingleUserReadResponse> {
+    ): Promise<User> {
         const user = await UserService.findOne(id, { field });
-
-        const statusCode = user ? 200 : 404;
-        this.setStatus(statusCode);
-
-        return { user };
+        this.setStatus(200);
+        return user;
     }
 
     /**
@@ -165,19 +157,19 @@ export class UserController extends Controller {
      * @param requestBody JSON object that contains the user's desired new nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @Response<UserUpdateResponse>(404, 'Resource Not Found', {})
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'User not found'
+    })
     @Put('{id}')
     async modifyUser(
         @Body() requestBody: ModifyUserRequestBody,
         @Path() id: number
-    ): Promise<UserUpdateResponse> {
+    ): Promise<User> {
         const { nickname } = requestBody;
         // as of now, the only modifiable data in a user is the nickname
         const modifiedUser = await UserService.updateOne(id, nickname);
-
-        const statusCode = modifiedUser ? 200 : 404;
-        this.setStatus(statusCode);
-        return { user: modifiedUser };
+        this.setStatus(200);
+        return modifiedUser;
     }
 
     /**
@@ -192,10 +184,7 @@ export class UserController extends Controller {
     })
     @Delete('{id}')
     async removeUser(@Path() id: number): Promise<void> {
-        const error = await UserService.removeOne(id);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
+        await UserService.removeOne(id);
         this.setStatus(200);
     }
 
@@ -273,11 +262,7 @@ export class UserController extends Controller {
         @Path() userID: number
     ): Promise<void> {
         const { petID } = requestBody;
-
-        const error = await UserService.registerUser(petID, userID);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
+        await UserService.registerUser(petID, userID);
         this.setStatus(201);
     }
 
@@ -300,10 +285,7 @@ export class UserController extends Controller {
         @Path() userID: number,
         @Path() petID: number
     ): Promise<void> {
-        const error = await UserService.unregisterUser(petID, userID);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
+        await UserService.unregisterUser(petID, userID);
         this.setStatus(200);
     }
 }

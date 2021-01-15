@@ -16,7 +16,7 @@ import {
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
-import { ApiError, ErrorResponse } from '@/common/error';
+import { ErrorResponse } from '@/common/error';
 
 /**
  * Request body to be received on pet creation
@@ -41,24 +41,9 @@ interface CreatePetRequestBody {
  */
 type ModifyPetRequestBody = CreatePetRequestBody;
 
-/**
- * Response containing requested pet information
- */
-interface SinglePetReadResponse {
-    /**
-     * JSON object containing pet information. Could be undefined.
-     */
-    pet?: Pet;
-}
-
 interface CreatePetResponse {
     id: number;
 }
-
-/**
- * Response containing updated pet information
- */
-type UpdatePetResponse = SinglePetReadResponse;
 
 @Route('api/pets')
 @Tags('Pet')
@@ -120,26 +105,20 @@ export class PetController extends Controller {
      * @isInt id
      * @example id 4
      */
-    @Example<SinglePetReadResponse>({
-        pet: {
-            id: 13,
-            species: 'cat',
-            nickname: 'lacey',
-            imageUrl: 'https://placedog.net/500/500'
-        }
+    @Example<Pet>({
+        id: 13,
+        species: 'cat',
+        nickname: 'lacey',
+        imageUrl: 'https://placedog.net/500/500'
     })
-    @Example<SinglePetReadResponse>({})
+    @Response<ErrorResponse>(404, 'Not found', {
+        message: 'Pet not found'
+    })
     @Get('{id}')
-    async getPet(
-        @Path() id: number,
-        @Query() field?: string[]
-    ): Promise<SinglePetReadResponse> {
+    async getPet(@Path() id: number, @Query() field?: string[]): Promise<Pet> {
         const pet = await PetService.findOne(id, { field });
-
-        const statusCode = pet ? 200 : 404;
-        this.setStatus(statusCode);
-
-        return { pet };
+        this.setStatus(200);
+        return pet;
     }
 
     /**
@@ -177,33 +156,29 @@ export class PetController extends Controller {
      * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400", "species": "dog" }
      * @example requestBody { "nickname": "baz", "imageUrl": "https://placekitten.com/400/400", "species": "cat" }
      */
-    @Example<UpdatePetResponse>({
-        pet: {
-            id: 4,
-            nickname: 'foo',
-            imageUrl: 'https://placedog.net/400/400',
-            species: 'dog'
-        }
+    @Example<Pet>({
+        id: 4,
+        nickname: 'foo',
+        imageUrl: 'https://placedog.net/400/400',
+        species: 'dog'
     })
-    @Example<UpdatePetResponse>({
-        pet: {
-            id: 5,
-            nickname: 'foo',
-            imageUrl: 'https://placedog.net/400/400',
-            species: 'dog'
-        }
+    @Example<Pet>({
+        id: 5,
+        nickname: 'foo',
+        imageUrl: 'https://placedog.net/400/400',
+        species: 'dog'
     })
-    @Response<UpdatePetResponse>(404, 'Not Found', {})
+    @Response<ErrorResponse>(404, 'Not Found', {
+        message: 'Pet not found'
+    })
     @Put('{id}')
     async modifyPet(
         @Body() requestBody: ModifyPetRequestBody,
         @Path() id: number
-    ): Promise<UpdatePetResponse> {
+    ): Promise<Pet> {
         const modifiedPet = await PetService.updateOne(id, requestBody);
-
-        const statusCode = modifiedPet ? 200 : 404;
-        this.setStatus(statusCode);
-        return { pet: modifiedPet };
+        this.setStatus(200);
+        return modifiedPet;
     }
 
     /**
@@ -216,10 +191,7 @@ export class PetController extends Controller {
     @Response<ErrorResponse>(404, 'Not Found', { message: 'Match not found' })
     @Delete('{id}')
     async removePet(@Path() id: number): Promise<void> {
-        const error = await PetService.removeOne(id);
-
-        if (error.message) throw new ApiError(error.status, error.message);
-
+        await PetService.removeOne(id);
         this.setStatus(200);
     }
 

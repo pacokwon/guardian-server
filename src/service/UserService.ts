@@ -9,7 +9,7 @@ import {
     FindHistoryOptions
 } from '@/repository/UserPetHistoryRepository';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
-import { ApiError, CustomError } from '@/common/error';
+import { ApiError } from '@/common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
@@ -18,11 +18,9 @@ const findAll = async (options?: FindAllOptions): Promise<User[]> => {
     return await userRepository.findAll(options);
 };
 
-const findOne = async (
-    id: number,
-    options?: FindOneOptions
-): Promise<User | undefined> => {
+const findOne = async (id: number, options?: FindOneOptions): Promise<User> => {
     const user = await userRepository.findOne(id, options);
+    if (!user) throw new ApiError(404, 'User not found');
     return user;
 };
 
@@ -39,41 +37,30 @@ const findPetsHistory = async (
 const createOne = async (nickname: string): Promise<number> => {
     const insertID = await userRepository.insertOne(nickname);
 
-    if (insertID === null) throw new ApiError(500, 'Failed to create user.');
+    if (insertID === null) throw new ApiError(500, 'Failed to create user');
 
     return insertID;
 };
 
-const updateOne = async (
-    id: number,
-    newNickname: string
-): Promise<User | undefined> => {
-    try {
-        await userRepository.updateOne(id, { nickname: newNickname });
-    } catch {
-        return undefined;
-    }
+const updateOne = async (id: number, newNickname: string): Promise<User> => {
+    await userRepository.updateOne(id, { nickname: newNickname }).catch(_ => {
+        throw new ApiError(404, 'User not found');
+    });
 
     // return modified entry
     return { id, nickname: newNickname };
 };
 
-const removeOne = async (id: number): Promise<CustomError> => {
+const removeOne = async (id: number): Promise<void> => {
     const deletedRowsCount = await userRepository.removeOne(id);
 
-    if (deletedRowsCount === 0)
-        return { status: 400, message: 'No match found' };
+    if (deletedRowsCount === 0) throw new ApiError(404, 'Match not found');
     else if (deletedRowsCount > 1)
-        return { status: 500, message: 'Multiple rows deleted' };
-
-    return {};
+        throw new ApiError(500, 'Multiple rows deleted');
 };
 
 // check for already existing reservation
-const registerUser = async (
-    petID: number,
-    userID: number
-): Promise<CustomError> => {
+const registerUser = async (petID: number, userID: number): Promise<void> => {
     const unreleasedPetRows = await userPetHistoryRepository.find({
         select: ['id'],
         where: { petID, released: 0 }
@@ -83,44 +70,25 @@ const registerUser = async (
 
     // pet is already taken
     if (isPetRegistered)
-        return { message: 'Pet is already registered to a user!', status: 400 };
+        throw new ApiError(400, 'Pet is already registered to a user!');
 
     // the database takes care of foreign key constraints
-    return await userPetHistoryRepository
-        .insertOne(petID, userID)
-        .then(() => ({}))
-        .catch(_ => ({
-            message: 'Pet or User does not exist!',
-            status: 404
-        }));
+    await userPetHistoryRepository.insertOne(petID, userID).catch(_ => {
+        throw new ApiError(404, 'Pet or User does not exist!');
+    });
 };
 
-const unregisterUser = async (
-    petID: number,
-    userID: number
-): Promise<CustomError> => {
+const unregisterUser = async (petID: number, userID: number): Promise<void> => {
     // the database takes care of foreign key constraints
-    const error = await userPetHistoryRepository
+    const changedRows = await userPetHistoryRepository
         .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
-        .then(changedRows => {
-            if (changedRows === 0)
-                return {
-                    message: 'Match not found',
-                    status: 404
-                };
-            else if (changedRows > 1)
-                return {
-                    message: 'Multiple rows have changed',
-                    status: 500
-                };
-            return {};
-        })
-        .catch(() => ({
-            message: 'Internal Server Error',
-            status: 500
-        }));
+        .catch(() => {
+            throw new ApiError(500, 'Internal Server Error');
+        });
 
-    return error;
+    if (changedRows === 0) throw new ApiError(404, 'Match not found');
+    else if (changedRows > 1)
+        throw new ApiError(500, 'Multiple rows have changed');
 };
 
 export {
