@@ -24,21 +24,25 @@ describe('/api/users endpoint test', () => {
             .post('/api/users')
             .send({ nickname: 'foo' });
         expect(createFooResponse.status).toBe(201);
+        expect(createFooResponse.body?.id).toBe(1);
 
         const createBarResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'bar' });
         expect(createBarResponse.status).toBe(201);
+        expect(createBarResponse.body?.id).toBe(2);
 
         const createBazResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'baz' });
         expect(createBazResponse.status).toBe(201);
+        expect(createBazResponse.body?.id).toBe(3);
 
         const createHamResponse = await request(app)
             .post('/api/users')
             .send({ nickname: 'ham' });
         expect(createHamResponse.status).toBe(201);
+        expect(createHamResponse.body?.id).toBe(4);
     });
 
     it('should retrieve a list with 4 users', async () => {
