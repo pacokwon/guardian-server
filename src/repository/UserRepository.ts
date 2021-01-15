@@ -55,12 +55,12 @@ export class UserRepository {
         return rows[0];
     }
 
-    async insertOne(nickname: string): Promise<number> {
+    async insertOne(nickname: string): Promise<number | null> {
         const [result] = await this.pool.query<ResultSetHeader>(
             `INSERT INTO User (nickname) VALUES ('${nickname}')`
         );
 
-        return result.affectedRows;
+        return result.insertId || null;
     }
 
     async updateOne(id: number, fields: UserModifiableFields): Promise<number> {

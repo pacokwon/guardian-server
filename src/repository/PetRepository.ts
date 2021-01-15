@@ -61,7 +61,7 @@ export class PetRepository {
         return rows[0];
     }
 
-    async insertOne(fields: PetCreationFields): Promise<number> {
+    async insertOne(fields: PetCreationFields): Promise<number | null> {
         const columnsList = Object.keys(fields);
         const valuesList = columnsList.map(column => `'${fields[column]}'`);
 
@@ -72,7 +72,7 @@ export class PetRepository {
             `INSERT INTO Pet (${columns}) VALUES (${values})`
         );
 
-        return result.affectedRows;
+        return result.insertId || null;
     }
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<void> {

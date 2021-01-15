@@ -51,10 +51,14 @@ interface SinglePetReadResponse {
     pet?: Pet;
 }
 
+interface CreatePetResponse {
+    id: number;
+}
+
 /**
  * Response containing updated pet information
  */
-type SinglePetUpdateResponse = SinglePetReadResponse;
+type UpdatePetResponse = SinglePetReadResponse;
 
 @Route('api/pets')
 @Tags('Pet')
@@ -147,17 +151,18 @@ export class PetController extends Controller {
      */
     @Post('/')
     @SuccessResponse(201, 'Created')
-    async createPet(@Body() requestBody: CreatePetRequestBody): Promise<void> {
+    async createPet(
+        @Body() requestBody: CreatePetRequestBody
+    ): Promise<CreatePetResponse> {
         const { species, nickname, imageUrl } = requestBody;
-        const error = await PetService.createOne({
+        const insertID = await PetService.createOne({
             species,
             nickname,
             imageUrl
         });
 
-        if (error.message) throw new ApiError(error.status, error.message);
-
         this.setStatus(201);
+        return { id: insertID };
     }
 
     /**
@@ -172,7 +177,7 @@ export class PetController extends Controller {
      * @example requestBody { "nickname": "foo", "imageUrl": "https://placedog.net/400/400", "species": "dog" }
      * @example requestBody { "nickname": "baz", "imageUrl": "https://placekitten.com/400/400", "species": "cat" }
      */
-    @Example<SinglePetUpdateResponse>({
+    @Example<UpdatePetResponse>({
         pet: {
             id: 4,
             nickname: 'foo',
@@ -180,7 +185,7 @@ export class PetController extends Controller {
             species: 'dog'
         }
     })
-    @Example<SinglePetUpdateResponse>({
+    @Example<UpdatePetResponse>({
         pet: {
             id: 5,
             nickname: 'foo',
@@ -188,12 +193,12 @@ export class PetController extends Controller {
             species: 'dog'
         }
     })
-    @Response<SinglePetUpdateResponse>(404, 'Not Found', {})
+    @Response<UpdatePetResponse>(404, 'Not Found', {})
     @Put('{id}')
     async modifyPet(
         @Body() requestBody: ModifyPetRequestBody,
         @Path() id: number
-    ): Promise<SinglePetUpdateResponse> {
+    ): Promise<UpdatePetResponse> {
         const modifiedPet = await PetService.updateOne(id, requestBody);
 
         const statusCode = modifiedPet ? 200 : 404;
