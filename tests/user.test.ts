@@ -92,7 +92,7 @@ describe('/api/users endpoint test', () => {
         const response = await request(app).get('/api/users/1');
 
         expect(response.status).toBe(200);
-        expect(response.body.user.nickname).toBe('foo');
+        expect(response.body?.nickname).toBe('foo');
     });
 
     it('should successfully modify foo\'s nickname to "baz"', async () => {
@@ -101,12 +101,12 @@ describe('/api/users endpoint test', () => {
             .send({ nickname: 'baz' });
 
         expect(modifyFooResponse.status).toBe(200);
-        expect(modifyFooResponse.body.user.nickname).toBe('baz');
+        expect(modifyFooResponse.body?.nickname).toBe('baz');
 
         const getBazResponse = await request(app).get('/api/users/1');
 
         expect(getBazResponse.status).toBe(200);
-        expect(getBazResponse.body.user.nickname).toBe('baz');
+        expect(getBazResponse.body?.nickname).toBe('baz');
     });
 
     it('should successfully delete an existing user "baz"', async () => {
@@ -117,6 +117,5 @@ describe('/api/users endpoint test', () => {
     it('should not retreive information of a deleted user "baz"', async () => {
         const response = await request(app).get('/api/users/1');
         expect(response.status).toBe(404);
-        expect(response.body.user).toBeUndefined();
     });
 });

@@ -22,10 +22,10 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "SinglePetReadResponse": {
+    "ErrorResponse": {
         "dataType": "refObject",
         "properties": {
-            "pet": {"ref":"Pet"},
+            "message": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },
@@ -48,22 +48,9 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UpdatePetResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"SinglePetReadResponse","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ModifyPetRequestBody": {
         "dataType": "refAlias",
         "type": {"ref":"CreatePetRequestBody","validators":{}},
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "ErrorResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "message": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "UserHistoryOfPet": {
@@ -89,14 +76,6 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "SingleUserReadResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "user": {"ref":"User"},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "CreateUserResponse": {
         "dataType": "refObject",
         "properties": {
@@ -111,11 +90,6 @@ const models: TsoaRoute.Models = {
             "nickname": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "UserUpdateResponse": {
-        "dataType": "refAlias",
-        "type": {"ref":"SingleUserReadResponse","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ModifyUserRequestBody": {

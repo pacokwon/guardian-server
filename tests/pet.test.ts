@@ -123,7 +123,7 @@ describe('/api/pets endpoint test', () => {
         const response = await request(app).get('/api/pets/1');
 
         expect(response.status).toBe(200);
-        expect(response.body.pet).toStrictEqual({
+        expect(response.body).toStrictEqual({
             id: 1,
             species: 'cat',
             nickname: 'foo',
@@ -139,7 +139,7 @@ describe('/api/pets endpoint test', () => {
         });
 
         expect(modifyFooResponse.status).toBe(200);
-        expect(modifyFooResponse.body.pet).toStrictEqual({
+        expect(modifyFooResponse.body).toStrictEqual({
             id: 1,
             species: 'cat',
             nickname: 'baz',
@@ -151,7 +151,7 @@ describe('/api/pets endpoint test', () => {
         const getBazResponse = await request(app).get('/api/pets/1');
 
         expect(getBazResponse.status).toBe(200);
-        expect(getBazResponse.body.pet).toStrictEqual({
+        expect(getBazResponse.body).toStrictEqual({
             id: 1,
             species: 'cat',
             nickname: 'baz',
@@ -167,6 +167,5 @@ describe('/api/pets endpoint test', () => {
     it('should not retreive information of a deleted pet "baz"', async () => {
         const response = await request(app).get('/api/pets/1');
         expect(response.status).toBe(404);
-        expect(response.body.pet).toBeUndefined();
     });
 });
