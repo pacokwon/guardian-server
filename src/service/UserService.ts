@@ -43,17 +43,23 @@ const createOne = async (nickname: string): Promise<number> => {
 };
 
 const updateOne = async (id: number, newNickname: string): Promise<User> => {
+    const userExists = (await userRepository.findOne(id, {})) !== undefined;
+    if (!userExists) throw new ApiError(404, 'User not found');
+
     const changedRows = await userRepository.updateOne(id, {
         nickname: newNickname
     });
-
-    if (changedRows < 1) throw new ApiError(404, 'User not found');
+    if (changedRows > 1)
+        throw new ApiError(500, 'Multiple rows have been updated');
 
     // return modified entry
     return { id, nickname: newNickname };
 };
 
 const removeOne = async (id: number): Promise<void> => {
+    const userExists = (await userRepository.findOne(id, {})) !== undefined;
+    if (!userExists) throw new ApiError(404, 'User not found');
+
     const deletedRowsCount = await userRepository.removeOne(id);
 
     if (deletedRowsCount === 0) throw new ApiError(404, 'User not found');

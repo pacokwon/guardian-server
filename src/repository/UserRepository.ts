@@ -66,7 +66,7 @@ export class UserRepository {
         // implementation is incomplete since it does not support numerical types
         // it is left as is since the only modifiable field as of now is the nickname
         const [result] = await this.pool.query<OkPacket>(
-            `UPDATE User SET ? WHERE id=? AND deleted=0`,
+            `UPDATE User SET ? WHERE id=?`,
             [fields, id]
         );
 
@@ -75,7 +75,7 @@ export class UserRepository {
 
     async removeOne(id: number): Promise<number> {
         const [result] = await this.pool.query<OkPacket>(
-            `UPDATE User SET deleted=1 WHERE id=? AND deleted=0`,
+            `UPDATE User SET deleted=1 WHERE id=?`,
             [id]
         );
 

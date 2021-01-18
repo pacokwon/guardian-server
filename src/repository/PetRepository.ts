@@ -37,8 +37,7 @@ export class PetRepository {
 
         const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `
-            SELECT ??
-            FROM Pet
+            SELECT ?? FROM Pet
             WHERE deleted=0
             LIMIT ?
             OFFSET ?
@@ -77,7 +76,7 @@ export class PetRepository {
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<number> {
         const [result] = await this.pool.query<OkPacket>(
-            `UPDATE Pet SET ? WHERE id=? AND deleted=0`,
+            `UPDATE Pet SET ? WHERE id=?`,
             [fields, id]
         );
 
@@ -86,7 +85,7 @@ export class PetRepository {
 
     async removeOne(id: number): Promise<number> {
         const [result] = await this.pool.query<OkPacket>(
-            `UPDATE Pet SET deleted=1 WHERE id=? AND deleted=0`,
+            `UPDATE Pet SET deleted=1 WHERE id=?`,
             [id]
         );
 
