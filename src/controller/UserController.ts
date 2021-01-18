@@ -178,7 +178,7 @@ export class UserController extends Controller {
      * @isInt id
      */
     @Response<ErrorResponse>(404, 'Not Found', {
-        message: 'Match not found'
+        message: 'User not found'
     })
     @Delete('{id}')
     async removeUser(@Path() id: number): Promise<void> {
@@ -276,7 +276,7 @@ export class UserController extends Controller {
      * @example userID 3
      */
     @Response<ErrorResponse>(404, 'Not Found', {
-        message: 'Match not found'
+        message: 'User not found'
     })
     @Delete('{userID}/pets/{petID}')
     async unregisterUser(

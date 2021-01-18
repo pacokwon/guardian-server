@@ -56,7 +56,7 @@ const updateOne = async (id: number, newNickname: string): Promise<User> => {
 const removeOne = async (id: number): Promise<void> => {
     const deletedRowsCount = await userRepository.removeOne(id);
 
-    if (deletedRowsCount === 0) throw new ApiError(404, 'Match not found');
+    if (deletedRowsCount === 0) throw new ApiError(404, 'User not found');
     else if (deletedRowsCount > 1)
         throw new ApiError(500, 'Multiple rows deleted');
 };
@@ -88,7 +88,7 @@ const unregisterUser = async (petID: number, userID: number): Promise<void> => {
             throw new ApiError(500, 'Internal Server Error');
         });
 
-    if (changedRows === 0) throw new ApiError(404, 'Match not found');
+    if (changedRows === 0) throw new ApiError(404, 'User not found');
     else if (changedRows > 1)
         throw new ApiError(500, 'Multiple rows have changed');
 };

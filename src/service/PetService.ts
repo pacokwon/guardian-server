@@ -50,7 +50,7 @@ const updateOne = async (
 
 const removeOne = async (id: number): Promise<void> => {
     const deletedRowsCount = await petRepository.removeOne(id);
-    if (deletedRowsCount === 0) throw new ApiError(404, 'Match not found');
+    if (deletedRowsCount === 0) throw new ApiError(404, 'Pet not found');
     else if (deletedRowsCount > 1)
         throw new ApiError(500, 'Multiple rows have been deleted');
 };
