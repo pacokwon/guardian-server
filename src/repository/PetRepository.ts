@@ -75,11 +75,13 @@ export class PetRepository {
         return result.insertId || null;
     }
 
-    async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
-        await this.pool.query(`UPDATE Pet SET ? WHERE id=? AND deleted=0`, [
-            fields,
-            id
-        ]);
+    async updateOne(id: number, fields: PetModifiableFields): Promise<number> {
+        const [result] = await this.pool.query<OkPacket>(
+            `UPDATE Pet SET ? WHERE id=? AND deleted=0`,
+            [fields, id]
+        );
+
+        return result.changedRows;
     }
 
     async removeOne(id: number): Promise<number> {

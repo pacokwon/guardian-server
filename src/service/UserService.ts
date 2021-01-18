@@ -43,9 +43,11 @@ const createOne = async (nickname: string): Promise<number> => {
 };
 
 const updateOne = async (id: number, newNickname: string): Promise<User> => {
-    await userRepository.updateOne(id, { nickname: newNickname }).catch(_ => {
-        throw new ApiError(404, 'User not found');
+    const changedRows = await userRepository.updateOne(id, {
+        nickname: newNickname
     });
+
+    if (changedRows < 1) throw new ApiError(404, 'User not found');
 
     // return modified entry
     return { id, nickname: newNickname };

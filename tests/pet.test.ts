@@ -168,4 +168,30 @@ describe('/api/pets endpoint test', () => {
         const response = await request(app).get('/api/pets/1');
         expect(response.status).toBe(404);
     });
+
+    it('should not update information of a deleted pet "baz"', async () => {
+        const response = await request(app).put('/api/pets/1').send({
+            nickname: 'baz',
+            imageUrl: 'https://placedog.net/300/300',
+            species: 'dog'
+        });
+        expect(response.status).toBe(404);
+    });
+
+    it('should not delete information of a deleted user "baz"', async () => {
+        const response = await request(app).delete('/api/pets/1');
+        expect(response.status).toBe(404);
+    });
+
+    it('should reject invalid fields when retrieving pet', async () => {
+        const invalidListPetFieldResponse = await request(app).get(
+            '/api/pets?field=invalidfield'
+        );
+        expect(invalidListPetFieldResponse.status).toBe(400);
+
+        const invalidGetPetFieldResponse = await request(app).get(
+            '/api/pets/1?field=invalidfield'
+        );
+        expect(invalidGetPetFieldResponse.status).toBe(400);
+    });
 });

@@ -41,9 +41,9 @@ const updateOne = async (
     id: number,
     fields: PetModifiableFields
 ): Promise<Pet> => {
-    await petRepository.updateOne(id, fields).catch(_ => {
-        throw new ApiError(404, 'Pet not found');
-    });
+    const changedRows = await petRepository.updateOne(id, fields);
+
+    if (changedRows < 1) throw new ApiError(404, 'Pet not found');
 
     return { id, ...fields };
 };

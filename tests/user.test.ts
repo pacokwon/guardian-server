@@ -118,4 +118,28 @@ describe('/api/users endpoint test', () => {
         const response = await request(app).get('/api/users/1');
         expect(response.status).toBe(404);
     });
+
+    it('should not update information of a deleted user "baz"', async () => {
+        const response = await request(app).put('/api/users/1').send({
+            nickname: 'spam'
+        });
+        expect(response.status).toBe(404);
+    });
+
+    it('should not delete information of a deleted user "baz"', async () => {
+        const response = await request(app).delete('/api/users/1');
+        expect(response.status).toBe(404);
+    });
+
+    it('should reject invalid fields when retrieving user', async () => {
+        const invalidListUserFieldResponse = await request(app).get(
+            '/api/users?field=invalidfield'
+        );
+        expect(invalidListUserFieldResponse.status).toBe(400);
+
+        const invalidGetUserFieldResponse = await request(app).get(
+            '/api/users/1?field=invalidfield'
+        );
+        expect(invalidGetUserFieldResponse.status).toBe(400);
+    });
 });
