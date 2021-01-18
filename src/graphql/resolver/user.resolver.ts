@@ -1,25 +1,24 @@
 import { IResolvers } from 'graphql-tools';
 import { User } from '@/model/User';
-import { ApiError } from '@/common/error';
 import * as UserService from '@/service/UserService';
 import {
-    QueryUserArgs,
+    ListUserArgs,
+    GetUserArgs,
     CreateUserArgs,
     UpdateUserArgs,
     DeleteUserArgs,
-    SuccessStatus,
-    UserUpdateInput
+    SuccessStatus
 } from '@/graphql/type/user.type';
 
 export const userResolver: IResolvers = {
     Query: {
-        users: async (): Promise<User[]> => {
-            const users = await UserService.findAll();
+        users: async (_: unknown, args: ListUserArgs): Promise<User[]> => {
+            const users = await UserService.findAll(args);
             return users;
         },
 
-        user: async (_: unknown, args: QueryUserArgs): Promise<User | null> => {
-            const user = await UserService.findOne(Number(args.id));
+        user: async (_: unknown, args: GetUserArgs): Promise<User | null> => {
+            const user = await UserService.findOne(Number(args.id), {});
             return user || null;
         }
     },
@@ -28,10 +27,14 @@ export const userResolver: IResolvers = {
             _: unknown,
             { nickname }: CreateUserArgs
         ): Promise<SuccessStatus> => {
-            const { message } = await UserService.createOne(nickname);
-            const success = message ? true : false;
-            return { success, message };
+            try {
+                await UserService.createOne(nickname);
+            } catch (error) {
+                return { success: false, message: error.message };
+            }
+            return { success: true };
         },
+
         updateUser: async (
             _: unknown,
             { id, input }: UpdateUserArgs
@@ -43,6 +46,19 @@ export const userResolver: IResolvers = {
             );
             const success = updatedUser ? true : false;
             return { success };
+        },
+
+        deleteUser: async (
+            _: unknown,
+            { id }: DeleteUserArgs
+        ): Promise<SuccessStatus> => {
+            try {
+                await UserService.removeOne(Number(id));
+            } catch {
+                return { success: false };
+            }
+
+            return { success: true };
         }
     }
 };

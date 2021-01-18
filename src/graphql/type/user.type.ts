@@ -1,6 +1,11 @@
 import { gql } from 'apollo-server';
 
-export interface QueryUserArgs {
+export interface ListUserArgs {
+    page?: number;
+    pageSize?: number;
+}
+
+export interface GetUserArgs {
     id: string;
 }
 
@@ -10,18 +15,14 @@ export interface CreateUserArgs {
 
 export interface UpdateUserArgs {
     id: string;
-    input: UserUpdateInput;
+    input: { nickname: string };
 }
 
-export type DeleteUserArgs = UpdateUserArgs;
+export type DeleteUserArgs = GetUserArgs;
 
 export interface SuccessStatus {
     success: boolean;
     message?: string;
-}
-
-export interface UserUpdateInput {
-    nickname: string;
 }
 
 export const userTypeDef = gql`
@@ -40,7 +41,7 @@ export const userTypeDef = gql`
     }
 
     type Query {
-        users: [User]
+        users(page: Int, pageSize: Int): [User]
         user(id: ID!): User
     }
 
