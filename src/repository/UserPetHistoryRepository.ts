@@ -98,11 +98,11 @@ export class UserPetHistoryRepository {
 
         const sql = `
             UPDATE UserPetHistory
-            SET released=${set.released}
+            SET released=?
             WHERE ${whereQuery}
         `;
 
-        const [result] = await this.pool.query<OkPacket>(sql);
+        const [result] = await this.pool.query<OkPacket>(sql, [set.released]);
 
         return result.changedRows;
     }
