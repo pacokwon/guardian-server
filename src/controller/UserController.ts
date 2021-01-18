@@ -260,7 +260,7 @@ export class UserController extends Controller {
         @Path() userID: number
     ): Promise<void> {
         const { petID } = requestBody;
-        await UserService.registerUser(petID, userID);
+        await UserService.registerPet(petID, userID);
         this.setStatus(201);
     }
 
@@ -283,7 +283,7 @@ export class UserController extends Controller {
         @Path() userID: number,
         @Path() petID: number
     ): Promise<void> {
-        await UserService.unregisterUser(petID, userID);
+        await UserService.unregisterPet(petID, userID);
         this.setStatus(200);
     }
 }

@@ -68,7 +68,7 @@ const removeOne = async (id: number): Promise<void> => {
 };
 
 // check for already existing reservation
-const registerUser = async (petID: number, userID: number): Promise<void> => {
+const registerPet = async (petID: number, userID: number): Promise<void> => {
     const unreleasedPetRows = await userPetHistoryRepository.find({
         field: ['id'],
         where: { petID, released: 0 }
@@ -86,7 +86,7 @@ const registerUser = async (petID: number, userID: number): Promise<void> => {
     });
 };
 
-const unregisterUser = async (petID: number, userID: number): Promise<void> => {
+const unregisterPet = async (petID: number, userID: number): Promise<void> => {
     // the database takes care of foreign key constraints
     const changedRows = await userPetHistoryRepository
         .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
@@ -106,6 +106,6 @@ export {
     createOne,
     updateOne,
     removeOne,
-    registerUser,
-    unregisterUser
+    registerPet,
+    unregisterPet
 };
