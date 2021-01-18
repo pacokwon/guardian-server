@@ -154,6 +154,16 @@ describe('/api/users endpoint test', () => {
         );
         expect(readSingleQuoteResponse.body?.nickname).toBe("'singlequote'");
 
+        const doubleQuoteResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: '"doublequote"' });
+        expect(doubleQuoteResponse.status).toBe(201);
+
+        const readDoubleQuoteResponse = await request(app).get(
+            `/api/users/${doubleQuoteResponse.body.id}`
+        );
+        expect(readDoubleQuoteResponse.body?.nickname).toBe('"doublequote"');
+
         const commaResponse = await request(app)
             .post('/api/users')
             .send({ nickname: ',comma,' });
