@@ -13,7 +13,7 @@ export const errorHandler: ErrorRequestHandler = (
     if (error instanceof ValidateError) {
         console.warn(`Caught Validation Error for ${req.path}:`, error.fields);
         return res.status(400).json({
-            message: 'Validation Failed',
+            message: error.message || 'Validation Failed!',
             details: error?.fields
         });
     }
