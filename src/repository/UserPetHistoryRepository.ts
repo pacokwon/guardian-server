@@ -42,6 +42,7 @@ export interface PetHistoryOfUser extends UserPetHistory {
 export interface FindHistoryOptions {
     page?: number;
     pageSize?: number;
+    where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
 }
 
 export class UserPetHistoryRepository {
@@ -111,14 +112,22 @@ export class UserPetHistoryRepository {
         petID: number,
         options: FindHistoryOptions
     ): Promise<UserHistoryOfPet[]> {
-        const { page = 1, pageSize = 10 } = options;
+        const { page = 1, pageSize = 10, where = {} } = options;
         const limit = Math.min(pageSize, 100);
         const offset = (page - 1) * pageSize;
+
+        // is empty string when `where` is empty
+        const whereCondition = Object.entries(where)
+            .map(([field, value]) => `${field}=${escape(value)}`)
+            .join(' AND ');
+
+        const whereQuery = whereCondition ? whereCondition : '1';
 
         const sql = `
             SELECT History.*, User.nickname
             FROM UserPetHistory History INNER JOIN User
             ON History.petID=? AND History.userID=User.id
+            WHERE ${whereQuery} AND User.deleted = 0
             LIMIT ?
             OFFSET ?
         `;

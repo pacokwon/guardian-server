@@ -1,4 +1,5 @@
 import { Pet } from '../model/Pet';
+import { User } from '../model/User';
 import {
     PetRepository,
     PetCreationFields,
@@ -23,10 +24,23 @@ const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
 const findOne = async (
     id: number,
     options: PetFindOneOptions
-): Promise<Pet> => {
+): Promise<Pet & { user?: User }> => {
     const pet = await petRepository.findOne(id, options);
     if (!pet) throw new ApiError(404, 'Pet not found');
-    return pet;
+
+    // fetch user history of pet. it should contain one user if user exists currently
+    const userHistory = await userPetHistoryRepository.findUsersHistoryFromPetID(
+        id,
+        {
+            where: { released: 0 }
+        }
+    );
+
+    // currently, pet does not have user
+    if (userHistory.length === 0) return pet;
+
+    const { nickname, userID } = userHistory[0];
+    return { ...pet, user: { nickname, id: userID } };
 };
 
 const createOne = async (fields: PetCreationFields): Promise<number> => {

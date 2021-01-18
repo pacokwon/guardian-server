@@ -90,8 +90,8 @@ const unregisterUser = async (petID: number, userID: number): Promise<void> => {
     // the database takes care of foreign key constraints
     const changedRows = await userPetHistoryRepository
         .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
-        .catch(() => {
-            throw new ApiError(500, 'Internal Server Error');
+        .catch(error => {
+            throw new ApiError(500, 'Internal Server Error: ' + error?.message);
         });
 
     if (changedRows === 0) throw new ApiError(404, 'User not found');

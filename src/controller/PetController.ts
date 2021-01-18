@@ -15,10 +15,13 @@ import {
     ValidateError
 } from 'tsoa';
 import { Pet } from '../model/Pet';
+import { User } from '../model/User';
 import * as PetService from '../service/PetService';
 import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
 import { ErrorResponse } from '../common/error';
 import { validatePetFields } from '../common/validator';
+
+type PetWithUserInformation = Pet & { user?: User };
 
 /**
  * Request body to be received on pet creation
@@ -120,7 +123,10 @@ export class PetController extends Controller {
         message: 'Pet not found'
     })
     @Get('{id}')
-    async getPet(@Path() id: number, @Query() field?: string[]): Promise<Pet> {
+    async getPet(
+        @Path() id: number,
+        @Query() field?: string[]
+    ): Promise<PetWithUserInformation> {
         if (!validatePetFields(field))
             throw new ValidateError({}, 'Invalid field for Pet!');
 

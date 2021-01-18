@@ -22,6 +22,20 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "User": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"integer","required":true},
+            "nickname": {"dataType":"string","required":true,"validators":{"maxLength":{"value":30}}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PetWithUserInformation": {
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"Pet"},{"dataType":"nestedObjectLiteral","nestedProperties":{"user":{"ref":"User"}}}],"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ErrorResponse": {
         "dataType": "refObject",
         "properties": {
@@ -63,15 +77,6 @@ const models: TsoaRoute.Models = {
             "releasedAt": {"dataType":"string","required":true},
             "released": {"dataType":"integer","required":true},
             "nickname": {"dataType":"string","required":true},
-        },
-        "additionalProperties": false,
-    },
-    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "User": {
-        "dataType": "refObject",
-        "properties": {
-            "id": {"dataType":"integer","required":true},
-            "nickname": {"dataType":"string","required":true,"validators":{"maxLength":{"value":30}}},
         },
         "additionalProperties": false,
     },
