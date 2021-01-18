@@ -91,13 +91,13 @@ describe('/api/pets endpoint test', () => {
         const response = await request(app).get(
             '/api/pets?page=2&pageSize=2&field=id&field=nickname'
         );
-        const users = response.body;
+        const pets = response.body;
 
         expect(response.status).toBe(200);
-        expect(users).toHaveLength(2);
+        expect(pets).toHaveLength(2);
 
-        expect(users).toContainEqual({ id: 3, nickname: 'baz' });
-        expect(users).toContainEqual({ id: 4, nickname: 'ham' });
+        expect(pets).toContainEqual({ id: 3, nickname: 'baz' });
+        expect(pets).toContainEqual({ id: 4, nickname: 'ham' });
     });
 
     it('should retrieve a list of ids through field selection', async () => {
@@ -178,7 +178,7 @@ describe('/api/pets endpoint test', () => {
         expect(response.status).toBe(404);
     });
 
-    it('should not delete information of a deleted user "baz"', async () => {
+    it('should not delete information of a deleted pet "baz"', async () => {
         const response = await request(app).delete('/api/pets/1');
         expect(response.status).toBe(404);
     });
@@ -193,5 +193,43 @@ describe('/api/pets endpoint test', () => {
             '/api/pets/1?field=invalidfield'
         );
         expect(invalidGetPetFieldResponse.status).toBe(400);
+    });
+
+    it('should successfully insert information with special characters', async () => {
+        const singleQuoteResponse = await request(app)
+            .post('/api/pets')
+            .send({ nickname: "'singlequote'", species: 'dog', imageUrl: '' });
+        expect(singleQuoteResponse.status).toBe(201);
+
+        const readSingleQuoteResponse = await request(app).get(
+            `/api/pets/${singleQuoteResponse.body.id}`
+        );
+        expect(readSingleQuoteResponse.body?.nickname).toBe("'singlequote'");
+
+        const commaResponse = await request(app)
+            .post('/api/pets')
+            .send({ nickname: ',comma,', species: 'dog', imageUrl: '' });
+        expect(commaResponse.status).toBe(201);
+
+        const readCommaResponse = await request(app).get(
+            `/api/pets/${commaResponse.body.id}`
+        );
+        expect(readCommaResponse.body?.nickname).toBe(',comma,');
+
+        const backtickResponse = await request(app)
+            .post('/api/pets')
+            .send({ nickname: '`backtick`', species: 'dog', imageUrl: '' });
+        expect(backtickResponse.status).toBe(201);
+
+        const readBacktickResponse = await request(app).get(
+            `/api/pets/${backtickResponse.body.id}`
+        );
+        expect(readBacktickResponse.body?.nickname).toBe('`backtick`');
+    });
+
+    it('should reject a create request with not enough information', async () => {
+        const response = await request(app).post('/api/pets');
+        expect(response.status).toBe(400);
+        expect(response.body?.message).toBe('Validation Failed!');
     });
 });

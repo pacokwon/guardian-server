@@ -142,4 +142,42 @@ describe('/api/users endpoint test', () => {
         );
         expect(invalidGetUserFieldResponse.status).toBe(400);
     });
+
+    it('should successfully insert information with special characters', async () => {
+        const singleQuoteResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: "'singlequote'" });
+        expect(singleQuoteResponse.status).toBe(201);
+
+        const readSingleQuoteResponse = await request(app).get(
+            `/api/users/${singleQuoteResponse.body.id}`
+        );
+        expect(readSingleQuoteResponse.body?.nickname).toBe("'singlequote'");
+
+        const commaResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: ',comma,' });
+        expect(commaResponse.status).toBe(201);
+
+        const readCommaResponse = await request(app).get(
+            `/api/users/${commaResponse.body.id}`
+        );
+        expect(readCommaResponse.body?.nickname).toBe(',comma,');
+
+        const backtickResponse = await request(app)
+            .post('/api/users')
+            .send({ nickname: '`backtick`' });
+        expect(backtickResponse.status).toBe(201);
+
+        const readBacktickResponse = await request(app).get(
+            `/api/users/${backtickResponse.body.id}`
+        );
+        expect(readBacktickResponse.body?.nickname).toBe('`backtick`');
+    });
+
+    it('should reject a create request with not enough information', async () => {
+        const response = await request(app).post('/api/users');
+        expect(response.status).toBe(400);
+        expect(response.body?.message).toBe('Validation Failed!');
+    });
 });

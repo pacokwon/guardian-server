@@ -87,6 +87,14 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         expect(registerUnknownPetResponse.status).toBe(404);
     });
 
+    it('should not proceed registration with no request body', async () => {
+        const noRequestBodyResponse = await request(app).post(
+            '/api/users/10/pets'
+        );
+        expect(noRequestBodyResponse.status).toBe(400);
+        expect(noRequestBodyResponse.body?.message).toBe('Validation Failed!');
+    });
+
     it('should not proceed registration with unknown user or pet', async () => {
         const registerUnknownUserResponse = await request(app)
             .post('/api/users/10/pets')
