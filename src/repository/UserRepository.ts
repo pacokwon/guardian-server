@@ -22,7 +22,7 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: FindAllOptions = {}): Promise<User[]> {
+    async findAll(options: FindAllOptions): Promise<User[]> {
         const { field = ['id', 'nickname'], page = 1, pageSize = 10 } = options;
         const limit = Math.min(pageSize, 100);
         const offset = (page - 1) * pageSize;
@@ -42,7 +42,7 @@ export class UserRepository {
 
     async findOne(
         id: number,
-        options: FindOneOptions = {}
+        options: FindOneOptions
     ): Promise<User | undefined> {
         const { field = ['id', 'nickname'] } = options;
         const [rows] = await this.pool.query<SQLRow<User>[]>(

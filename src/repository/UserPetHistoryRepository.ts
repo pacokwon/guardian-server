@@ -109,7 +109,7 @@ export class UserPetHistoryRepository {
 
     async findUsersHistoryFromPetID(
         petID: number,
-        options: FindHistoryOptions = {}
+        options: FindHistoryOptions
     ): Promise<UserHistoryOfPet[]> {
         const { page = 1, pageSize = 10 } = options;
         const limit = Math.min(pageSize, 100);
@@ -134,7 +134,7 @@ export class UserPetHistoryRepository {
 
     async findPetsHistoryFromUserID(
         userID: number,
-        options: FindHistoryOptions = {}
+        options: FindHistoryOptions
     ): Promise<PetHistoryOfUser[]> {
         const { page = 1, pageSize = 10 } = options;
         const limit = Math.min(pageSize, 100);

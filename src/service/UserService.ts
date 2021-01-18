@@ -14,11 +14,11 @@ import { ApiError } from '@/common/error';
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options?: FindAllOptions): Promise<User[]> => {
+const findAll = async (options: FindAllOptions): Promise<User[]> => {
     return await userRepository.findAll(options);
 };
 
-const findOne = async (id: number, options?: FindOneOptions): Promise<User> => {
+const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
     const user = await userRepository.findOne(id, options);
     if (!user) throw new ApiError(404, 'User not found');
     return user;

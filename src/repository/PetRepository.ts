@@ -28,7 +28,7 @@ export class PetRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: PetFindAllOptions = {}): Promise<Pet[]> {
+    async findAll(options: PetFindAllOptions): Promise<Pet[]> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
 
         const { page = 1, pageSize = 10 } = options;
@@ -51,7 +51,7 @@ export class PetRepository {
 
     async findOne(
         id: number,
-        options: PetFindOneOptions = {}
+        options: PetFindOneOptions
     ): Promise<Pet | undefined> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
 
