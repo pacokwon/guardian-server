@@ -1,6 +1,6 @@
 import { makeExecutableSchema } from 'graphql-tools';
-import { userResolver } from '@/graphql/resolver/user.resolver';
-import { userTypeDef } from '@/graphql/type/user.type';
+import { userResolver } from '../resolver/user.resolver';
+import { userTypeDef } from '../type/user.type';
 
 export const schema = makeExecutableSchema({
     typeDefs: userTypeDef,

@@ -1,6 +1,6 @@
 import { IResolvers } from 'graphql-tools';
-import { User } from '@/model/User';
-import * as UserService from '@/service/UserService';
+import { User } from '../../model/User';
+import * as UserService from '../../service/UserService';
 import {
     ListUserArgs,
     GetUserArgs,
@@ -8,7 +8,7 @@ import {
     UpdateUserArgs,
     DeleteUserArgs,
     SuccessStatus
-} from '@/graphql/type/user.type';
+} from '../type/user.type';
 
 export const userResolver: IResolvers = {
     Query: {
