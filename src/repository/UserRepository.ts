@@ -6,13 +6,13 @@ import { User } from '@/model/User';
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
 export interface FindAllOptions {
-    field?: (keyof User)[];
+    field?: string[];
     page?: number;
     pageSize?: number;
 }
 
 export interface FindOneOptions {
-    field?: (keyof User)[];
+    field?: string[];
 }
 
 export class UserRepository {
@@ -29,8 +29,7 @@ export class UserRepository {
 
         const [rows] = await this.pool.query<SQLRow<User>[]>(
             `
-            SELECT ??
-            FROM User
+            SELECT ?? FROM User
             WHERE deleted=0
             LIMIT ?
             OFFSET ?

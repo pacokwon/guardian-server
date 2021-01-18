@@ -11,12 +11,14 @@ import {
     Response,
     SuccessResponse,
     Example,
-    Tags
+    Tags,
+    ValidateError
 } from 'tsoa';
 import { User } from '@/model/User';
 import * as UserService from '@/service/UserService';
 import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
 import { ErrorResponse } from '@/common/error';
+import { validateUserFields } from '@/common/validator';
 
 /**
  * Request body to be sent on user creation
@@ -32,16 +34,6 @@ interface CreateUserRequestBody {
  * Request body to be sent on user information modificiation
  */
 type ModifyUserRequestBody = CreateUserRequestBody;
-
-/**
- * Response containing requested user information
- */
-interface SingleUserReadResponse {
-    /**
-     * JSON object containing user information. Could be undefined.
-     */
-    user?: User;
-}
 
 interface CreateUserResponse {
     id: number;
@@ -100,6 +92,9 @@ export class UserController extends Controller {
         @Query() pageSize?: number,
         @Query() field?: string[]
     ): Promise<User[]> {
+        if (!validateUserFields(field))
+            throw new ValidateError({}, 'Invalid field for User!');
+
         const users = await UserService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return users;
@@ -124,6 +119,9 @@ export class UserController extends Controller {
         @Path() id: number,
         @Query() field?: string[]
     ): Promise<User> {
+        if (!validateUserFields(field))
+            throw new ValidateError({}, 'Invalid field for User!');
+
         const user = await UserService.findOne(id, { field });
         this.setStatus(200);
         return user;

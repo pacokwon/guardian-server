@@ -1,5 +1,3 @@
-import { RowDataPacket } from 'mysql2';
-
 /**
  * JSON object containing user information.
  */
@@ -13,3 +11,5 @@ export interface User {
      */
     nickname: string;
 }
+
+export const userFields = ['id', 'nickname'];

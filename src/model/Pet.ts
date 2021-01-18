@@ -16,3 +16,5 @@ export interface Pet {
     nickname: string;
     imageUrl: string;
 }
+
+export const petFields = ['id', 'species', 'nickname', 'imageUrl'];

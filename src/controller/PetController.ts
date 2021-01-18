@@ -11,12 +11,14 @@ import {
     Example,
     Response,
     SuccessResponse,
-    Tags
+    Tags,
+    ValidateError
 } from 'tsoa';
 import { Pet } from '@/model/Pet';
 import * as PetService from '@/service/PetService';
 import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
 import { ErrorResponse } from '@/common/error';
+import { validatePetFields } from '@/common/validator';
 
 /**
  * Request body to be received on pet creation
@@ -93,6 +95,9 @@ export class PetController extends Controller {
         @Query() pageSize?: number,
         @Query() field?: string[]
     ): Promise<Pet[]> {
+        if (!validatePetFields(field))
+            throw new ValidateError({}, 'Invalid field for Pet!');
+
         const pets = await PetService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return pets;
@@ -116,6 +121,9 @@ export class PetController extends Controller {
     })
     @Get('{id}')
     async getPet(@Path() id: number, @Query() field?: string[]): Promise<Pet> {
+        if (!validatePetFields(field))
+            throw new ValidateError({}, 'Invalid field for Pet!');
+
         const pet = await PetService.findOne(id, { field });
         this.setStatus(200);
         return pet;
