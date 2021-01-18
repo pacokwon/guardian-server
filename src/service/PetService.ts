@@ -1,17 +1,17 @@
-import { Pet } from '@/model/Pet';
+import { Pet } from '../model/Pet';
 import {
     PetRepository,
     PetCreationFields,
     PetModifiableFields,
     PetFindAllOptions,
     PetFindOneOptions
-} from '@/repository/PetRepository';
+} from '../repository/PetRepository';
 import {
     UserPetHistoryRepository,
     FindHistoryOptions
-} from '@/repository/UserPetHistoryRepository';
-import { ApiError } from '@/common/error';
-import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
+} from '../repository/UserPetHistoryRepository';
+import { ApiError } from '../common/error';
+import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
 
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();

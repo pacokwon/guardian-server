@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { getPool } from '@/common/db';
+import { getPool } from '../src/common/db';
 import { populateUsers } from './populateUsers';
 import { populatePets } from './populatePets';
 import { populateHistories } from './populateHistories';

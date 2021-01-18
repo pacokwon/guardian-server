@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import { RegisterRoutes } from './routes';
-import { errorHandler } from '@/middleware/errorHandler';
+import { errorHandler } from './middleware/errorHandler';
 
 const app = express();
 

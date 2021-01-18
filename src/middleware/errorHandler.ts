@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 import { ValidateError } from 'tsoa';
-import { ApiError } from '@/common/error';
+import { ApiError } from '../common/error';
 
 // reference: handling errors in express
 // https://expressjs.com/en/guide/error-handling.html

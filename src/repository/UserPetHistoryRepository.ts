@@ -1,7 +1,7 @@
 import { Pool, OkPacket, escape } from 'mysql2/promise';
-import { getPool } from '@/common/db';
-import { SQLRow } from '@/common/type';
-import { UserPetHistory } from '@/model/UserPetHistory';
+import { getPool } from '../common/db';
+import { SQLRow } from '../common/type';
+import { UserPetHistory } from '../model/UserPetHistory';
 
 interface FindQuery {
     field: (keyof UserPetHistory)[];

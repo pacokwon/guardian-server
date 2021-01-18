@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getPool } from '@/common/db';
+import { getPool } from '../src/common/db';
 
 type DogAPIResponse = {
     status: boolean;

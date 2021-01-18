@@ -1,5 +1,5 @@
-import { userFields } from '@/model/User';
-import { petFields } from '@/model/Pet';
+import { userFields } from '../model/User';
+import { petFields } from '../model/Pet';
 
 const fieldValidator = (requiredFields: string[]) => (
     inputFields: string[] = []

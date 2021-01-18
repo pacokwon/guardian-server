@@ -1,7 +1,7 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
-import { getPool } from '@/common/db';
-import { SQLRow } from '@/common/type';
-import { User } from '@/model/User';
+import { getPool } from '../common/db';
+import { SQLRow } from '../common/type';
+import { User } from '../model/User';
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 

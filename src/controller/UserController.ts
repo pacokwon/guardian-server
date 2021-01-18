@@ -14,11 +14,11 @@ import {
     Tags,
     ValidateError
 } from 'tsoa';
-import { User } from '@/model/User';
-import * as UserService from '@/service/UserService';
-import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
-import { ErrorResponse } from '@/common/error';
-import { validateUserFields } from '@/common/validator';
+import { User } from '../model/User';
+import * as UserService from '../service/UserService';
+import { PetHistoryOfUser } from '../repository/UserPetHistoryRepository';
+import { ErrorResponse } from '../common/error';
+import { validateUserFields } from '../common/validator';
 
 /**
  * Request body to be sent on user creation

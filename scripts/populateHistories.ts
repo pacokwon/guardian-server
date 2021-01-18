@@ -1,8 +1,8 @@
-import { getPool } from '@/common/db';
-import { SQLRow } from '@/common/type';
-import { User } from '@/model/User';
-import { Pet } from '@/model/Pet';
-import { UserPetHistory as _UserPetHistory } from '@/model/UserPetHistory';
+import { getPool } from '../src/common/db';
+import { SQLRow } from '../src/common/type';
+import { User } from '../src/model/User';
+import { Pet } from '../src/model/Pet';
+import { UserPetHistory as _UserPetHistory } from '../src/model/UserPetHistory';
 
 // UserPetHistory without id field
 type UserPetHistory = Omit<_UserPetHistory, 'id'>;

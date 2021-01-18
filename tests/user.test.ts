@@ -1,5 +1,5 @@
-import app from '@/app';
-import { getPool } from '@/common/db';
+import app from '../src/app';
+import { getPool } from '../src/common/db';
 import request from 'supertest';
 
 describe('/api/users endpoint test', () => {

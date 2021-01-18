@@ -1,15 +1,15 @@
-import { User } from '@/model/User';
+import { User } from '../model/User';
 import {
     UserRepository,
     FindAllOptions,
     FindOneOptions
-} from '@/repository/UserRepository';
+} from '../repository/UserRepository';
 import {
     UserPetHistoryRepository,
     FindHistoryOptions
-} from '@/repository/UserPetHistoryRepository';
-import { PetHistoryOfUser } from '@/repository/UserPetHistoryRepository';
-import { ApiError } from '@/common/error';
+} from '../repository/UserPetHistoryRepository';
+import { PetHistoryOfUser } from '../repository/UserPetHistoryRepository';
+import { ApiError } from '../common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();

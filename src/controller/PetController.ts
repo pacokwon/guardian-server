@@ -14,11 +14,11 @@ import {
     Tags,
     ValidateError
 } from 'tsoa';
-import { Pet } from '@/model/Pet';
-import * as PetService from '@/service/PetService';
-import { UserHistoryOfPet } from '@/repository/UserPetHistoryRepository';
-import { ErrorResponse } from '@/common/error';
-import { validatePetFields } from '@/common/validator';
+import { Pet } from '../model/Pet';
+import * as PetService from '../service/PetService';
+import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
+import { ErrorResponse } from '../common/error';
+import { validatePetFields } from '../common/validator';
 
 /**
  * Request body to be received on pet creation

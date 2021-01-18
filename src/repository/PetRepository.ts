@@ -1,7 +1,7 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
-import { getPool } from '@/common/db';
-import { SQLRow } from '@/common/type';
-import { Pet } from '@/model/Pet';
+import { getPool } from '../common/db';
+import { SQLRow } from '../common/type';
+import { Pet } from '../model/Pet';
 
 export type PetModifiableFields = Omit<Pet, 'id'>;
 export type PetCreationFields = Pick<
