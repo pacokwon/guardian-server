@@ -51,7 +51,7 @@ export class UserRepository {
             [field, id]
         );
 
-        return rows[0];
+        return rows.length === 0 ? undefined : rows[0];
     }
 
     async insertOne(nickname: string): Promise<number | null> {
