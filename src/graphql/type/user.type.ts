@@ -13,9 +13,11 @@ export interface CreateUserArgs {
     nickname: string;
 }
 
+type UpdateUserInput = CreateUserArgs;
+
 export interface UpdateUserArgs {
     id: string;
-    input: { nickname: string };
+    input: UpdateUserInput;
 }
 
 export type DeleteUserArgs = GetUserArgs;
@@ -31,23 +33,18 @@ export const userTypeDef = gql`
         nickname: String
     }
 
-    type SuccessStatus {
-        success: Boolean!
-        message: String
-    }
-
-    input UserUpdateInput {
+    input UpdateUserInput {
         nickname: String
     }
 
-    type Query {
+    extend type Query {
         users(page: Int, pageSize: Int): [User]
         user(id: ID!): User
     }
 
-    type Mutation {
+    extend type Mutation {
         createUser(nickname: String!): SuccessStatus
-        updateUser(id: ID!, input: UserUpdateInput): SuccessStatus
+        updateUser(id: ID!, input: UpdateUserInput): SuccessStatus
         deleteUser(id: ID!): SuccessStatus
     }
 `;
