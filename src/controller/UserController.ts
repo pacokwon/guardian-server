@@ -257,7 +257,7 @@ export class UserController extends Controller {
         message: 'Pet or User does not exist!'
     })
     @Post('{userID}/pets')
-    async registerUser(
+    async registerPet(
         @Body() requestBody: RegisterUserToPetRequestBody,
         @Path() userID: number
     ): Promise<void> {
@@ -281,7 +281,7 @@ export class UserController extends Controller {
         message: 'User not found'
     })
     @Delete('{userID}/pets/{petID}')
-    async unregisterUser(
+    async unregisterPet(
         @Path() userID: number,
         @Path() petID: number
     ): Promise<void> {

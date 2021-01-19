@@ -432,7 +432,7 @@ export function RegisterRoutes(app: express.Router) {
             const controller = new UserController();
 
 
-            const promise = controller.registerUser.apply(controller, validatedArgs as any);
+            const promise = controller.registerPet.apply(controller, validatedArgs as any);
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -455,7 +455,7 @@ export function RegisterRoutes(app: express.Router) {
             const controller = new UserController();
 
 
-            const promise = controller.unregisterUser.apply(controller, validatedArgs as any);
+            const promise = controller.unregisterPet.apply(controller, validatedArgs as any);
             promiseHandler(controller, promise, response, next);
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
