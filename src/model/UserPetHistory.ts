@@ -2,18 +2,19 @@ import { RowDataPacket } from 'mysql2';
 
 export interface UserPetHistory {
     /**
+     * History row's identification number
      * @isInt
      */
     id: number;
 
     /**
-     * The pet's id
+     * The user's identification number
      * @isInt
      */
     userID: number;
 
     /**
-     * The pet's id
+     * The pet's identification number
      * @isInt
      */
     petID: number;

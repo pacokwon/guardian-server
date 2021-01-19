@@ -251,7 +251,7 @@ export class UserController extends Controller {
     }
 
     /**
-     * Register a user to a pet
+     * Register a pet to a user
      *
      * @param petID the pet's identifier
      * @isInt petID

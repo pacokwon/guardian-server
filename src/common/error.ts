@@ -12,7 +12,14 @@ export interface CustomError {
     status?: number;
 }
 
+/**
+ * Error Response
+ * If this response is sent back, an error has occurred.
+ */
 export interface ErrorResponse {
+    /**
+     * Error message containing details of the error.
+     */
     message: string;
 }
 
