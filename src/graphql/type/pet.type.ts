@@ -39,6 +39,14 @@ export const petTypeDef = gql`
         imageUrl: String
     }
 
+    type PetWithUserInformation {
+        id: ID
+        nickname: String
+        species: String
+        imageUrl: String
+        user: User
+    }
+
     input UpdatePetInput {
         nickname: String
         species: String
@@ -47,12 +55,12 @@ export const petTypeDef = gql`
 
     extend type Query {
         pets(page: Int, pageSize: Int): [Pet]
-        pet(id: ID!): Pet
+        pet(id: ID!): PetWithUserInformation
     }
 
     extend type Mutation {
         createPet(nickname: String!): SuccessStatus
-        updatePet(id: ID!, input: UpdatePetInput): SuccessStatus
+        updatePet(id: ID!, input: UpdatePetInput!): SuccessStatus
         deletePet(id: ID!): SuccessStatus
     }
 `;
