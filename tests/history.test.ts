@@ -183,20 +183,49 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         expect(guardiansListOfBaz.body[0].nickname).toBe('jay');
     });
 
+    it('should correctly retrieve the list of pets that are *currently* registered to user "bob"', async () => {
+        const currentPetsListOfBob = await request(app).get(
+            '/api/users/1/pets'
+        );
+        expect(currentPetsListOfBob.status).toBe(200);
+        expect(currentPetsListOfBob.body).toHaveLength(2);
+
+        const petNames = currentPetsListOfBob.body
+            .map((pet: { nickname: string }) => pet.nickname)
+            .sort();
+        expect(petNames).toEqual(['foo', 'bar'].sort());
+    });
+
+    it('should correctly retrieve the list of pets that are *currently* registered to user "bob", with pagination', async () => {
+        const currentPetsListOfBob = await request(app).get(
+            '/api/users/1/pets?page=2&pageSize=1'
+        );
+        expect(currentPetsListOfBob.status).toBe(200);
+        expect(currentPetsListOfBob.body).toHaveLength(1);
+
+        const { nickname } = currentPetsListOfBob.body[0];
+        expect(['foo', 'bar'].includes(nickname)).toBe(true);
+    });
+
     it('should correctly retrieve the list of pets that are registered to user "bob"', async () => {
-        const petsListOfBob = await request(app).get('/api/users/1/pets');
-        expect(petsListOfBob.body).toHaveLength(3);
+        const petsListOfBob = await request(app).get(
+            '/api/users/1/pets?all=true'
+        );
         const petNames = petsListOfBob.body
             .map((pet: { nickname: string }) => pet.nickname)
             .sort();
+
+        expect(petsListOfBob.body).toHaveLength(3);
         expect(petNames).toEqual(['baz', 'foo', 'bar'].sort());
     });
 
     it('should correctly retrieve the list of pets that are registered to user "bob", with pagination', async () => {
         const petsListOfBob = await request(app).get(
-            '/api/users/1/pets?page=2&pageSize=2'
+            '/api/users/1/pets?page=2&pageSize=2&all=true'
         );
         expect(petsListOfBob.body).toHaveLength(1);
-        expect(petsListOfBob.body[0].nickname).toBe('bar');
+
+        const { nickname } = petsListOfBob.body[0];
+        expect(['baz', 'foo', 'bar'].includes(nickname)).toBe(true);
     });
 });

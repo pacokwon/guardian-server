@@ -123,7 +123,7 @@ describe('/api/pets endpoint test', () => {
         const response = await request(app).get('/api/pets/1');
 
         expect(response.status).toBe(200);
-        expect(response.body).toStrictEqual({
+        expect(response.body).toMatchObject({
             id: 1,
             species: 'cat',
             nickname: 'foo',
@@ -139,7 +139,7 @@ describe('/api/pets endpoint test', () => {
         });
 
         expect(modifyFooResponse.status).toBe(200);
-        expect(modifyFooResponse.body).toStrictEqual({
+        expect(modifyFooResponse.body).toMatchObject({
             id: 1,
             species: 'cat',
             nickname: 'baz',
@@ -151,7 +151,7 @@ describe('/api/pets endpoint test', () => {
         const getBazResponse = await request(app).get('/api/pets/1');
 
         expect(getBazResponse.status).toBe(200);
-        expect(getBazResponse.body).toStrictEqual({
+        expect(getBazResponse.body).toMatchObject({
             id: 1,
             species: 'cat',
             nickname: 'baz',
