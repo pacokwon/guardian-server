@@ -9,9 +9,7 @@ interface FindQuery {
 }
 
 interface UpdateQuery {
-    set: {
-        released: 0 | 1;
-    };
+    set: { released: 0 | 1 };
     where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
 }
 
@@ -145,14 +143,22 @@ export class UserPetHistoryRepository {
         userID: number,
         options: FindHistoryOptions
     ): Promise<PetHistoryOfUser[]> {
-        const { page = 1, pageSize = 10 } = options;
+        const { page = 1, pageSize = 10, where = {} } = options;
         const limit = Math.min(pageSize, 100);
         const offset = (page - 1) * pageSize;
+
+        // is empty string when `where` is empty
+        const whereCondition = Object.entries(where)
+            .map(([field, value]) => `${field}=${escape(value)}`)
+            .join(' AND ');
+
+        const whereQuery = whereCondition ? whereCondition : '1';
 
         const sql = `
             SELECT History.*, Pet.nickname
             FROM UserPetHistory History INNER JOIN Pet
             ON History.userID=? AND History.petID=Pet.id
+            WHERE ${whereQuery} AND Pet.deleted = 0
             LIMIT ?
             OFFSET ?
         `;

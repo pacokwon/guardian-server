@@ -394,6 +394,7 @@ export function RegisterRoutes(app: express.Router) {
                     userID: {"in":"path","name":"userID","required":true,"dataType":"integer","validators":{"isInt":{"errorMsg":"userID"}}},
                     page: {"in":"query","name":"page","dataType":"integer","validators":{"isInt":{"errorMsg":"page"}}},
                     pageSize: {"in":"query","name":"pageSize","dataType":"integer","validators":{"isInt":{"errorMsg":"pageSize"}}},
+                    all: {"in":"query","name":"all","dataType":"boolean"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

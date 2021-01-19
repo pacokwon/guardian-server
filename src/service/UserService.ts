@@ -26,12 +26,17 @@ const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
 
 const findPetsHistory = async (
     userID: number,
-    options: FindHistoryOptions
+    options: FindHistoryOptions & { all?: boolean }
 ): Promise<PetHistoryOfUser[]> => {
-    return await userPetHistoryRepository.findPetsHistoryFromUserID(
-        userID,
-        options
-    );
+    const { all = false, page, pageSize } = options;
+
+    // query unreleased pets if `all` is false. an empty object queries everything
+    const where = all ? {} : { released: 0 };
+    return await userPetHistoryRepository.findPetsHistoryFromUserID(userID, {
+        page,
+        pageSize,
+        where
+    });
 };
 
 const createOne = async (nickname: string): Promise<number> => {

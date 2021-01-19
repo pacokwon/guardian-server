@@ -228,11 +228,13 @@ export class UserController extends Controller {
     async listPetsHistory(
         @Path() userID: number,
         @Query() page?: number,
-        @Query() pageSize?: number
+        @Query() pageSize?: number,
+        @Query() all?: boolean
     ): Promise<PetHistoryOfUser[]> {
         const petsHistory = UserService.findPetsHistory(userID, {
             page,
-            pageSize
+            pageSize,
+            all
         });
         this.setStatus(200);
         return petsHistory;
