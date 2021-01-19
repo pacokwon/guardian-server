@@ -3,6 +3,7 @@
  */
 export interface User {
     /**
+     * The user's identification number;
      * @isInt
      */
     id: number;
