@@ -9,7 +9,7 @@ import {
     FindHistoryOptions
 } from '../repository/UserPetHistoryRepository';
 import { PetHistoryOfUser } from '../repository/UserPetHistoryRepository';
-import { ApiError } from '../common/error';
+import { ApiError, Summary } from '../common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
@@ -20,7 +20,7 @@ const findAll = async (options: FindAllOptions): Promise<User[]> => {
 
 const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
     const user = await userRepository.findOne(id, options);
-    if (!user) throw new ApiError(404, 'User not found');
+    if (!user) throw new ApiError(Summary.NotFound, 'User not found');
     return user;
 };
 
@@ -42,20 +42,27 @@ const findPetsHistory = async (
 const createOne = async (nickname: string): Promise<number> => {
     const insertID = await userRepository.insertOne(nickname);
 
-    if (insertID === null) throw new ApiError(500, 'Failed to create user');
+    if (insertID === null)
+        throw new ApiError(
+            Summary.InternalServerError,
+            'Failed to create user'
+        );
 
     return insertID;
 };
 
 const updateOne = async (id: number, newNickname: string): Promise<User> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
-    if (!userExists) throw new ApiError(404, 'User not found');
+    if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
     const changedRows = await userRepository.updateOne(id, {
         nickname: newNickname
     });
     if (changedRows > 1)
-        throw new ApiError(500, 'Multiple rows have been updated');
+        throw new ApiError(
+            Summary.InternalServerError,
+            'Multiple rows have been updated'
+        );
 
     // return modified entry
     return { id, nickname: newNickname };
@@ -63,13 +70,17 @@ const updateOne = async (id: number, newNickname: string): Promise<User> => {
 
 const removeOne = async (id: number): Promise<void> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
-    if (!userExists) throw new ApiError(404, 'User not found');
+    if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
     const deletedRowsCount = await userRepository.removeOne(id);
 
-    if (deletedRowsCount === 0) throw new ApiError(404, 'User not found');
+    if (deletedRowsCount === 0)
+        throw new ApiError(Summary.NotFound, 'User not found');
     else if (deletedRowsCount > 1)
-        throw new ApiError(500, 'Multiple rows deleted');
+        throw new ApiError(
+            Summary.InternalServerError,
+            'Multiple rows deleted'
+        );
 };
 
 // check for already existing reservation
@@ -83,11 +94,14 @@ const registerPet = async (petID: number, userID: number): Promise<void> => {
 
     // pet is already taken
     if (isPetRegistered)
-        throw new ApiError(400, 'Pet is already registered to a user!');
+        throw new ApiError(
+            Summary.BadRequest,
+            'Pet is already registered to a user!'
+        );
 
     // the database takes care of foreign key constraints
     await userPetHistoryRepository.insertOne(petID, userID).catch(_ => {
-        throw new ApiError(404, 'Pet or User does not exist!');
+        throw new ApiError(Summary.NotFound, 'Pet or User does not exist!');
     });
 };
 
@@ -96,12 +110,19 @@ const unregisterPet = async (petID: number, userID: number): Promise<void> => {
     const changedRows = await userPetHistoryRepository
         .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
         .catch(error => {
-            throw new ApiError(500, 'Internal Server Error: ' + error?.message);
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Internal Server Error: ' + error?.message
+            );
         });
 
-    if (changedRows === 0) throw new ApiError(404, 'User not found');
+    if (changedRows === 0)
+        throw new ApiError(Summary.NotFound, 'User not found');
     else if (changedRows > 1)
-        throw new ApiError(500, 'Multiple rows have changed');
+        throw new ApiError(
+            Summary.InternalServerError,
+            'Multiple rows have changed'
+        );
 };
 
 export {
