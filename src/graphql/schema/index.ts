@@ -1,7 +1,9 @@
 import { gql } from 'apollo-server';
 import { makeExecutableSchema } from 'graphql-tools';
 import { userResolver, petResolver } from '../resolver';
-import { userTypeDef, petTypeDef } from '../type';
+import { userTypeDef } from './user.schema';
+import { petTypeDef } from './pet.schema';
+import { userPetHistoryTypeDef } from './userPetHistory.schema';
 
 const baseTypeDef = gql`
     type Query {
@@ -19,6 +21,6 @@ const baseTypeDef = gql`
 `;
 
 export const schema = makeExecutableSchema({
-    typeDefs: [baseTypeDef, userTypeDef, petTypeDef],
+    typeDefs: [baseTypeDef, userTypeDef, petTypeDef, userPetHistoryTypeDef],
     resolvers: [userResolver, petResolver]
 });

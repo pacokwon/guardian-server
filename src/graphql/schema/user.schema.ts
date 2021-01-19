@@ -29,8 +29,15 @@ export interface SuccessStatus {
 
 export const userTypeDef = gql`
     type User {
-        id: ID
-        nickname: String
+        id: ID!
+        nickname: String!
+
+        "user's registered pets. if 'currentOnly' is false, get past history too"
+        pets(currentOnly: Boolean = true): [UserPetHistory!]!
+    }
+
+    input CreateUserInput {
+        nickname: String!
     }
 
     input UpdateUserInput {
@@ -38,13 +45,16 @@ export const userTypeDef = gql`
     }
 
     extend type Query {
-        users(page: Int, pageSize: Int): [User]
+        users(page: Int, pageSize: Int): [User!]!
         user(id: ID!): User
     }
 
     extend type Mutation {
-        createUser(nickname: String!): SuccessStatus
-        updateUser(id: ID!, input: UpdateUserInput): SuccessStatus
-        deleteUser(id: ID!): SuccessStatus
+        createUser(param: CreateUserInput!): User!
+        updateUser(id: ID!, input: UpdateUserInput!): User!
+        deleteUser(id: ID!): SuccessStatus!
+
+        registerUserToPet(userID: ID!, petID: ID!): SuccessStatus!
+        unregisterUserFromPet(userID: ID!, petID: ID!): SuccessStatus!
     }
 `;

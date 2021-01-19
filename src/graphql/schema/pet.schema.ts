@@ -33,18 +33,19 @@ export interface SuccessStatus {
 
 export const petTypeDef = gql`
     type Pet {
-        id: ID
-        nickname: String
-        species: String
-        imageUrl: String
+        id: ID!
+        nickname: String!
+        species: String!
+        imageUrl: String!
+
+        "pet's registered user(s). if 'currentOnly' is false, get past history too"
+        users(currentOnly: Boolean = true): [UserPetHistory!]!
     }
 
-    type PetWithUserInformation {
-        id: ID
-        nickname: String
-        species: String
-        imageUrl: String
-        user: User
+    input CreatePetInput {
+        nickname: String!
+        species: String!
+        imageUrl: String!
     }
 
     input UpdatePetInput {
@@ -54,13 +55,13 @@ export const petTypeDef = gql`
     }
 
     extend type Query {
-        pets(page: Int, pageSize: Int): [Pet]
-        pet(id: ID!): PetWithUserInformation
+        pets(page: Int, pageSize: Int): [Pet!]!
+        pet(id: ID!): Pet
     }
 
     extend type Mutation {
-        createPet(nickname: String!): SuccessStatus
-        updatePet(id: ID!, input: UpdatePetInput!): SuccessStatus
-        deletePet(id: ID!): SuccessStatus
+        createPet(param: CreatePetInput!): Pet!
+        updatePet(id: ID!, param: UpdatePetInput!): Pet!
+        deletePet(id: ID!): SuccessStatus!
     }
 `;

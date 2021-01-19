@@ -8,7 +8,7 @@ import {
     UpdatePetArgs,
     DeletePetArgs,
     SuccessStatus
-} from '../type/pet.type';
+} from '../schema/pet.schema';
 
 export const petResolver: IResolvers = {
     Query: {

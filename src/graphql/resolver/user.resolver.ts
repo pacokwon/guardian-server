@@ -8,7 +8,7 @@ import {
     UpdateUserArgs,
     DeleteUserArgs,
     SuccessStatus
-} from '../type/user.type';
+} from '../schema/user.schema';
 
 export const userResolver: IResolvers = {
     Query: {
