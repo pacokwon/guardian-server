@@ -11,7 +11,15 @@ export const errorHandler: ErrorRequestHandler = (
     next: NextFunction
 ) => {
     if (error instanceof ValidateError) {
-        console.warn(`Caught Validation Error for ${req.path}:`, error.fields);
+        if (
+            process.env.NODE_ENV === 'development' ||
+            process.env.NODE_ENV === 'production'
+        )
+            console.warn(
+                `Caught Validation Error for ${req.path}:`,
+                error.fields
+            );
+
         return res.status(400).json({
             message: error.message || 'Validation Failed!',
             details: error?.fields
