@@ -24,20 +24,18 @@ const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
 const findOne = async (
     id: number,
     options: PetFindOneOptions
-): Promise<Pet & { user?: User }> => {
+): Promise<Pet & { user: User | null }> => {
     const pet = await petRepository.findOne(id, options);
     if (!pet) throw new ApiError(404, 'Pet not found');
 
     // fetch user history of pet. it should contain one user if user exists currently
     const userHistory = await userPetHistoryRepository.findUsersHistoryFromPetID(
         id,
-        {
-            where: { released: 0 }
-        }
+        { where: { released: 0 } }
     );
 
     // currently, pet does not have user
-    if (userHistory.length === 0) return pet;
+    if (userHistory.length === 0) return { ...pet, user: null };
 
     const { nickname, userID } = userHistory[0];
     return { ...pet, user: { nickname, id: userID } };

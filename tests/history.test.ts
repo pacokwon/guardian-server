@@ -122,7 +122,7 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     it('should have owner information when retrieving pet', async () => {
         const bazResponse = await request(app).get('/api/pets/3');
         expect(bazResponse?.body?.nickname).toBe('baz');
-        expect(bazResponse?.body?.user).toBeUndefined();
+        expect(bazResponse?.body?.user).toBeNull();
     });
 
     it('should not proceed unregistration for invalid registration', async () => {

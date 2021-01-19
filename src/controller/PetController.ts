@@ -21,7 +21,7 @@ import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
 import { ErrorResponse } from '../common/error';
 import { validatePetFields } from '../common/validator';
 
-type PetWithUserInformation = Pet & { user?: User };
+type PetWithUserInformation = Pet & { user: User | null };
 
 /**
  * Request body to be received on pet creation
