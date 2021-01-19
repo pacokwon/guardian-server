@@ -119,6 +119,12 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         expect(unregisterBobResponse.status).toBe(200);
     });
 
+    it('should have owner information when retrieving pet', async () => {
+        const bazResponse = await request(app).get('/api/pets/3');
+        expect(bazResponse?.body?.nickname).toBe('baz');
+        expect(bazResponse?.body?.user).toBeUndefined();
+    });
+
     it('should not proceed unregistration for invalid registration', async () => {
         const unregisterBobResponse = await request(app).delete(
             '/api/users/1/pets/3'
@@ -155,6 +161,13 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
             .post('/api/users/1/pets')
             .send({ petID: 2 });
         expect(bobToBarResponse.status).toBe(201);
+    });
+
+    it("should correctly retrieve the pet information along with its user's information", async () => {
+        const bazResponse = await request(app).get('/api/pets/3');
+        expect(bazResponse?.body?.nickname).toBe('baz');
+        expect(bazResponse?.body?.user?.id).toBe(4);
+        expect(bazResponse?.body?.user?.nickname).toBe('jay');
     });
 
     it('should correctly retrieve the list of guardians that pet "baz" has been registered to', async () => {
