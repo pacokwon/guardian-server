@@ -10,7 +10,6 @@ import {
     Query,
     Example,
     Response,
-    SuccessResponse,
     Tags,
     ValidateError
 } from 'tsoa';
@@ -21,6 +20,11 @@ import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
 import { ErrorResponse } from '../common/error';
 import { validatePetFields } from '../common/validator';
 
+/**
+ * Response to be sent on pet information query.
+ * If pet is currently registered to a user, the user information will be sent as well.
+ * Otherwise, user field is `null`.
+ */
 type PetWithUserInformation = Pet & { user: User | null };
 
 /**
@@ -46,6 +50,10 @@ interface CreatePetRequestBody {
  */
 type ModifyPetRequestBody = CreatePetRequestBody;
 
+/**
+ * Response to be sent on pet creation request. Contains identification
+ * number of created pet.
+ */
 interface CreatePetResponse {
     id: number;
 }
@@ -112,12 +120,25 @@ export class PetController extends Controller {
      * @param id the pet's identifier
      * @isInt id
      * @example id 4
+     *
+     * @param field properties available for Pet information. Usable fields are `id`, `nickname`, `species`, `imageUrl`. Can be used multiple times.
+     * @default 'id', 'nickname', 'species', 'imageUrl'
+     * @example 'id'
+     * @example 'nickname'
      */
-    @Example<Pet>({
+    @Example<PetWithUserInformation>({
         id: 13,
         species: 'cat',
         nickname: 'lacey',
-        imageUrl: 'https://placedog.net/500/500'
+        imageUrl: 'https://placedog.net/500/500',
+        user: null
+    })
+    @Example<PetWithUserInformation>({
+        id: 13,
+        species: 'cat',
+        nickname: 'lacey',
+        imageUrl: 'https://placedog.net/500/500',
+        user: { id: 12, nickname: 'rhys' }
     })
     @Response<ErrorResponse>(404, 'Not found', {
         message: 'Pet not found'
@@ -142,8 +163,10 @@ export class PetController extends Controller {
      * @example requestBody { "nickname": "foo", "species": "dog", "imageUrl": "https://placedog.net/400/400" }
      * @example requestBody { "nickname": "bar", "species": "cat", "imageUrl": "https://placekitten.com/400/400" }
      */
+    @Response<CreatePetResponse>(201, 'Created', {
+        id: 1
+    })
     @Post('/')
-    @SuccessResponse(201, 'Created')
     async createPet(
         @Body() requestBody: CreatePetRequestBody
     ): Promise<CreatePetResponse> {

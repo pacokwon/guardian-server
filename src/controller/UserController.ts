@@ -9,7 +9,6 @@ import {
     Body,
     Query,
     Response,
-    SuccessResponse,
     Example,
     Tags,
     ValidateError
@@ -35,6 +34,10 @@ interface CreateUserRequestBody {
  */
 type ModifyUserRequestBody = CreateUserRequestBody;
 
+/**
+ * Response to be sent on user creation request. Contains identification
+ * number of created user.
+ */
 interface CreateUserResponse {
     id: number;
 }
@@ -104,8 +107,8 @@ export class UserController extends Controller {
      * Retrieve the information of a single user by its id.
      *
      * @param id the user's identifier
-     * @example id 4
      * @isInt id
+     * @example id 4
      */
     @Example<User>({
         id: 4,
@@ -133,7 +136,9 @@ export class UserController extends Controller {
      * @param requestBody JSON object that contains the new user's nickname
      * @example requestBody { "nickname": "foo" }
      */
-    @SuccessResponse(201, 'Created')
+    @Response<CreateUserResponse>(201, 'Created', {
+        id: 1
+    })
     @Post('/')
     async createUser(
         @Body() requestBody: CreateUserRequestBody
@@ -187,7 +192,7 @@ export class UserController extends Controller {
     }
 
     /**
-     * Retrieve a list of pets that a specific user has registered to (past to present)
+     * Retrieve a list of pets that a specific user has registered to
      *
      * @param userID the pet's identifier
      * @isInt userID
@@ -202,6 +207,11 @@ export class UserController extends Controller {
      * @isInt pageSize
      * @default 10
      * @example 5
+     *
+     * @param all flag for querying all(including past records) pet history. Defaults to `false`
+     * @isBool all
+     * @default false
+     * @example true
      */
     @Example<PetHistoryOfUser[]>([
         {
