@@ -10,7 +10,7 @@
     "lint": "eslint ./src --ext .ts",
     "tsoa": "npx tsoa spec-and-routes",
     "tsoa:watch": "nodemon --exec \"npm run tsoa\" --watch \"./src/controller/*.ts\" --watch \"./src/model/*.ts\" --watch \"./src/repository/*.ts\"",
-    "test": "npm run tsoa && jest --runInBand --coverage",
+    "test": "npx ts-node ./tests/initTestDB.ts && npm run tsoa && jest --runInBand --coverage",
     "db:init": "mysql < ./setup/init.sql"
   },
   "repository": {
