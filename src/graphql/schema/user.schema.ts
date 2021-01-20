@@ -33,7 +33,7 @@ export const userTypeDef = gql`
         nickname: String!
 
         "user's registered pets. if 'currentOnly' is false, get past history too"
-        pets(currentOnly: Boolean = true): [UserPetHistory!]!
+        petHistory(currentOnly: Boolean = true): [PetHistory!]!
     }
 
     input CreateUserInput {
@@ -46,7 +46,7 @@ export const userTypeDef = gql`
 
     extend type Query {
         users(page: Int, pageSize: Int): [User!]!
-        user(id: ID!): User
+        user(id: ID!): User!
     }
 
     extend type Mutation {

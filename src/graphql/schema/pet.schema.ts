@@ -38,8 +38,8 @@ export const petTypeDef = gql`
         species: String!
         imageUrl: String!
 
-        "pet's registered user(s). if 'currentOnly' is false, get past history too"
-        users(currentOnly: Boolean = true): [UserPetHistory!]!
+        guardian: User
+        userHistory: [UserHistory!]!
     }
 
     input CreatePetInput {
@@ -56,7 +56,7 @@ export const petTypeDef = gql`
 
     extend type Query {
         pets(page: Int, pageSize: Int): [Pet!]!
-        pet(id: ID!): Pet
+        pet(id: ID!): Pet!
     }
 
     extend type Mutation {
