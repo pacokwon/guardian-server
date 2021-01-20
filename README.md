@@ -1,4 +1,4 @@
-# Guardian
+# guardian
 
 Guardian is an API server for a toy project, where users can register themselves as guardians (for a temporary period of time) to pets that are registered in the service.
 
