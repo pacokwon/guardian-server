@@ -12,6 +12,18 @@ This project uses:
 
 ## Getting Started
 
+Make sure to fill in the variables in the `.env` file to run or test this project.
+
+```
+# .env.example
+
+# user of MySQL database
+DB_USERNAME=""
+
+# password of MySQL database
+DB_PASSWORD=""
+```
+
 After cloning this repository, run:
 
 `npm install`
