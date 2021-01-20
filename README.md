@@ -10,19 +10,23 @@ This project uses:
 - [tsoa](https://github.com/lukeautry/tsoa) for automated routes & swagger specification generation
 - [Jest](https://jestjs.io/) as testing framework
 
+## Requirements
+
+- Make sure to fill in the variables in the `.env` file to run or test this project.
+
+  ```
+  # .env.example
+
+  # user of MySQL database
+  DB_USERNAME=""
+
+  # password of MySQL database
+  DB_PASSWORD=""
+  ```
+
+- Also make sure to run `npm run db:init` to initialize the database before running the server.
+
 ## Getting Started
-
-Make sure to fill in the variables in the `.env` file to run or test this project.
-
-```
-# .env.example
-
-# user of MySQL database
-DB_USERNAME=""
-
-# password of MySQL database
-DB_PASSWORD=""
-```
 
 After cloning this repository, run:
 
