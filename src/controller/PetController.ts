@@ -271,16 +271,16 @@ export class PetController extends Controller {
     ])
     @Example<UserHistoryOfPet[]>([])
     @Get('{petID}/users')
-    async listUsersHistory(
+    async listUserHistory(
         @Path() petID: number,
         @Query() page?: number,
         @Query() pageSize?: number
     ): Promise<UserHistoryOfPet[]> {
-        const usersHistory = PetService.findUsersHistory(petID, {
+        const userHistory = PetService.findUserHistory(petID, {
             page,
             pageSize
         });
         this.setStatus(200);
-        return usersHistory;
+        return userHistory;
     }
 }

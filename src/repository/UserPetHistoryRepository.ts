@@ -118,7 +118,7 @@ export class UserPetHistoryRepository {
         return result.changedRows;
     }
 
-    async findUsersHistoryFromPetID(
+    async findUserHistoryFromPetID(
         petID: number,
         options: FindHistoryOptions
     ): Promise<UserHistoryOfPet[]> {
@@ -151,7 +151,7 @@ export class UserPetHistoryRepository {
         return rows;
     }
 
-    async findPetsHistoryFromUserID(
+    async findPetHistoryFromUserID(
         userID: number,
         options: FindHistoryOptions
     ): Promise<PetHistoryOfUser[]> {

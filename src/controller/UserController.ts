@@ -235,19 +235,19 @@ export class UserController extends Controller {
     ])
     @Example<PetHistoryOfUser[]>([])
     @Get('{userID}/pets')
-    async listPetsHistory(
+    async listPetHistory(
         @Path() userID: number,
         @Query() page?: number,
         @Query() pageSize?: number,
         @Query() all?: boolean
     ): Promise<PetHistoryOfUser[]> {
-        const petsHistory = UserService.findPetsHistory(userID, {
+        const petHistory = UserService.findPetHistory(userID, {
             page,
             pageSize,
             all
         });
         this.setStatus(200);
-        return petsHistory;
+        return petHistory;
     }
 
     /**

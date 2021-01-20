@@ -24,7 +24,7 @@ const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
     return user;
 };
 
-const findPetsHistory = async (
+const findPetHistory = async (
     userID: number,
     options: FindHistoryOptions & { all?: boolean }
 ): Promise<PetHistoryOfUser[]> => {
@@ -32,7 +32,7 @@ const findPetsHistory = async (
 
     // query unreleased pets if `all` is false. an empty object queries everything
     const where = all ? {} : { released: 0 };
-    return await userPetHistoryRepository.findPetsHistoryFromUserID(userID, {
+    return await userPetHistoryRepository.findPetHistoryFromUserID(userID, {
         page,
         pageSize,
         where
@@ -128,7 +128,7 @@ const unregisterPet = async (petID: number, userID: number): Promise<void> => {
 export {
     findAll,
     findOne,
-    findPetsHistory,
+    findPetHistory,
     createOne,
     updateOne,
     removeOne,

@@ -29,7 +29,7 @@ const findOne = async (
     if (!pet) throw new ApiError(Summary.NotFound, 'Pet not found');
 
     // fetch user history of pet. it should contain one user if user exists currently
-    const userHistory = await userPetHistoryRepository.findUsersHistoryFromPetID(
+    const userHistory = await userPetHistoryRepository.findUserHistoryFromPetID(
         id,
         { where: { released: 0 } }
     );
@@ -84,14 +84,14 @@ const removeOne = async (id: number): Promise<void> => {
         );
 };
 
-const findUsersHistory = async (
+const findUserHistory = async (
     petID: number,
     options: FindHistoryOptions
 ): Promise<UserHistoryOfPet[]> => {
-    return await userPetHistoryRepository.findUsersHistoryFromPetID(
+    return await userPetHistoryRepository.findUserHistoryFromPetID(
         petID,
         options
     );
 };
 
-export { findAll, findOne, findUsersHistory, createOne, updateOne, removeOne };
+export { findAll, findOne, findUserHistory, createOne, updateOne, removeOne };
