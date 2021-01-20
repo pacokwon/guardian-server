@@ -11,7 +11,7 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '../repository/UserPetHistoryRepository';
-import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
+import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
 import { ApiError, Summary } from '../common/error';
 
 const petRepository = new PetRepository();

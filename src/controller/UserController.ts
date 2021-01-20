@@ -15,7 +15,7 @@ import {
 } from 'tsoa';
 import { User } from '../model/User';
 import * as UserService from '../service/UserService';
-import { PetHistoryOfUser } from '../repository/UserPetHistoryRepository';
+import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
 import { ErrorResponse } from '../common/error';
 import { validateUserFields } from '../common/validator';
 

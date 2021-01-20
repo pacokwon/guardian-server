@@ -8,7 +8,7 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '../repository/UserPetHistoryRepository';
-import { PetHistoryOfUser } from '../repository/UserPetHistoryRepository';
+import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
 import { ApiError, Summary } from '../common/error';
 
 const userRepository = new UserRepository();

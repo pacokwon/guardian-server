@@ -16,7 +16,7 @@ import {
 import { Pet } from '../model/Pet';
 import { User } from '../model/User';
 import * as PetService from '../service/PetService';
-import { UserHistoryOfPet } from '../repository/UserPetHistoryRepository';
+import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
 import { ErrorResponse } from '../common/error';
 import { validatePetFields } from '../common/validator';
 
