@@ -22,17 +22,15 @@ export const userResolver: IResolvers = {
             return user || null;
         }
     },
+
     Mutation: {
         createUser: async (
             _: unknown,
             { nickname }: CreateUserArgs
         ): Promise<SuccessStatus> => {
-            try {
-                await UserService.createOne(nickname);
-            } catch (error) {
-                return { success: false, message: error.message };
-            }
-            return { success: true };
+            return await UserService.createOne(nickname)
+                .then(_ => ({ success: true }))
+                .catch(error => ({ success: false, message: error?.message }));
         },
 
         updateUser: async (
@@ -52,13 +50,10 @@ export const userResolver: IResolvers = {
             _: unknown,
             { id }: DeleteUserArgs
         ): Promise<SuccessStatus> => {
-            try {
-                await UserService.removeOne(Number(id));
-            } catch {
-                return { success: false };
-            }
+            return await UserService.removeOne(Number(id))
+                .then(_ => ({ success: true }))
+                .catch(_ => ({ success: false }));
 
-            return { success: true };
         }
     }
 };
