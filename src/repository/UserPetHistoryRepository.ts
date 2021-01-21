@@ -2,7 +2,7 @@ import { Pool, OkPacket, escape } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
 import { ApiError, Summary } from '../common/error';
-import { UserPetHistory } from '../model/UserPetHistory';
+import { User, UserPetHistory } from '../model';
 import {
     UserHistoryOfPet,
     NestedUserHistoryOfPet
@@ -170,7 +170,7 @@ export class UserPetHistoryRepository {
         const sql = `
             SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
             FROM Pet JOIN UserPetHistory History
-            WHERE History.userID IN (?)
+            ON History.userID IN (?)
             AND History.petID = Pet.id
         `;
 
@@ -189,13 +189,13 @@ export class UserPetHistoryRepository {
         );
     }
 
-    async findUsersFromPetIDs(
+    async findUsersByPetIDs(
         petIDs: readonly number[]
     ): Promise<NestedUserHistoryOfPet[][]> {
         const sql = `
             SELECT User.nickname, History.*
             FROM User JOIN UserPetHistory History
-            WHERE History.petID IN (?)
+            ON History.petID IN (?)
             AND History.userID = User.id
         `;
 
@@ -213,5 +213,23 @@ export class UserPetHistoryRepository {
                     ...history
                 }))
         );
+    }
+
+    async findGuardiansByPetIDs(
+        petIDs: readonly number[]
+    ): Promise<(User | null)[]> {
+        const sql = `
+            SELECT User.*,History.petID
+            FROM UserPetHistory History INNER JOIN User
+            ON History.petID IN (?)
+            AND History.userID = User.id
+            WHERE History.released = 0
+        `;
+
+        const [rows] = await this.pool.query<
+            SQLRow<User & { petID: number }>[]
+        >(sql, [petIDs]);
+
+        return petIDs.map(id => rows.find(({ petID }) => id === petID) || null);
     }
 }

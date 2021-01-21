@@ -19,7 +19,7 @@ import {
 } from '../../common/pagination';
 
 // load **pets** from a *userID*
-const userPetLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
+const userPetHistoryLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
     userIDs => UserService.findPetsByUserIDs(userIDs),
     {
         cache: false
@@ -86,7 +86,7 @@ export const userResolver: IResolvers = {
             // args: { currentOnly: boolean }
         ): Promise<NestedPetHistoryOfUser[]> => {
             const userID = parent.id;
-            return await userPetLoader.load(userID);
+            return await userPetHistoryLoader.load(userID);
         }
     }
 };

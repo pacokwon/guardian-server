@@ -47,6 +47,12 @@ const findGuardian = async (petID: number): Promise<User | null> => {
     return { nickname, id: userID };
 };
 
+const findGuardiansByPetIDs = async (
+    petIDs: readonly number[]
+): Promise<(User | null)[]> => {
+    return userPetHistoryRepository.findGuardiansByPetIDs(petIDs);
+};
+
 const findOneWithGuardian = async (
     id: number,
     options: PetFindOneOptions
@@ -100,7 +106,7 @@ const findUserHistory = async (
 const findUsersByPetIDs = async (
     userIDs: readonly number[]
 ): Promise<NestedUserHistoryOfPet[][]> => {
-    return userPetHistoryRepository.findUsersFromPetIDs(userIDs);
+    return userPetHistoryRepository.findUsersByPetIDs(userIDs);
 };
 
 export {
@@ -108,6 +114,7 @@ export {
     findOne,
     findOneWithGuardian,
     findGuardian,
+    findGuardiansByPetIDs,
     findUserHistory,
     findUsersByPetIDs,
     createOne,

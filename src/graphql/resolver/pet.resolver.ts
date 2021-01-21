@@ -19,8 +19,14 @@ import {
 } from '../../common/pagination';
 
 // load **users** from a *petID*
-const petUserLoader = new DataLoader<number, NestedUserHistoryOfPet[]>(
+const petUserHistoryLoader = new DataLoader<number, NestedUserHistoryOfPet[]>(
     petIDs => PetService.findUsersByPetIDs(petIDs),
+    { cache: false }
+);
+
+// load **one guardian** from a *petID*
+const petGuardianLoader = new DataLoader<number, User | null>(
+    petIDs => PetService.findGuardiansByPetIDs(petIDs),
     { cache: false }
 );
 
@@ -81,12 +87,16 @@ export const petResolver: IResolvers = {
         }
     },
     Pet: {
+        guardian: async (parent: Pet): Promise<User | null> => {
+            const petID = parent.id;
+            return await petGuardianLoader.load(petID);
+        },
         userHistory: async (
             parent: Pet
             // args: { currentOnly: boolean }
         ): Promise<NestedUserHistoryOfPet[]> => {
             const petID = parent.id;
-            return await petUserLoader.load(petID);
+            return await petUserHistoryLoader.load(petID);
         }
     }
 };
