@@ -16,6 +16,7 @@ export interface PetFindAllOptions {
     field?: string[];
     page?: number;
     pageSize?: number;
+    after?: number;
 }
 
 export interface PetFindOneOptions {
@@ -32,10 +33,11 @@ export class PetRepository {
     async findAll(options: PetFindAllOptions): Promise<Pet[]> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
 
-        const { page = 1, pageSize = 10 } = options;
+        const { page = 1, pageSize = 10, after } = options;
         const limit = Math.min(pageSize, 100);
-        const offset = (page - 1) * pageSize;
 
+        // prioritize `after` option over `page`
+        const offset = after !== undefined ? after + 1 : (page - 1) * pageSize;
         const [rows] = await this.pool.query<SQLRow<Pet>[]>(
             `
             SELECT ?? FROM Pet

@@ -2,13 +2,7 @@ import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
 import { ApiError, Summary } from '../common/error';
-import { convertToID } from '../common/pagination';
 import { User } from '../model/User';
-
-interface UserPaginationResult {
-    users: User[];
-    limit: number;
-}
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
@@ -16,7 +10,7 @@ export interface UserFindAllOptions {
     field?: string[];
     page?: number;
     pageSize?: number;
-    cursor?: string;
+    after?: number;
 }
 
 export interface UserFindOneOptions {
@@ -30,15 +24,17 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: UserFindAllOptions): Promise<UserPaginationResult> {
+    async findAll(options: UserFindAllOptions): Promise<User[]> {
         const {
             field = ['id', 'nickname'],
             page = 1,
             pageSize = 10,
-            cursor
+            after
         } = options;
         const limit = Math.min(pageSize, 100);
-        const offset = cursor ? convertToID(cursor) + 1 : (page - 1) * pageSize;
+
+        // prioritize `after` option over `page`
+        const offset = after !== undefined ? after + 1 : (page - 1) * pageSize;
 
         const [rows] = await this.pool.query<SQLRow<User>[]>(
             `
@@ -50,7 +46,8 @@ export class UserRepository {
             [field, limit, offset]
         );
 
-        return { users: rows, limit };
+        return rows;
+        // return { users: rows, limit };
     }
 
     async findOne(

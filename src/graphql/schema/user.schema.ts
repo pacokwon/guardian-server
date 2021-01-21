@@ -1,7 +1,7 @@
 import { gql } from 'apollo-server';
 
 export interface ListUserArgs {
-    first?: number;
+    first: number; // this field is optional in the schema, but has a default value
     after?: string;
 }
 

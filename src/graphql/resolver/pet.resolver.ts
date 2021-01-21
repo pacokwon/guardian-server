@@ -9,17 +9,32 @@ import {
     DeletePetArgs,
     SuccessStatus
 } from '../schema/pet.schema';
+import { PaginationConnection } from '../../common/type';
+import {
+    convertToID,
+    listToPageInfo,
+    mapToEdgeList
+} from '../../common/pagination';
 
 export const petResolver: IResolvers = {
     Query: {
-        pets: async (_: unknown, args: ListPetArgs): Promise<Pet[]> => {
-            const pets = await PetService.findAll(args);
-            return pets;
-        },
+        pets: async (
+            _: unknown,
+            { first, after }: ListPetArgs
+        ): Promise<PaginationConnection<Pet>> => {
+            const pets = await PetService.findAll({
+                after: after === undefined ? after : convertToID(after),
+                pageSize: first
+            });
 
-        pet: async (_: unknown, args: GetPetArgs): Promise<Pet | null> => {
+            return {
+                pageInfo: listToPageInfo(pets, first),
+                edges: mapToEdgeList(pets)
+            };
+        },
+        pet: async (_: unknown, args: GetPetArgs): Promise<Pet> => {
             const pet = await PetService.findOne(Number(args.id), {});
-            return pet || null;
+            return pet;
         }
     },
     Mutation: {

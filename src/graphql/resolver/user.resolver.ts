@@ -1,5 +1,5 @@
 import { IResolvers } from 'graphql-tools';
-import { User } from '../../model/User';
+import { User } from '../../model';
 import * as UserService from '../../service/UserService';
 import {
     ListUserArgs,
@@ -9,15 +9,31 @@ import {
     DeleteUserArgs,
     SuccessStatus
 } from '../schema/user.schema';
+import { PaginationConnection } from '../../common/type';
+import {
+    convertToID,
+    listToPageInfo,
+    mapToEdgeList
+} from '../../common/pagination';
 
 export const userResolver: IResolvers = {
     Query: {
-        users: async (_: unknown, args: ListUserArgs): Promise<User[]> => {
-            const users = await UserService.findAll(args);
-            return users;
-        },
+        users: async (
+            _: unknown,
+            { first, after }: ListUserArgs
+        ): Promise<PaginationConnection<User>> => {
+            // graphql specific pagination operations are done here
+            const users = await UserService.findAll({
+                after: after === undefined ? after : convertToID(after),
+                pageSize: first
+            });
 
-        user: async (_: unknown, args: GetUserArgs): Promise<User | null> => {
+            return {
+                pageInfo: listToPageInfo(users, first),
+                edges: mapToEdgeList(users)
+            };
+        },
+        user: async (_: unknown, args: GetUserArgs): Promise<User> => {
             const user = await UserService.findOne(Number(args.id), {});
             return user || null;
         }

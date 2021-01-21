@@ -3,6 +3,7 @@ import { makeExecutableSchema } from 'graphql-tools';
 import { dateResolver, userResolver, petResolver } from '../resolver';
 import { userTypeDef } from './user.schema';
 import { petTypeDef } from './pet.schema';
+import { paginationTypeDef } from './pagination.schema';
 import { userPetHistoryTypeDef } from './userPetHistory.schema';
 
 const baseTypeDef = gql`
@@ -23,6 +24,12 @@ const baseTypeDef = gql`
 `;
 
 export const schema = makeExecutableSchema({
-    typeDefs: [baseTypeDef, userTypeDef, petTypeDef, userPetHistoryTypeDef],
+    typeDefs: [
+        baseTypeDef,
+        paginationTypeDef,
+        userTypeDef,
+        petTypeDef,
+        userPetHistoryTypeDef
+    ],
     resolvers: [dateResolver, userResolver, petResolver]
 });
