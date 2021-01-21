@@ -42,6 +42,16 @@ export const petTypeDef = gql`
         userHistory: [UserHistory!]!
     }
 
+    type PetConnection {
+        pageInfo: PageInfo!
+        edges: [PetEdge!]!
+    }
+
+    type PetEdge {
+        cursor: String!
+        node: Pet!
+    }
+
     input CreatePetInput {
         nickname: String!
         species: String!
@@ -55,7 +65,7 @@ export const petTypeDef = gql`
     }
 
     extend type Query {
-        pets(page: Int, pageSize: Int): [Pet!]!
+        pets(first: Int = 10, after: String): PetConnection!
         pet(id: ID!): Pet!
     }
 

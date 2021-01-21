@@ -1,8 +1,8 @@
 import { gql } from 'apollo-server';
 
 export interface ListUserArgs {
-    page?: number;
-    pageSize?: number;
+    first?: number;
+    after?: string;
 }
 
 export interface GetUserArgs {
@@ -36,6 +36,16 @@ export const userTypeDef = gql`
         petHistory(currentOnly: Boolean = true): [PetHistory!]!
     }
 
+    type UserConnection {
+        pageInfo: PageInfo!
+        edges: [UserEdge!]!
+    }
+
+    type UserEdge {
+        cursor: String!
+        node: User!
+    }
+
     input CreateUserInput {
         nickname: String!
     }
@@ -45,7 +55,7 @@ export const userTypeDef = gql`
     }
 
     extend type Query {
-        users(page: Int, pageSize: Int): [User!]!
+        users(first: Int = 10, after: String): UserConnection!
         user(id: ID!): User!
     }
 
