@@ -25,7 +25,7 @@ import { validatePetFields } from '../common/validator';
  * If pet is currently registered to a user, the user information will be sent as well.
  * Otherwise, user field is `null`.
  */
-type PetWithUserInformation = Pet & { user: User | null };
+type PetWithGuardianInformation = Pet & { guardian: User | null };
 
 /**
  * Request body to be received on pet creation
@@ -126,19 +126,19 @@ export class PetController extends Controller {
      * @example 'id'
      * @example 'nickname'
      */
-    @Example<PetWithUserInformation>({
+    @Example<PetWithGuardianInformation>({
         id: 13,
         species: 'cat',
         nickname: 'lacey',
         imageUrl: 'https://placedog.net/500/500',
-        user: null
+        guardian: null
     })
-    @Example<PetWithUserInformation>({
+    @Example<PetWithGuardianInformation>({
         id: 13,
         species: 'cat',
         nickname: 'lacey',
         imageUrl: 'https://placedog.net/500/500',
-        user: { id: 12, nickname: 'rhys' }
+        guardian: { id: 12, nickname: 'rhys' }
     })
     @Response<ErrorResponse>(404, 'Not found', {
         message: 'Pet not found'
@@ -147,11 +147,11 @@ export class PetController extends Controller {
     async getPet(
         @Path() id: number,
         @Query() field?: string[]
-    ): Promise<PetWithUserInformation> {
+    ): Promise<PetWithGuardianInformation> {
         if (!validatePetFields(field))
             throw new ValidateError({}, 'Invalid field for Pet!');
 
-        const pet = await PetService.findOne(id, { field });
+        const pet = await PetService.findOneWithGuardian(id, { field });
         this.setStatus(200);
         return pet;
     }

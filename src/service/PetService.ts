@@ -24,21 +24,34 @@ const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
 const findOne = async (
     id: number,
     options: PetFindOneOptions
-): Promise<Pet & { user: User | null }> => {
+): Promise<Pet> => {
     const pet = await petRepository.findOne(id, options);
     if (!pet) throw new ApiError(Summary.NotFound, 'Pet not found');
+    return pet;
+};
 
+const findGuardian = async (petID: number): Promise<User | null> => {
     // fetch user history of pet. it should contain one user if user exists currently
     const userHistory = await userPetHistoryRepository.findUserHistoryFromPetID(
-        id,
+        petID,
         { where: { released: 0 } }
     );
 
     // currently, pet does not have user
-    if (userHistory.length === 0) return { ...pet, user: null };
+    if (userHistory.length === 0) return null;
 
     const { nickname, userID } = userHistory[0];
-    return { ...pet, user: { nickname, id: userID } };
+    return { nickname, id: userID };
+};
+
+const findOneWithGuardian = async (
+    id: number,
+    options: PetFindOneOptions
+): Promise<Pet & { guardian: User | null }> => {
+    const pet = await findOne(id, options);
+    const guardian = await findGuardian(id);
+
+    return { guardian, ...pet };
 };
 
 const createOne = async (fields: PetCreationFields): Promise<number> => {
@@ -81,4 +94,13 @@ const findUserHistory = async (
     );
 };
 
-export { findAll, findOne, findUserHistory, createOne, updateOne, removeOne };
+export {
+    findAll,
+    findOne,
+    findOneWithGuardian,
+    findGuardian,
+    findUserHistory,
+    createOne,
+    updateOne,
+    removeOne
+};
