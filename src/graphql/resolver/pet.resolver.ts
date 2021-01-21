@@ -1,5 +1,7 @@
 import { IResolvers } from 'graphql-tools';
-import { Pet } from '../../model/Pet';
+import DataLoader from 'dataloader';
+import { User, Pet } from '../../model';
+import { NestedUserHistoryOfPet } from '../../model/UserHistoryOfPet';
 import * as PetService from '../../service/PetService';
 import {
     ListPetArgs,
@@ -15,6 +17,12 @@ import {
     listToPageInfo,
     mapToEdgeList
 } from '../../common/pagination';
+
+// load **users** from a *petID*
+const petUserLoader = new DataLoader<number, NestedUserHistoryOfPet[]>(
+    petIDs => PetService.findUsersByPetIDs(petIDs),
+    { cache: false }
+);
 
 export const petResolver: IResolvers = {
     Query: {
@@ -70,6 +78,15 @@ export const petResolver: IResolvers = {
             return await PetService.removeOne(Number(id))
                 .then(_ => ({ success: true }))
                 .catch(_ => ({ success: false }));
+        }
+    },
+    Pet: {
+        userHistory: async (
+            parent: Pet
+            // args: { currentOnly: boolean }
+        ): Promise<NestedUserHistoryOfPet[]> => {
+            const petID = parent.id;
+            return await petUserLoader.load(petID);
         }
     }
 };

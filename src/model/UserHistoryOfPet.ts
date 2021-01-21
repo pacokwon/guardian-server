@@ -1,4 +1,5 @@
 import { UserPetHistory } from './UserPetHistory';
+import { User } from './User';
 
 /**
  * Single row containing details of a single registration + the informations of the corresponding **user**.
@@ -12,3 +13,7 @@ export interface UserHistoryOfPet extends UserPetHistory {
      */
     nickname: string;
 }
+
+export type NestedUserHistoryOfPet = Omit<UserPetHistory, 'userID'> & {
+    user: User;
+};

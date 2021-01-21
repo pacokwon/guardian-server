@@ -11,7 +11,10 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '../repository/UserPetHistoryRepository';
-import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
+import {
+    NestedUserHistoryOfPet,
+    UserHistoryOfPet
+} from '../model/UserHistoryOfPet';
 import { ApiError, Summary } from '../common/error';
 
 const petRepository = new PetRepository();
@@ -94,12 +97,19 @@ const findUserHistory = async (
     );
 };
 
+const findUsersByPetIDs = async (
+    userIDs: readonly number[]
+): Promise<NestedUserHistoryOfPet[][]> => {
+    return userPetHistoryRepository.findUsersFromPetIDs(userIDs);
+};
+
 export {
     findAll,
     findOne,
     findOneWithGuardian,
     findGuardian,
     findUserHistory,
+    findUsersByPetIDs,
     createOne,
     updateOne,
     removeOne

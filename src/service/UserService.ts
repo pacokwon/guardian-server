@@ -8,7 +8,10 @@ import {
     UserPetHistoryRepository,
     FindHistoryOptions
 } from '../repository/UserPetHistoryRepository';
-import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
+import {
+    NestedPetHistoryOfUser,
+    PetHistoryOfUser
+} from '../model/PetHistoryOfUser';
 import { ApiError, Summary } from '../common/error';
 
 const userRepository = new UserRepository();
@@ -40,6 +43,12 @@ const findPetHistory = async (
         pageSize,
         where
     });
+};
+
+const findPetsByUserIDs = async (
+    userIDs: readonly number[]
+): Promise<NestedPetHistoryOfUser[][]> => {
+    return userPetHistoryRepository.findPetsByUserIDs(userIDs);
 };
 
 const createOne = async (nickname: string): Promise<number> => {
@@ -106,6 +115,7 @@ export {
     findAll,
     findOne,
     findPetHistory,
+    findPetsByUserIDs,
     createOne,
     updateOne,
     removeOne,

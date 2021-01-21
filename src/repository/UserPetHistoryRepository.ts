@@ -3,8 +3,14 @@ import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
 import { ApiError, Summary } from '../common/error';
 import { UserPetHistory } from '../model/UserPetHistory';
-import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
-import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
+import {
+    UserHistoryOfPet,
+    NestedUserHistoryOfPet
+} from '../model/UserHistoryOfPet';
+import {
+    PetHistoryOfUser,
+    NestedPetHistoryOfUser
+} from '../model/PetHistoryOfUser';
 
 interface FindQuery {
     field: (keyof UserPetHistory)[];
@@ -155,5 +161,57 @@ export class UserPetHistoryRepository {
         ]);
 
         return rows;
+    }
+
+    // constraints: 1) preserve id order. 2) preserve input length
+    async findPetsByUserIDs(
+        userIDs: readonly number[]
+    ): Promise<NestedPetHistoryOfUser[][]> {
+        const sql = `
+            SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
+            FROM Pet JOIN UserPetHistory History
+            WHERE History.userID IN (?)
+            AND History.petID = Pet.id
+        `;
+
+        // a flattened array with different userIDs will be returned
+        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql, [
+            userIDs
+        ]);
+
+        return userIDs.map(id =>
+            rows
+                .filter(({ userID }) => id === userID)
+                .map(({ petID, species, nickname, imageUrl, ...history }) => ({
+                    pet: { id: petID, species, nickname, imageUrl },
+                    ...history
+                }))
+        );
+    }
+
+    async findUsersFromPetIDs(
+        petIDs: readonly number[]
+    ): Promise<NestedUserHistoryOfPet[][]> {
+        const sql = `
+            SELECT User.nickname, History.*
+            FROM User JOIN UserPetHistory History
+            WHERE History.petID IN (?)
+            AND History.userID = User.id
+        `;
+
+        // a flattened array with different petIDs will be returned
+        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql, [
+            petIDs
+        ]);
+
+        // group the flat result in a 2D array and return
+        return petIDs.map(id =>
+            rows
+                .filter(({ petID }) => id === petID)
+                .map(({ userID, nickname, ...history }) => ({
+                    user: { id: userID, nickname },
+                    ...history
+                }))
+        );
     }
 }
