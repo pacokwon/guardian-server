@@ -11,9 +11,8 @@ export const userPetHistoryTypeDef = gql`
         "history's id"
         id: ID!
 
-        userID: Int!
-        nickname: String!
-        petHistory(currentOnly: Boolean = true): [PetHistory!]!
+        "user must exist"
+        user: User!
 
         registeredAt: Date!
         releasedAt: Date!
@@ -24,13 +23,8 @@ export const userPetHistoryTypeDef = gql`
         "history's id"
         id: ID!
 
-        petID: Int!
-        nickname: String!
-        species: String!
-        imageUrl: String!
-
-        guardian: User
-        userHistory: [UserHistory!]!
+        "pet must exist"
+        pet: Pet!
 
         registeredAt: Date!
         releasedAt: Date!
