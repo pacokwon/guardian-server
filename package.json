@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run tsoa:watch\" \"nodemon\"",
+    "dev:gql": "nodemon",
     "populate": "ts-node ./scripts/populate.ts",
     "build": "tsc",
     "lint": "eslint ./src --ext .ts",
