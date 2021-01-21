@@ -22,12 +22,12 @@ export interface UserPetHistory {
     /**
      * Date of registration
      */
-    registeredAt: string;
+    registeredAt: Date;
 
     /**
      * Date of unregistration. If pet is not unregistered yet, it will be equal to `registeredAt`
      */
-    releasedAt: string;
+    releasedAt: Date;
 
     /**
      * Whether this registration has been released or not.

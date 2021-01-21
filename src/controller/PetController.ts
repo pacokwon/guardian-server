@@ -254,8 +254,8 @@ export class PetController extends Controller {
             id: 33,
             userID: 8,
             petID: 1,
-            registeredAt: '2021-01-07T21:45:30.000Z',
-            releasedAt: '2021-01-10T21:45:30.000Z',
+            registeredAt: new Date('2021-01-07T21:45:30.000Z'),
+            releasedAt: new Date('2021-01-10T21:45:30.000Z'),
             released: 1,
             nickname: 'charlie'
         },
@@ -263,8 +263,8 @@ export class PetController extends Controller {
             id: 48,
             userID: 15,
             petID: 1,
-            registeredAt: '2021-01-11T21:45:30.000Z',
-            releasedAt: '2021-01-12T21:45:30.000Z',
+            registeredAt: new Date('2021-01-11T21:45:30.000Z'),
+            releasedAt: new Date('2021-01-12T21:45:30.000Z'),
             released: 1,
             nickname: 'luther'
         }
