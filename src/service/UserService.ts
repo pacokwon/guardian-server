@@ -1,8 +1,8 @@
 import { User } from '../model/User';
 import {
     UserRepository,
-    FindAllOptions,
-    FindOneOptions
+    UserFindAllOptions,
+    UserFindOneOptions
 } from '../repository/UserRepository';
 import {
     UserPetHistoryRepository,
@@ -14,11 +14,14 @@ import { ApiError, Summary } from '../common/error';
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options: FindAllOptions): Promise<User[]> => {
+const findAll = async (options: UserFindAllOptions): Promise<User[]> => {
     return await userRepository.findAll(options);
 };
 
-const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
+const findOne = async (
+    id: number,
+    options: UserFindOneOptions
+): Promise<User> => {
     const user = await userRepository.findOne(id, options);
     if (!user) throw new ApiError(Summary.NotFound, 'User not found');
     return user;

@@ -12,14 +12,14 @@ interface UserPaginationResult {
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
-export interface FindAllOptions {
+export interface UserFindAllOptions {
     field?: string[];
     page?: number;
     pageSize?: number;
     cursor?: string;
 }
 
-export interface FindOneOptions {
+export interface UserFindOneOptions {
     field?: string[];
 }
 
@@ -30,7 +30,7 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: FindAllOptions): Promise<UserPaginationResult> {
+    async findAll(options: UserFindAllOptions): Promise<UserPaginationResult> {
         const {
             field = ['id', 'nickname'],
             page = 1,
@@ -55,7 +55,7 @@ export class UserRepository {
 
     async findOne(
         id: number,
-        options: FindOneOptions
+        options: UserFindOneOptions
     ): Promise<User | undefined> {
         const { field = ['id', 'nickname'] } = options;
         const [rows] = await this.pool.query<SQLRow<User>[]>(
