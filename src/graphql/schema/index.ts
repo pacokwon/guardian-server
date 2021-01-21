@@ -6,6 +6,8 @@ import { petTypeDef } from './pet.schema';
 import { userPetHistoryTypeDef } from './userPetHistory.schema';
 
 const baseTypeDef = gql`
+    scalar Date
+
     type Query {
         _empty: String
     }

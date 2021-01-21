@@ -2,31 +2,29 @@ import { gql } from 'apollo-server';
 
 export const userPetHistoryTypeDef = gql`
     interface UserPetHistory {
-        "yyyy-mm-dd hh:mm:ss"
-        registeredAt: String!
-
-        "yyyy-mm-dd hh:mm:ss"
-        releasedAt: String!
-
+        registeredAt: Date!
+        releasedAt: Date!
         released: Boolean!
     }
 
     type UserHistory implements UserPetHistory {
+        "history's id"
         id: ID!
-        nickname: String!
 
+        userID: Int!
+        nickname: String!
         petHistory(currentOnly: Boolean = true): [PetHistory!]!
 
-        "yyyy-mm-dd hh:mm:ss"
-        registeredAt: String!
-
-        "yyyy-mm-dd hh:mm:ss"
-        releasedAt: String!
+        registeredAt: Date!
+        releasedAt: Date!
         released: Boolean!
     }
 
     type PetHistory implements UserPetHistory {
+        "history's id"
         id: ID!
+
+        petID: Int!
         nickname: String!
         species: String!
         imageUrl: String!
@@ -34,11 +32,8 @@ export const userPetHistoryTypeDef = gql`
         guardian: User
         userHistory: [UserHistory!]!
 
-        "yyyy-mm-dd hh:mm:ss"
-        registeredAt: String!
-
-        "yyyy-mm-dd hh:mm:ss"
-        releasedAt: String!
+        registeredAt: Date!
+        releasedAt: Date!
         released: Boolean!
     }
 `;
