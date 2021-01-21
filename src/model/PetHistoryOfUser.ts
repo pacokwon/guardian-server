@@ -10,15 +10,15 @@ export interface PetHistoryOfUser extends UserPetHistory {
     /**
      * The pet's species (e.g. cat, dog)
      */
-    species?: string;
+    species: string;
 
     /**
      * The pet's nickname
      */
-    nickname?: string;
+    nickname: string;
 
     /**
      * A public url hosting the pet's image
      */
-    imageUrl?: string;
+    imageUrl: string;
 }
