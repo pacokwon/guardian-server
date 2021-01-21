@@ -51,24 +51,23 @@ export const userResolver: IResolvers = {
     Mutation: {
         createUser: async (
             _: unknown,
-            { nickname }: CreateUserArgs
-        ): Promise<SuccessStatus> => {
-            return await UserService.createOne(nickname)
-                .then(_ => ({ success: true }))
-                .catch(error => ({ success: false, message: error?.message }));
+            { input }: { input: CreateUserArgs }
+        ): Promise<User> => {
+            const { nickname } = input;
+            const id = await UserService.createOne(nickname);
+            return { id, nickname };
         },
 
         updateUser: async (
             _: unknown,
-            { id, input }: UpdateUserArgs
-        ): Promise<SuccessStatus> => {
-            const { nickname } = input;
+            { input }: { input: UpdateUserArgs }
+        ): Promise<User> => {
+            const { id, nickname } = input;
             const updatedUser = await UserService.updateOne(
                 Number(id),
                 nickname
             );
-            const success = updatedUser ? true : false;
-            return { success };
+            return updatedUser;
         },
 
         deleteUser: async (

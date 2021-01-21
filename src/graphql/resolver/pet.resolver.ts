@@ -54,27 +54,32 @@ export const petResolver: IResolvers = {
     Mutation: {
         createPet: async (
             _: unknown,
-            { nickname, species, imageUrl }: CreatePetArgs
-        ): Promise<SuccessStatus> => {
-            return await PetService.createOne({ nickname, species, imageUrl })
-                .then(_ => ({ success: true }))
-                .catch(error => ({ success: false, message: error.message }));
+            { input }: { input: CreatePetArgs }
+        ): Promise<Pet> => {
+            const { nickname, species, imageUrl } = input;
+            const id = await PetService.createOne({
+                nickname,
+                species,
+                imageUrl
+            });
+
+            return { id, nickname, species, imageUrl };
         },
 
         updatePet: async (
             _: unknown,
-            { id, input }: UpdatePetArgs
-        ): Promise<SuccessStatus> => {
+            { input }: { input: UpdatePetArgs }
+        ): Promise<Pet> => {
+            const { id, nickname, species, imageUrl } = input;
             // there is a possibility that these fields are undefined at runtime.
             // but it doesn't matter since it will only update the fields that are not undefined
-            const { nickname, species, imageUrl } = input;
             const updatedPet = await PetService.updateOne(Number(id), {
                 nickname,
                 species,
                 imageUrl
             });
-            const success = updatedPet ? true : false;
-            return { success };
+
+            return updatedPet;
         },
 
         deletePet: async (

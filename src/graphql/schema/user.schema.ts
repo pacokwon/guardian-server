@@ -13,12 +13,9 @@ export interface CreateUserArgs {
     nickname: string;
 }
 
-type UpdateUserInput = CreateUserArgs;
-
-export interface UpdateUserArgs {
+export type UpdateUserArgs = CreateUserArgs & {
     id: string;
-    input: UpdateUserInput;
-}
+};
 
 export type DeleteUserArgs = GetUserArgs;
 
@@ -51,6 +48,7 @@ export const userTypeDef = gql`
     }
 
     input UpdateUserInput {
+        id: ID!
         nickname: String
     }
 
@@ -60,8 +58,8 @@ export const userTypeDef = gql`
     }
 
     extend type Mutation {
-        createUser(param: CreateUserInput!): User!
-        updateUser(id: ID!, input: UpdateUserInput!): User!
+        createUser(input: CreateUserInput!): User!
+        updateUser(input: UpdateUserInput!): User!
         deleteUser(id: ID!): SuccessStatus!
 
         registerUserToPet(userID: ID!, petID: ID!): SuccessStatus!

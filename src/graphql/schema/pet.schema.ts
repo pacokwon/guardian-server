@@ -15,12 +15,9 @@ export interface CreatePetArgs {
     imageUrl: string;
 }
 
-type UpdatePetInput = CreatePetArgs;
-
-export interface UpdatePetArgs {
+export type UpdatePetArgs = CreatePetArgs & {
     id: string;
-    input: UpdatePetInput;
-}
+};
 
 export interface DeletePetArgs {
     id: string;
@@ -59,6 +56,7 @@ export const petTypeDef = gql`
     }
 
     input UpdatePetInput {
+        id: ID!
         nickname: String
         species: String
         imageUrl: String
@@ -70,8 +68,8 @@ export const petTypeDef = gql`
     }
 
     extend type Mutation {
-        createPet(param: CreatePetInput!): Pet!
-        updatePet(id: ID!, param: UpdatePetInput!): Pet!
+        createPet(input: CreatePetInput!): Pet!
+        updatePet(input: UpdatePetInput!): Pet!
         deletePet(id: ID!): SuccessStatus!
     }
 `;
