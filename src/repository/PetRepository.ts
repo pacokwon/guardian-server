@@ -1,6 +1,7 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
+import { ApiError, Summary } from '../common/error';
 import { Pet } from '../model/Pet';
 
 export type PetModifiableFields = Omit<Pet, 'id'>;
@@ -74,21 +75,34 @@ export class PetRepository {
         return result.insertId || null;
     }
 
-    async updateOne(id: number, fields: PetModifiableFields): Promise<number> {
-        const [result] = await this.pool.query<OkPacket>(
+    async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
+        const [{ changedRows }] = await this.pool.query<OkPacket>(
             `UPDATE Pet SET ? WHERE id=?`,
             [fields, id]
         );
 
-        return result.changedRows;
+        if (changedRows === 0)
+            throw new ApiError(Summary.NotFound, 'User not found');
+        else if (changedRows > 1)
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Multiple rows have been updated'
+            );
     }
 
-    async removeOne(id: number): Promise<number> {
+    async removeOne(id: number): Promise<void> {
         const [result] = await this.pool.query<OkPacket>(
             `UPDATE Pet SET deleted=1 WHERE id=?`,
             [id]
         );
 
-        return result.changedRows;
+        const deletedRowsCount = result.changedRows;
+        if (deletedRowsCount === 0)
+            throw new ApiError(Summary.NotFound, 'Pet not found');
+        else if (deletedRowsCount > 1)
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Multiple rows have been deleted'
+            );
     }
 }

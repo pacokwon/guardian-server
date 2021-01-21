@@ -55,15 +55,9 @@ const updateOne = async (id: number, newNickname: string): Promise<User> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
     if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
-    const changedRows = await userRepository.updateOne(id, {
+    await userRepository.updateOne(id, {
         nickname: newNickname
     });
-    if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been updated'
-        );
-
     // return modified entry
     return { id, nickname: newNickname };
 };
@@ -72,25 +66,17 @@ const removeOne = async (id: number): Promise<void> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
     if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
-    const deletedRowsCount = await userRepository.removeOne(id);
-
-    if (deletedRowsCount === 0)
-        throw new ApiError(Summary.NotFound, 'User not found');
-    else if (deletedRowsCount > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows deleted'
-        );
+    await userRepository.removeOne(id);
 };
 
 // check for already existing reservation
 const registerPet = async (petID: number, userID: number): Promise<void> => {
-    const unreleasedPetRows = await userPetHistoryRepository.find({
+    const unreleasedPets = await userPetHistoryRepository.find({
         field: ['id'],
         where: { petID, released: 0 }
     });
 
-    const isPetRegistered = unreleasedPetRows.length !== 0;
+    const isPetRegistered = unreleasedPets.length !== 0;
 
     // pet is already taken
     if (isPetRegistered)
@@ -107,22 +93,10 @@ const registerPet = async (petID: number, userID: number): Promise<void> => {
 
 const unregisterPet = async (petID: number, userID: number): Promise<void> => {
     // the database takes care of foreign key constraints
-    const changedRows = await userPetHistoryRepository
-        .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
-        .catch(error => {
-            throw new ApiError(
-                Summary.InternalServerError,
-                'Internal Server Error: ' + error?.message
-            );
-        });
-
-    if (changedRows === 0)
-        throw new ApiError(Summary.NotFound, 'User not found');
-    else if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have changed'
-        );
+    await userPetHistoryRepository.update({
+        set: { released: 1 },
+        where: { petID, userID, released: 0 }
+    });
 };
 
 export {

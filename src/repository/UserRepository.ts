@@ -1,7 +1,14 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
+import { ApiError, Summary } from '../common/error';
+import { convertToID } from '../common/pagination';
 import { User } from '../model/User';
+
+interface UserPaginationResult {
+    users: User[];
+    limit: number;
+}
 
 type UserModifiableFields = Omit<Partial<User>, 'id'>;
 
@@ -9,6 +16,7 @@ export interface FindAllOptions {
     field?: string[];
     page?: number;
     pageSize?: number;
+    cursor?: string;
 }
 
 export interface FindOneOptions {
@@ -22,10 +30,15 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: FindAllOptions): Promise<User[]> {
-        const { field = ['id', 'nickname'], page = 1, pageSize = 10 } = options;
+    async findAll(options: FindAllOptions): Promise<UserPaginationResult> {
+        const {
+            field = ['id', 'nickname'],
+            page = 1,
+            pageSize = 10,
+            cursor
+        } = options;
         const limit = Math.min(pageSize, 100);
-        const offset = (page - 1) * pageSize;
+        const offset = cursor ? convertToID(cursor) + 1 : (page - 1) * pageSize;
 
         const [rows] = await this.pool.query<SQLRow<User>[]>(
             `
@@ -37,7 +50,7 @@ export class UserRepository {
             [field, limit, offset]
         );
 
-        return rows;
+        return { users: rows, limit };
     }
 
     async findOne(
@@ -62,23 +75,36 @@ export class UserRepository {
         return result.insertId || null;
     }
 
-    async updateOne(id: number, fields: UserModifiableFields): Promise<number> {
+    async updateOne(id: number, fields: UserModifiableFields): Promise<void> {
         // implementation is incomplete since it does not support numerical types
         // it is left as is since the only modifiable field as of now is the nickname
-        const [result] = await this.pool.query<OkPacket>(
+        const [{ changedRows }] = await this.pool.query<OkPacket>(
             `UPDATE User SET ? WHERE id=?`,
             [fields, id]
         );
 
-        return result.changedRows;
+        if (changedRows === 0)
+            throw new ApiError(Summary.NotFound, 'User not found');
+        else if (changedRows > 1)
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Multiple rows have been updated'
+            );
     }
 
-    async removeOne(id: number): Promise<number> {
+    async removeOne(id: number): Promise<void> {
         const [result] = await this.pool.query<OkPacket>(
             `UPDATE User SET deleted=1 WHERE id=?`,
             [id]
         );
 
-        return result.changedRows;
+        const deletedRowsCount = result.changedRows;
+        if (deletedRowsCount === 0)
+            throw new ApiError(Summary.NotFound, 'User not found');
+        else if (deletedRowsCount > 1)
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Multiple rows deleted'
+            );
     }
 }

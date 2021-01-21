@@ -1,6 +1,7 @@
 import { Pool, OkPacket, escape } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
+import { ApiError, Summary } from '../common/error';
 import { UserPetHistory } from '../model/UserPetHistory';
 import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
 import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
@@ -63,7 +64,7 @@ export class UserPetHistoryRepository {
         await this.pool.query(sql);
     }
 
-    async update(query: UpdateQuery): Promise<number> {
+    async update(query: UpdateQuery): Promise<void> {
         const { set, where = {} } = query;
 
         // is empty string when `where` is empty
@@ -81,7 +82,13 @@ export class UserPetHistoryRepository {
 
         const [result] = await this.pool.query<OkPacket>(sql, [set.released]);
 
-        return result.changedRows;
+        if (result.changedRows === 0)
+            throw new ApiError(Summary.NotFound, 'User not found');
+        else if (result.changedRows > 1)
+            throw new ApiError(
+                Summary.InternalServerError,
+                'Multiple rows have changed'
+            );
     }
 
     async findUserHistoryFromPetID(

@@ -60,13 +60,7 @@ const updateOne = async (
     const petExists = (await petRepository.findOne(id, {})) !== undefined;
     if (!petExists) throw new ApiError(Summary.NotFound, 'Pet not found');
 
-    const changedRows = await petRepository.updateOne(id, fields);
-    if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been updated'
-        );
-
+    await petRepository.updateOne(id, fields);
     return { id, ...fields };
 };
 
@@ -74,14 +68,7 @@ const removeOne = async (id: number): Promise<void> => {
     const petExists = (await petRepository.findOne(id, {})) !== undefined;
     if (!petExists) throw new ApiError(Summary.NotFound, 'Pet not found');
 
-    const deletedRowsCount = await petRepository.removeOne(id);
-    if (deletedRowsCount === 0)
-        throw new ApiError(Summary.NotFound, 'Pet not found');
-    else if (deletedRowsCount > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been deleted'
-        );
+    await petRepository.removeOne(id);
 };
 
 const findUserHistory = async (
