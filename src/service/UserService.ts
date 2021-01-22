@@ -46,9 +46,16 @@ const findPetHistory = async (
 };
 
 const findPetsByUserIDs = async (
-    userIDs: readonly number[]
+    userIDs: readonly number[],
+    options?: { currentOnly: boolean }
 ): Promise<NestedPetHistoryOfUser[][]> => {
-    return userPetHistoryRepository.findPetsByUserIDs(userIDs);
+    // find *current pets* by default
+    const currentOnly = options?.currentOnly ?? true;
+
+    // apply filter if `currentOnly` == true. otherwise, do not use filter
+    return userPetHistoryRepository.findPetsByUserIDs(userIDs, {
+        where: currentOnly ? { released: 0 } : undefined
+    });
 };
 
 const createOne = async (nickname: string): Promise<number> => {

@@ -22,6 +22,10 @@ interface UpdateQuery {
     where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
 }
 
+interface FindPetsByUserIDsOptions {
+    where?: { released: 0 | 1 };
+}
+
 export interface FindHistoryOptions {
     page?: number;
     pageSize?: number;
@@ -165,13 +169,21 @@ export class UserPetHistoryRepository {
 
     // constraints: 1) preserve id order. 2) preserve input length
     async findPetsByUserIDs(
-        userIDs: readonly number[]
+        userIDs: readonly number[],
+        options?: FindPetsByUserIDsOptions
     ): Promise<NestedPetHistoryOfUser[][]> {
+        // if `where` is undefined, select all. otherwise, filter with `released`
+        const whereQuery =
+            options?.where === undefined
+                ? '1'
+                : `released=${options?.where.released}`;
+
         const sql = `
             SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
             FROM Pet JOIN UserPetHistory History
             ON History.userID IN (?)
             AND History.petID = Pet.id
+            WHERE ${whereQuery}
         `;
 
         // a flattened array with different userIDs will be returned

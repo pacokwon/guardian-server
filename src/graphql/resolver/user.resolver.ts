@@ -19,12 +19,16 @@ import {
     mapToEdgeList
 } from '../../common/pagination';
 
-// load **pets** from a *userID*
+// load **current pets** from a *userID*
+const currentPetsLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
+    userIDs => UserService.findPetsByUserIDs(userIDs, { currentOnly: true }),
+    { cache: false }
+);
+
+// load **all pets including past** from a *userID*
 const userPetHistoryLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
-    userIDs => UserService.findPetsByUserIDs(userIDs),
-    {
-        cache: false
-    }
+    userIDs => UserService.findPetsByUserIDs(userIDs, { currentOnly: false }),
+    { cache: false }
 );
 
 export const userResolver: IResolvers = {
@@ -103,13 +107,16 @@ export const userResolver: IResolvers = {
     },
     User: {
         petHistory: async (
-            parent: User
-            // args: { currentOnly: boolean }
+            parent: User,
+            { currentOnly }: { currentOnly: boolean } // true by default
         ): Promise<NestedUserPetHistory[]> => {
             // user's id and nickname
             const { id, nickname } = parent;
 
-            const petHistory = await userPetHistoryLoader.load(id);
+            const petHistory = currentOnly
+                ? await currentPetsLoader.load(id)
+                : await userPetHistoryLoader.load(id);
+
             return petHistory.map(history => ({
                 ...history,
                 user: { id, nickname }
