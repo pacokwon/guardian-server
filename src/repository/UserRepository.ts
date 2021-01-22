@@ -34,7 +34,7 @@ export class UserRepository {
         const limit = Math.min(pageSize, 100);
 
         // prioritize `after` option over `page`
-        const offset = after !== undefined ? after + 1 : (page - 1) * pageSize;
+        const offset = after !== undefined ? after : (page - 1) * pageSize;
 
         const [rows] = await this.pool.query<SQLRow<User>[]>(
             `
