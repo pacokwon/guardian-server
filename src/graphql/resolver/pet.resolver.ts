@@ -85,9 +85,9 @@ export const petResolver: IResolvers = {
             { id }: DeletePetArgs
         ): Promise<SuccessStatus> => {
             // if there is an error, let it pass
-            return await PetService.removeOne(Number(id)).then(_ => ({
-                success: true
-            }));
+            await PetService.removeOne(Number(id));
+
+            return { success: true };
         }
     },
     Pet: {

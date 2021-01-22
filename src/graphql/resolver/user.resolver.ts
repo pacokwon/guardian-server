@@ -73,31 +73,31 @@ export const userResolver: IResolvers = {
             { id }: DeleteUserArgs
         ): Promise<SuccessStatus> => {
             // if there is an error, let it pass
-            return await UserService.removeOne(Number(id)).then(_ => ({
-                success: true
-            }));
+            await UserService.removeOne(Number(id));
+
+            return { success: true };
         },
         registerUserToPet: async (
             _: unknown,
             args: { userID: string; petID: string }
         ): Promise<SuccessStatus> => {
-            return await UserService.registerPet(
+            await UserService.registerPet(
                 Number(args.petID),
                 Number(args.userID)
-            ).then(_ => ({
-                success: true
-            }));
+            );
+
+            return { success: true };
         },
         unregisterUserFromPet: async (
             _: unknown,
             args: { userID: string; petID: string }
         ): Promise<SuccessStatus> => {
-            return await UserService.unregisterPet(
+            await UserService.unregisterPet(
                 Number(args.petID),
                 Number(args.userID)
-            ).then(_ => ({
-                success: true
-            }));
+            )
+
+            return { success: true };
         }
     },
     User: {
