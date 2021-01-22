@@ -5,6 +5,7 @@ import { NestedPetHistoryOfUser } from '../../model/PetHistoryOfUser';
 import { NestedUserPetHistory } from '../../model/UserPetHistory';
 import * as UserService from '../../service/UserService';
 import {
+    SCHEMA_NAME as USER_SCHEMA_NAME,
     ListUserArgs,
     GetUserArgs,
     CreateUserArgs,
@@ -13,11 +14,7 @@ import {
     SuccessStatus
 } from '../schema/user.schema';
 import { PaginationConnection } from '../../common/type';
-import {
-    convertToID,
-    listToPageInfo,
-    mapToEdgeList
-} from '../../common/pagination';
+import { convertToID, listToConnection } from '../../common/pagination';
 
 // load **current pets** from a *userID*
 const currentPetsLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
@@ -43,10 +40,8 @@ export const userResolver: IResolvers = {
                 pageSize: first
             });
 
-            return {
-                pageInfo: listToPageInfo(users, first),
-                edges: mapToEdgeList(users)
-            };
+            // Connection object using the limit count and schema name
+            return listToConnection(users, first, USER_SCHEMA_NAME);
         },
         user: async (_: unknown, args: GetUserArgs): Promise<User> => {
             const user = await UserService.findOne(Number(args.id), {});

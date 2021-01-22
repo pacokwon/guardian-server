@@ -1,23 +1,40 @@
-import { PageInfo, Identifiable, PaginationEdge } from './type';
+import { PaginationConnection, Identifiable, PaginationEdge } from './type';
 
-export const convertToCursor = (nodeID: string | number): string =>
-    Buffer.from(nodeID.toString(), 'binary').toString('base64');
+export const convertToCursor = (nodeID: string | number, type = ''): string =>
+    Buffer.from(`${type}:${nodeID}`, 'binary').toString('base64');
 
-export const convertToID = (cursor: string): number =>
-    Number(Buffer.from(cursor, 'base64').toString('binary'));
+export const convertToID = (cursor: string): number => {
+    const decoded = Buffer.from(cursor, 'base64').toString('binary');
+    const [_, nodeID] = decoded.split(':');
 
-export const listToPageInfo = (list: Identifiable[], limit: number): PageInfo =>
-    list.length === 0
-        ? { hasNextPage: false, endCursor: '' }
-        : {
-              hasNextPage: list.length === limit,
-              endCursor: convertToCursor(list[list.length - 1].id)
-          };
+    if (nodeID === undefined)
+        throw Error('Invalid Cursor: decoded cursor does not contain nodeID');
 
-export const mapToEdgeList = <T extends Identifiable>(
-    list: T[]
+    return Number(nodeID);
+};
+
+const mapToEdges = <T extends Identifiable>(
+    list: T[],
+    type: string
 ): PaginationEdge<T>[] =>
     list.map(node => ({
-        cursor: convertToCursor(node.id),
+        cursor: convertToCursor(node.id, type),
         node
     }));
+
+export const listToConnection = <T extends Identifiable>(
+    list: T[],
+    limit: number,
+    type: string
+): PaginationConnection<T> => {
+    const edges = mapToEdges(list, type);
+    const pageInfo =
+        edges.length === 0
+            ? { hasNextPage: false, endCursor: '' }
+            : {
+                  hasNextPage: edges.length === limit,
+                  endCursor: edges[edges.length - 1].cursor
+              };
+
+    return { edges, pageInfo };
+};
