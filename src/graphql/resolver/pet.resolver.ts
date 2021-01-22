@@ -2,6 +2,7 @@ import { IResolvers } from 'graphql-tools';
 import DataLoader from 'dataloader';
 import { User, Pet } from '../../model';
 import { NestedUserHistoryOfPet } from '../../model/UserHistoryOfPet';
+import { NestedUserPetHistory } from '../../model/UserPetHistory';
 import * as PetService from '../../service/PetService';
 import {
     ListPetArgs,
@@ -98,9 +99,13 @@ export const petResolver: IResolvers = {
         userHistory: async (
             parent: Pet
             // args: { currentOnly: boolean }
-        ): Promise<NestedUserHistoryOfPet[]> => {
-            const petID = parent.id;
-            return await petUserHistoryLoader.load(petID);
+        ): Promise<NestedUserPetHistory[]> => {
+            const { id, nickname, species, imageUrl } = parent;
+            const userHistory = await petUserHistoryLoader.load(id);
+            return userHistory.map(history => ({
+                ...history,
+                pet: { id, nickname, species, imageUrl }
+            }));
         }
     }
 };

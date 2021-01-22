@@ -1,4 +1,5 @@
-import { RowDataPacket } from 'mysql2';
+import { User } from './User';
+import { Pet } from './Pet';
 
 export interface UserPetHistory {
     /**
@@ -36,4 +37,7 @@ export interface UserPetHistory {
     released: number;
 }
 
-export type UserPetHistoryRow = UserPetHistory & RowDataPacket;
+export type NestedUserPetHistory = Omit<UserPetHistory, 'userID' | 'petID'> & {
+    user: User;
+    pet: Pet;
+};
