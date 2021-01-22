@@ -62,7 +62,7 @@ export const userTypeDef = gql`
         updateUser(input: UpdateUserInput!): User!
         deleteUser(id: ID!): SuccessStatus!
 
-        registerUserToPet(userID: ID!, petID: ID!): SuccessStatus!
-        unregisterUserFromPet(userID: ID!, petID: ID!): SuccessStatus!
+        registerUserToPet(petID: ID!, userID: ID!): SuccessStatus!
+        unregisterUserFromPet(petID: ID!, userID: ID!): SuccessStatus!
     }
 `;

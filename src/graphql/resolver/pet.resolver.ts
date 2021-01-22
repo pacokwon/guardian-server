@@ -65,7 +65,6 @@ export const petResolver: IResolvers = {
 
             return { id, nickname, species, imageUrl };
         },
-
         updatePet: async (
             _: unknown,
             { input }: { input: UpdatePetArgs }
@@ -81,7 +80,6 @@ export const petResolver: IResolvers = {
 
             return updatedPet;
         },
-
         deletePet: async (
             _: unknown,
             { id }: DeletePetArgs

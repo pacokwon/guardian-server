@@ -57,7 +57,6 @@ export const userResolver: IResolvers = {
             const id = await UserService.createOne(nickname);
             return { id, nickname };
         },
-
         updateUser: async (
             _: unknown,
             { input }: { input: UpdateUserArgs }
@@ -69,13 +68,34 @@ export const userResolver: IResolvers = {
             );
             return updatedUser;
         },
-
         deleteUser: async (
             _: unknown,
             { id }: DeleteUserArgs
         ): Promise<SuccessStatus> => {
             // if there is an error, let it pass
             return await UserService.removeOne(Number(id)).then(_ => ({
+                success: true
+            }));
+        },
+        registerUserToPet: async (
+            _: unknown,
+            args: { userID: string; petID: string }
+        ): Promise<SuccessStatus> => {
+            return await UserService.registerPet(
+                Number(args.petID),
+                Number(args.userID)
+            ).then(_ => ({
+                success: true
+            }));
+        },
+        unregisterUserFromPet: async (
+            _: unknown,
+            args: { userID: string; petID: string }
+        ): Promise<SuccessStatus> => {
+            return await UserService.unregisterPet(
+                Number(args.petID),
+                Number(args.userID)
+            ).then(_ => ({
                 success: true
             }));
         }
