@@ -74,9 +74,10 @@ export const userResolver: IResolvers = {
             _: unknown,
             { id }: DeleteUserArgs
         ): Promise<SuccessStatus> => {
-            return await UserService.removeOne(Number(id))
-                .then(_ => ({ success: true }))
-                .catch(_ => ({ success: false }));
+            // if there is an error, let it pass
+            return await UserService.removeOne(Number(id)).then(_ => ({
+                success: true
+            }));
         }
     },
     User: {
