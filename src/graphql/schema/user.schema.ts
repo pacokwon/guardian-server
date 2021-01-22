@@ -33,7 +33,7 @@ export const userTypeDef = gql`
         nickname: String!
 
         "user's registered pets. if 'currentOnly' is false, get past history too"
-        petHistory(currentOnly: Boolean = true): [PetHistory!]!
+        petHistory(currentOnly: Boolean = true): [UserPetHistory!]!
     }
 
     type UserConnection {

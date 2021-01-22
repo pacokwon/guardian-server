@@ -39,7 +39,7 @@ export const petTypeDef = gql`
         imageUrl: String!
 
         guardian: User
-        userHistory: [UserHistory!]!
+        userHistory: [UserPetHistory!]!
     }
 
     type PetConnection {
