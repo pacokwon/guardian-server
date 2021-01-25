@@ -12,6 +12,8 @@
     "tsoa": "npx tsoa spec-and-routes",
     "tsoa:watch": "nodemon --exec \"npm run tsoa\" --watch \"./src/controller/*.ts\" --watch \"./src/model/*.ts\" --watch \"./src/repository/*.ts\"",
     "test": "npx ts-node ./tests/initTestDB.ts && npm run tsoa && jest --runInBand --coverage",
+    "test:rest": "npx ts-node ./tests/initTestDB.ts && npm run tsoa && jest --runInBand --coverage",
+    "test:gql": "npx ts-node ./tests/initTestDB.ts && jest --runInBand --coverage ./tests/graphql",
     "db:init": "mysql < ./setup/init.sql"
   },
   "repository": {
