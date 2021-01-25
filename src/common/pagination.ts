@@ -24,7 +24,7 @@ const mapToEdges = <T extends Identifiable>(
         node
     }));
 
-export const listToConnection = <T extends Identifiable>(params: {
+export const makeConnection = <T extends Identifiable>(params: {
     list: T[]; // actual list of results
     totalCount: number; // number of items that would have been returned without pagination constraint
     type: string; // type of resource e.g. 'User', 'Pet'

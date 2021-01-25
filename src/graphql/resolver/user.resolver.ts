@@ -16,7 +16,7 @@ import {
 } from '../schema/user.schema';
 import { SCHEMA_NAME as HISTORY_SCHEMA_NAME } from '../schema/userPetHistory.schema';
 import { PaginationConnection } from '../../common/type';
-import { convertToID, listToConnection } from '../../common/pagination';
+import { convertToID, makeConnection } from '../../common/pagination';
 
 // load **current pets** from a *userID*
 const currentPetsLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
@@ -38,8 +38,8 @@ export const userResolver: IResolvers = {
                 pageSize: first
             });
 
-            // Connection object using the limit count and schema name
-            return listToConnection({
+            // make connection object with result + schema name + total count
+            return makeConnection({
                 list: users,
                 type: USER_SCHEMA_NAME,
                 totalCount
@@ -137,8 +137,8 @@ export const userResolver: IResolvers = {
                 })
             );
 
-            // Connection object using the limit count and schema name
-            return listToConnection({
+            // make connection object with result + schema name + total count
+            return makeConnection({
                 list: nestedPetHistory,
                 type: HISTORY_SCHEMA_NAME,
                 totalCount
