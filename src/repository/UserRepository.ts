@@ -33,21 +33,33 @@ export class UserRepository {
         } = options;
         const limit = Math.min(pageSize, 100);
 
-        // prioritize `after` option over `page`
-        const offset = after !== undefined ? after : (page - 1) * pageSize;
+        if (after === undefined) {
+            const offset = (page - 1) * pageSize;
+            const [rows] = await this.pool.query<SQLRow<User>[]>(
+                `
+                SELECT ?? FROM User
+                WHERE deleted=0
+                LIMIT ?
+                OFFSET ?
+            `,
+                [field, limit, offset]
+            );
 
-        const [rows] = await this.pool.query<SQLRow<User>[]>(
-            `
-            SELECT ?? FROM User
-            WHERE deleted=0
-            LIMIT ?
-            OFFSET ?
-        `,
-            [field, limit, offset]
-        );
+            return rows;
+        } else {
+            // use cursor
+            const [rows] = await this.pool.query<SQLRow<User>[]>(
+                `
+                SELECT ?? FROM User
+                WHERE deleted=0 AND id > ?
+                ORDER BY id
+                LIMIT ?
+            `,
+                [field, after, limit]
+            );
 
-        return rows;
-        // return { users: rows, limit };
+            return rows;
+        }
     }
 
     async findOne(

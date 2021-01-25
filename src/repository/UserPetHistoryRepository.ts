@@ -30,6 +30,7 @@ export interface FindHistoryOptions {
     page?: number;
     pageSize?: number;
     where?: Partial<Pick<UserPetHistory, 'petID' | 'userID' | 'released'>>;
+    after?: number;
 }
 
 export class UserPetHistoryRepository {
@@ -105,9 +106,8 @@ export class UserPetHistoryRepository {
         petID: number,
         options: FindHistoryOptions
     ): Promise<UserHistoryOfPet[]> {
-        const { page = 1, pageSize = 10, where = {} } = options;
+        const { page = 1, pageSize = 10, where = {}, after } = options;
         const limit = Math.min(pageSize, 100);
-        const offset = (page - 1) * pageSize;
 
         // is empty string when `where` is empty
         const whereCondition = Object.entries(where)
@@ -116,31 +116,47 @@ export class UserPetHistoryRepository {
 
         const whereQuery = whereCondition ? whereCondition : '1';
 
-        const sql = `
-            SELECT History.*, User.nickname
-            FROM UserPetHistory History INNER JOIN User
-            ON History.petID=? AND History.userID=User.id
-            WHERE ${whereQuery} AND User.deleted = 0
-            LIMIT ?
-            OFFSET ?
-        `;
+        if (after === undefined) {
+            // use offset
+            const offset = (page - 1) * pageSize;
 
-        const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(sql, [
-            petID,
-            limit,
-            offset
-        ]);
+            const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(
+                `
+                SELECT User.nickname, History.*
+                FROM UserPetHistory History INNER JOIN User
+                ON History.petID=? AND History.userID=User.id
+                WHERE ${whereQuery} AND User.deleted = 0
+                LIMIT ?
+                OFFSET ?
+            `,
+                [petID, limit, offset]
+            );
 
-        return rows;
+            return rows;
+        } else {
+            // use cursor
+            const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(
+                `
+                SELECT User.nickname, History.*
+                FROM UserPetHistory History INNER JOIN User
+                ON History.petID=? AND History.userID=User.id
+                WHERE ${whereQuery} AND User.deleted = 0 AND History.id > ?
+                ORDER BY History.id
+                LIMIT ?
+            `,
+                [petID, after, limit]
+            );
+
+            return rows;
+        }
     }
 
     async findPetHistoryFromUserID(
         userID: number,
         options: FindHistoryOptions
     ): Promise<PetHistoryOfUser[]> {
-        const { page = 1, pageSize = 10, where = {} } = options;
+        const { page = 1, pageSize = 10, where = {}, after } = options;
         const limit = Math.min(pageSize, 100);
-        const offset = (page - 1) * pageSize;
 
         // is empty string when `where` is empty
         const whereCondition = Object.entries(where)
@@ -149,22 +165,39 @@ export class UserPetHistoryRepository {
 
         const whereQuery = whereCondition ? whereCondition : '1';
 
-        const sql = `
-            SELECT History.*, Pet.nickname
-            FROM UserPetHistory History INNER JOIN Pet
-            ON History.userID=? AND History.petID=Pet.id
-            WHERE ${whereQuery} AND Pet.deleted = 0
-            LIMIT ?
-            OFFSET ?
-        `;
+        if (after === undefined) {
+            // use offset
+            const offset = (page - 1) * pageSize;
 
-        const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(sql, [
-            userID,
-            limit,
-            offset
-        ]);
+            const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(
+                `
+                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                FROM UserPetHistory History INNER JOIN Pet
+                ON History.userID=? AND History.petID=Pet.id
+                WHERE ${whereQuery} AND Pet.deleted = 0
+                LIMIT ?
+                OFFSET ?
+            `,
+                [userID, limit, offset]
+            );
 
-        return rows;
+            return rows;
+        } else {
+            // use cursor
+            const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(
+                `
+                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                FROM UserPetHistory History INNER JOIN Pet
+                ON History.userID=? AND History.petID=Pet.id
+                WHERE ${whereQuery} AND Pet.deleted = 0 AND History.id > ?
+                ORDER BY History.id
+                LIMIT ?
+            `,
+                [userID, after, limit]
+            );
+
+            return rows;
+        }
     }
 
     // constraints: 1) preserve id order. 2) preserve input length

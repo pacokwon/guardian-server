@@ -1,26 +1,21 @@
 import { IResolvers } from 'graphql-tools';
 import DataLoader from 'dataloader';
 import { User, Pet } from '../../model';
-import { NestedUserHistoryOfPet } from '../../model/UserHistoryOfPet';
 import { NestedUserPetHistory } from '../../model/UserPetHistory';
 import * as PetService from '../../service/PetService';
 import {
     SCHEMA_NAME as PET_SCHEMA_NAME,
     ListPetArgs,
+    ListUserHistoryArgs,
     GetPetArgs,
     CreatePetArgs,
     UpdatePetArgs,
     DeletePetArgs,
     SuccessStatus
 } from '../schema/pet.schema';
+import { SCHEMA_NAME as HISTORY_SCHEMA_NAME } from '../schema/userPetHistory.schema';
 import { PaginationConnection } from '../../common/type';
 import { convertToID, listToConnection } from '../../common/pagination';
-
-// load **users** from a *petID*
-const petUserHistoryLoader = new DataLoader<number, NestedUserHistoryOfPet[]>(
-    petIDs => PetService.findUsersByPetIDs(petIDs),
-    { cache: false }
-);
 
 // load **one guardian** from a *petID*
 const petGuardianLoader = new DataLoader<number, User | null>(
@@ -32,10 +27,12 @@ export const petResolver: IResolvers = {
     Query: {
         pets: async (
             _: unknown,
-            { first, after }: ListPetArgs
+            { first, after: afterCursor }: ListPetArgs
         ): Promise<PaginationConnection<Pet>> => {
+            const after = convertToID(afterCursor);
+
             const pets = await PetService.findAll({
-                after: after === undefined ? after : convertToID(after),
+                after,
                 pageSize: first
             });
 
@@ -92,15 +89,29 @@ export const petResolver: IResolvers = {
             return await petGuardianLoader.load(petID);
         },
         userHistory: async (
-            parent: Pet
-            // args: { currentOnly: boolean }
-        ): Promise<NestedUserPetHistory[]> => {
-            const { id, nickname, species, imageUrl } = parent;
-            const userHistory = await petUserHistoryLoader.load(id);
-            return userHistory.map(history => ({
-                ...history,
-                pet: { id, nickname, species, imageUrl }
-            }));
+            parent: Pet,
+            { first, after: afterCursor }: ListUserHistoryArgs
+        ): Promise<PaginationConnection<NestedUserPetHistory>> => {
+            const after = convertToID(afterCursor);
+
+            const userHistory = await PetService.findUserHistory(parent.id, {
+                after,
+                pageSize: first
+            });
+
+            const nestedUserHistory = userHistory.map(
+                ({ userID, nickname, ...history }) => ({
+                    user: { id: userID, nickname },
+                    pet: { ...parent },
+                    ...history
+                })
+            );
+
+            return listToConnection(
+                nestedUserHistory,
+                first,
+                HISTORY_SCHEMA_NAME
+            );
         }
     }
 };

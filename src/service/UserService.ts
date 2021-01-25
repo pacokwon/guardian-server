@@ -34,14 +34,13 @@ const findPetHistory = async (
     userID: number,
     options: FindHistoryOptions & { all?: boolean }
 ): Promise<PetHistoryOfUser[]> => {
-    const { all = false, page, pageSize } = options;
+    const { all = false, ...restOptions } = options;
 
     // query unreleased pets if `all` is false. an empty object queries everything
     const where = all ? {} : { released: 0 };
     return await userPetHistoryRepository.findPetHistoryFromUserID(userID, {
-        page,
-        pageSize,
-        where
+        where,
+        ...restOptions
     });
 };
 

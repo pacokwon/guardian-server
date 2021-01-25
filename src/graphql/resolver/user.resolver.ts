@@ -7,12 +7,14 @@ import * as UserService from '../../service/UserService';
 import {
     SCHEMA_NAME as USER_SCHEMA_NAME,
     ListUserArgs,
+    ListPetHistoryArgs,
     GetUserArgs,
     CreateUserArgs,
     UpdateUserArgs,
     DeleteUserArgs,
     SuccessStatus
 } from '../schema/user.schema';
+import { SCHEMA_NAME as HISTORY_SCHEMA_NAME } from '../schema/userPetHistory.schema';
 import { PaginationConnection } from '../../common/type';
 import { convertToID, listToConnection } from '../../common/pagination';
 
@@ -22,21 +24,17 @@ const currentPetsLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
     { cache: false }
 );
 
-// load **all pets including past** from a *userID*
-const userPetHistoryLoader = new DataLoader<number, NestedPetHistoryOfUser[]>(
-    userIDs => UserService.findPetsByUserIDs(userIDs, { currentOnly: false }),
-    { cache: false }
-);
-
 export const userResolver: IResolvers = {
     Query: {
         users: async (
             _: unknown,
-            { first, after }: ListUserArgs
+            { first, after: afterCursor }: ListUserArgs
         ): Promise<PaginationConnection<User>> => {
+            const after = convertToID(afterCursor);
+
             // graphql specific pagination operations are done here
             const users = await UserService.findAll({
-                after: after === undefined ? after : convertToID(after),
+                after,
                 pageSize: first
             });
 
@@ -101,21 +99,43 @@ export const userResolver: IResolvers = {
         }
     },
     User: {
-        petHistory: async (
-            parent: User,
-            { currentOnly }: { currentOnly: boolean } // true by default
-        ): Promise<NestedUserPetHistory[]> => {
+        pets: async (parent: User): Promise<NestedUserPetHistory[]> => {
             // user's id and nickname
             const { id, nickname } = parent;
 
-            const petHistory = currentOnly
-                ? await currentPetsLoader.load(id)
-                : await userPetHistoryLoader.load(id);
+            const petHistory = await currentPetsLoader.load(id);
 
             return petHistory.map(history => ({
                 ...history,
                 user: { id, nickname }
             }));
+        },
+        petHistory: async (
+            parent: User,
+            { first, after: afterCursor }: ListPetHistoryArgs
+        ): Promise<PaginationConnection<NestedUserPetHistory>> => {
+            const after = convertToID(afterCursor);
+
+            const petHistory = await UserService.findPetHistory(parent.id, {
+                after,
+                pageSize: first,
+                all: true
+            });
+
+            const nestedPetHistory = petHistory.map(
+                ({ petID, species, nickname, imageUrl, ...history }) => ({
+                    pet: { id: petID, species, nickname, imageUrl },
+                    user: { ...parent },
+                    ...history
+                })
+            );
+
+            // Connection object using the limit count and schema name
+            return listToConnection(
+                nestedPetHistory,
+                first,
+                HISTORY_SCHEMA_NAME
+            );
         }
     }
 };

@@ -7,6 +7,8 @@ export interface ListUserArgs {
     after?: string;
 }
 
+export type ListPetHistoryArgs = ListUserArgs;
+
 export interface GetUserArgs {
     id: string;
 }
@@ -31,8 +33,11 @@ export const userTypeDef = gql`
         id: ID!
         nickname: String!
 
-        "user's registered pets. if 'currentOnly' is false, get past history too"
-        petHistory(currentOnly: Boolean = true): [UserPetHistory!]!
+        "pets currently registered to this user"
+        pets: [UserPetHistory!]!
+
+        "list of all pets, including current pets"
+        petHistory(first: Int = 10, after: String): UserPetHistoryConnection!
     }
 
     type UserConnection {

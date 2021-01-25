@@ -3,7 +3,9 @@ import { PaginationConnection, Identifiable, PaginationEdge } from './type';
 export const convertToCursor = (nodeID: string | number, type = ''): string =>
     Buffer.from(`${type}:${nodeID}`, 'binary').toString('base64');
 
-export const convertToID = (cursor: string): number => {
+export const convertToID = (cursor: string | undefined): number => {
+    if (cursor === undefined) return 0;
+
     const decoded = Buffer.from(cursor, 'base64').toString('binary');
     const [_, nodeID] = decoded.split(':');
 
@@ -24,7 +26,7 @@ const mapToEdges = <T extends Identifiable>(
 
 export const listToConnection = <T extends Identifiable>(
     list: T[],
-    limit: number,
+    first: number,
     type: string
 ): PaginationConnection<T> => {
     const edges = mapToEdges(list, type);
@@ -32,7 +34,7 @@ export const listToConnection = <T extends Identifiable>(
         edges.length === 0
             ? { hasNextPage: false, endCursor: '' }
             : {
-                  hasNextPage: edges.length === limit,
+                  hasNextPage: edges.length === first,
                   endCursor: edges[edges.length - 1].cursor
               };
 

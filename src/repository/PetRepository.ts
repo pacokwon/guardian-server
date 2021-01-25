@@ -36,19 +36,33 @@ export class PetRepository {
         const { page = 1, pageSize = 10, after } = options;
         const limit = Math.min(pageSize, 100);
 
-        // prioritize `after` option over `page`
-        const offset = after !== undefined ? after : (page - 1) * pageSize;
-        const [rows] = await this.pool.query<SQLRow<Pet>[]>(
-            `
-            SELECT ?? FROM Pet
-            WHERE deleted=0
-            LIMIT ?
-            OFFSET ?
-        `,
-            [field, limit, offset]
-        );
+        if (after === undefined) {
+            const offset = (page - 1) * pageSize;
+            const [rows] = await this.pool.query<SQLRow<Pet>[]>(
+                `
+                SELECT ?? FROM Pet
+                WHERE deleted=0
+                LIMIT ?
+                OFFSET ?
+            `,
+                [field, limit, offset]
+            );
 
-        return rows;
+            return rows;
+        } else {
+            // use cursor
+            const [rows] = await this.pool.query<SQLRow<Pet>[]>(
+                `
+                SELECT ?? FROM Pet
+                WHERE deleted=0 AND id > ?
+                ORDER BY id
+                LIMIT ?
+            `,
+                [field, after, limit]
+            );
+
+            return rows;
+        }
     }
 
     async findOne(

@@ -7,6 +7,8 @@ export interface ListPetArgs {
     after?: string;
 }
 
+export type ListUserHistoryArgs = ListPetArgs;
+
 export interface GetPetArgs {
     id: string;
 }
@@ -38,7 +40,7 @@ export const petTypeDef = gql`
         imageUrl: String!
 
         guardian: User
-        userHistory: [UserPetHistory!]!
+        userHistory(first: Int = 10, after: String): UserPetHistoryConnection!
     }
 
     type PetConnection {
