@@ -34,7 +34,7 @@ export const userTypeDef = gql`
         nickname: String!
 
         "pets currently registered to this user"
-        pets: [UserPetHistory!]!
+        currentPets: [UserPetHistory!]!
 
         "list of all pets, including current pets"
         petHistory(first: Int = 10, after: String): UserPetHistoryConnection!

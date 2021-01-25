@@ -103,7 +103,7 @@ export const userResolver: IResolvers = {
         }
     },
     User: {
-        pets: async (parent: User): Promise<NestedUserPetHistory[]> => {
+        currentPets: async (parent: User): Promise<NestedUserPetHistory[]> => {
             // user's id and nickname
             const { id, nickname } = parent;
 

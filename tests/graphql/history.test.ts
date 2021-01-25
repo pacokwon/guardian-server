@@ -360,7 +360,7 @@ describe('/graphql', () => {
             query: `
                 query {
                     user(id: "1") {
-                        pets { pet { nickname } }
+                        currentPets { pet { nickname } }
                     }
                 }
             `
@@ -368,7 +368,7 @@ describe('/graphql', () => {
         expect(response.body?.errors).toBeUndefined();
 
         type Pet = { pet: { nickname: string } };
-        const petNames = response.body?.data?.user?.pets
+        const petNames = response.body?.data?.user?.currentPets
             ?.map(({ pet }: Pet) => pet.nickname)
             .sort();
         expect(petNames).toEqual(['foo', 'bar'].sort());
