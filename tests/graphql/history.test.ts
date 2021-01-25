@@ -290,19 +290,156 @@ describe('/graphql', () => {
                 query {
                     pet(id: "3") {
                         userHistory {
-                            user {
-                                nickname
-                            }
+                            edges { node { user { nickname } } }
                         }
                     }
                 }
             `
         });
+
+        type UserNode = { node: { user: { nickname: string } } };
+
         const users: string[] = (
-            guardiansListOfBaz.body?.data?.pet?.userHistory || []
-        ).map(({ user }: { user: { nickname: string } }) => user.nickname);
+            guardiansListOfBaz.body?.data?.pet?.userHistory?.edges || []
+        ).map(({ node }: UserNode) => node.user.nickname);
 
         expect(users).toHaveLength(2);
         expect(users.sort()).toEqual(['bob', 'jay']);
+    });
+
+    it('should correctly retrieve the list of guardians that pet "baz" has been registered to, with pagination', async () => {
+        const firstGuardianResponse = await request(app).post('/graphql').send({
+            query: `
+                query {
+                    pet(id: "3") {
+                        userHistory(first: 1) {
+                            pageInfo { endCursor }
+                            edges { node { user { nickname } } }
+                        }
+                    }
+                }
+            `
+        });
+
+        const firstGuardian =
+            firstGuardianResponse.body?.data?.pet?.userHistory?.edges[0]?.node
+                ?.user?.nickname;
+        const endCursor =
+            firstGuardianResponse.body?.data?.pet?.userHistory?.pageInfo
+                ?.endCursor;
+
+        const secondGuardianResponse = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                    query ($cursor: String!) {
+                        pet(id: "3") {
+                            userHistory(first: 1, after: $cursor) {
+                                pageInfo { endCursor }
+                                edges { node { user { nickname } } }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    cursor: endCursor
+                }
+            });
+
+        const secondGuardian =
+            secondGuardianResponse.body?.data?.pet?.userHistory?.edges[0]?.node
+                ?.user?.nickname;
+
+        expect([firstGuardian, secondGuardian].sort()).toEqual(['bob', 'jay']);
+    });
+
+    it('should correctly retrieve the list of pets that are *currently* registered to user "bob"', async () => {
+        const response = await request(app).post('/graphql').send({
+            query: `
+                query {
+                    user(id: "1") {
+                        pets { pet { nickname } }
+                    }
+                }
+            `
+        });
+
+        type Pet = { pet: { nickname: string } };
+        const petNames = response.body?.data?.user?.pets
+            ?.map(({ pet }: Pet) => pet.nickname)
+            .sort();
+        expect(petNames).toEqual(['foo', 'bar'].sort());
+    });
+
+    it('should correctly retrieve the list of pets that are registered to user "bob"', async () => {
+        const response = await request(app).post('/graphql').send({
+            query: `
+                query {
+                    user(id: "1") {
+                        petHistory {
+                            edges { node { pet { nickname } } }
+                        }
+                    }
+                }
+            `
+        });
+
+        type PetNode = { node: { pet: { nickname: string } } };
+        const petNames = response.body?.data?.user?.petHistory?.edges
+            ?.map(({ node }: PetNode) => node.pet.nickname)
+            .sort();
+        expect(petNames).toEqual(['baz', 'foo', 'bar'].sort());
+    });
+
+    it('should correctly retrieve the list of pets that are registered to user "bob", with pagination', async () => {
+        type PetNode = { node: { pet: { nickname: string } } };
+
+        const firstResponse = await request(app).post('/graphql').send({
+            query: `
+                query {
+                    user(id: "1") {
+                        petHistory(first: 2) {
+                            pageInfo {
+                                endCursor
+                            }
+                            edges { node { pet { nickname } } }
+                        }
+                    }
+                }
+            `
+        });
+        const petNamesFirst = firstResponse.body?.data?.user?.petHistory?.edges?.map(
+            ({ node }: PetNode) => node.pet.nickname
+        );
+        const endCursor =
+            firstResponse.body?.data?.user?.petHistory?.pageInfo?.endCursor;
+
+        const secondResponse = await request(app)
+            .post('/graphql')
+            .send({
+                query: `
+                    query($cursor: String!) {
+                        user(id: "1") {
+                            petHistory(first: 2, after: $cursor) {
+                                pageInfo {
+                                    endCursor
+                                }
+                                edges { node { pet { nickname } } }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    cursor: endCursor
+                }
+            });
+        const petNamesSecond = secondResponse.body?.data?.user?.petHistory?.edges?.map(
+            ({ node }: PetNode) => node.pet.nickname
+        );
+
+        const petNames = [...petNamesFirst, ...petNamesSecond].sort();
+
+        expect(petNames).toHaveLength(3);
+        expect(petNames).toEqual(['foo', 'bar', 'baz'].sort());
     });
 });
