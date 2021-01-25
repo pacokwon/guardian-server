@@ -5,22 +5,23 @@ import {
     PetCreationFields,
     PetModifiableFields,
     PetFindAllOptions,
-    PetFindOneOptions
+    PetFindOneOptions,
+    PetFindAllResult
 } from '../repository/PetRepository';
 import {
     UserPetHistoryRepository,
-    FindHistoryOptions
+    FindHistoryOptions,
+    FindUserHistoryResult
 } from '../repository/UserPetHistoryRepository';
-import {
-    NestedUserHistoryOfPet,
-    UserHistoryOfPet
-} from '../model/UserHistoryOfPet';
+import { NestedUserHistoryOfPet } from '../model/UserHistoryOfPet';
 import { ApiError, Summary } from '../common/error';
 
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
+const findAll = async (
+    options: PetFindAllOptions
+): Promise<PetFindAllResult> => {
     return await petRepository.findAll(options);
 };
 
@@ -35,10 +36,11 @@ const findOne = async (
 
 const findGuardian = async (petID: number): Promise<User | null> => {
     // fetch user history of pet. it should contain one user if user exists currently
-    const userHistory = await userPetHistoryRepository.findUserHistoryFromPetID(
-        petID,
-        { where: { released: 0 } }
-    );
+    const {
+        userHistory
+    } = await userPetHistoryRepository.findUserHistoryFromPetID(petID, {
+        where: { released: 0 }
+    });
 
     // currently, pet does not have user
     if (userHistory.length === 0) return null;
@@ -96,7 +98,7 @@ const removeOne = async (id: number): Promise<void> => {
 const findUserHistory = async (
     petID: number,
     options: FindHistoryOptions
-): Promise<UserHistoryOfPet[]> => {
+): Promise<FindUserHistoryResult> => {
     return await userPetHistoryRepository.findUserHistoryFromPetID(
         petID,
         options

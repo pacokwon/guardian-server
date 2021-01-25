@@ -33,6 +33,16 @@ export interface FindHistoryOptions {
     after?: number;
 }
 
+export interface FindUserHistoryResult {
+    userHistory: UserHistoryOfPet[];
+    totalCount: number;
+}
+
+export interface FindPetHistoryResult {
+    petHistory: PetHistoryOfUser[];
+    totalCount: number;
+}
+
 export class UserPetHistoryRepository {
     pool: Pool;
 
@@ -105,7 +115,7 @@ export class UserPetHistoryRepository {
     async findUserHistoryFromPetID(
         petID: number,
         options: FindHistoryOptions
-    ): Promise<UserHistoryOfPet[]> {
+    ): Promise<FindUserHistoryResult> {
         const { page = 1, pageSize = 10, where = {}, after } = options;
         const limit = Math.min(pageSize, 100);
 
@@ -120,9 +130,11 @@ export class UserPetHistoryRepository {
             // use offset
             const offset = (page - 1) * pageSize;
 
-            const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(
+            const [userHistory] = await this.pool.query<
+                SQLRow<UserHistoryOfPet>[]
+            >(
                 `
-                SELECT User.nickname, History.*
+                SELECT SQL_CALC_FOUND_ROWS User.nickname, History.*
                 FROM UserPetHistory History INNER JOIN User
                 ON History.petID=? AND History.userID=User.id
                 WHERE ${whereQuery} AND User.deleted = 0
@@ -132,10 +144,16 @@ export class UserPetHistoryRepository {
                 [petID, limit, offset]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { userHistory, totalCount };
         } else {
             // use cursor
-            const [rows] = await this.pool.query<SQLRow<UserHistoryOfPet>[]>(
+            const [userHistory] = await this.pool.query<
+                SQLRow<UserHistoryOfPet>[]
+            >(
                 `
                 SELECT User.nickname, History.*
                 FROM UserPetHistory History INNER JOIN User
@@ -147,14 +165,18 @@ export class UserPetHistoryRepository {
                 [petID, after, limit]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { userHistory, totalCount };
         }
     }
 
     async findPetHistoryFromUserID(
         userID: number,
         options: FindHistoryOptions
-    ): Promise<PetHistoryOfUser[]> {
+    ): Promise<FindPetHistoryResult> {
         const { page = 1, pageSize = 10, where = {}, after } = options;
         const limit = Math.min(pageSize, 100);
 
@@ -169,9 +191,11 @@ export class UserPetHistoryRepository {
             // use offset
             const offset = (page - 1) * pageSize;
 
-            const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(
+            const [petHistory] = await this.pool.query<
+                SQLRow<PetHistoryOfUser>[]
+            >(
                 `
-                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                SELECT SQL_CALC_FOUND_ROWS Pet.nickname, Pet.species, Pet.imageUrl, History.*
                 FROM UserPetHistory History INNER JOIN Pet
                 ON History.userID=? AND History.petID=Pet.id
                 WHERE ${whereQuery} AND Pet.deleted = 0
@@ -181,12 +205,18 @@ export class UserPetHistoryRepository {
                 [userID, limit, offset]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { petHistory, totalCount };
         } else {
             // use cursor
-            const [rows] = await this.pool.query<SQLRow<PetHistoryOfUser>[]>(
+            const [petHistory] = await this.pool.query<
+                SQLRow<PetHistoryOfUser>[]
+            >(
                 `
-                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                SELECT SQL_CALC_FOUND_ROWS Pet.nickname, Pet.species, Pet.imageUrl, History.*
                 FROM UserPetHistory History INNER JOIN Pet
                 ON History.userID=? AND History.petID=Pet.id
                 WHERE ${whereQuery} AND Pet.deleted = 0 AND History.id > ?
@@ -196,7 +226,11 @@ export class UserPetHistoryRepository {
                 [userID, after, limit]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { petHistory, totalCount };
         }
     }
 

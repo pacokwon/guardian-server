@@ -109,7 +109,7 @@ export class PetController extends Controller {
         if (!validatePetFields(field))
             throw new ValidateError({}, 'Invalid field for Pet!');
 
-        const pets = await PetService.findAll({ page, pageSize, field });
+        const { pets } = await PetService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return pets;
     }
@@ -276,7 +276,7 @@ export class PetController extends Controller {
         @Query() page?: number,
         @Query() pageSize?: number
     ): Promise<UserHistoryOfPet[]> {
-        const userHistory = PetService.findUserHistory(petID, {
+        const { userHistory } = await PetService.findUserHistory(petID, {
             page,
             pageSize
         });

@@ -17,6 +17,11 @@ export interface UserFindOneOptions {
     field?: string[];
 }
 
+export interface UserFindAllResult {
+    users: User[];
+    totalCount: number;
+}
+
 export class UserRepository {
     pool: Pool;
 
@@ -24,7 +29,7 @@ export class UserRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: UserFindAllOptions): Promise<User[]> {
+    async findAll(options: UserFindAllOptions): Promise<UserFindAllResult> {
         const {
             field = ['id', 'nickname'],
             page = 1,
@@ -35,9 +40,9 @@ export class UserRepository {
 
         if (after === undefined) {
             const offset = (page - 1) * pageSize;
-            const [rows] = await this.pool.query<SQLRow<User>[]>(
+            const [users] = await this.pool.query<SQLRow<User>[]>(
                 `
-                SELECT ?? FROM User
+                SELECT SQL_CALC_FOUND_ROWS ?? FROM User
                 WHERE deleted=0
                 LIMIT ?
                 OFFSET ?
@@ -45,12 +50,16 @@ export class UserRepository {
                 [field, limit, offset]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { users, totalCount };
         } else {
             // use cursor
-            const [rows] = await this.pool.query<SQLRow<User>[]>(
+            const [users] = await this.pool.query<SQLRow<User>[]>(
                 `
-                SELECT ?? FROM User
+                SELECT SQL_CALC_FOUND_ROWS ?? FROM User
                 WHERE deleted=0 AND id > ?
                 ORDER BY id
                 LIMIT ?
@@ -58,7 +67,11 @@ export class UserRepository {
                 [field, after, limit]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { users, totalCount };
         }
     }
 

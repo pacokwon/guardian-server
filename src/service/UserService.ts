@@ -2,22 +2,23 @@ import { User } from '../model/User';
 import {
     UserRepository,
     UserFindAllOptions,
-    UserFindOneOptions
+    UserFindOneOptions,
+    UserFindAllResult
 } from '../repository/UserRepository';
 import {
     UserPetHistoryRepository,
-    FindHistoryOptions
+    FindHistoryOptions,
+    FindPetHistoryResult
 } from '../repository/UserPetHistoryRepository';
-import {
-    NestedPetHistoryOfUser,
-    PetHistoryOfUser
-} from '../model/PetHistoryOfUser';
+import { NestedPetHistoryOfUser } from '../model/PetHistoryOfUser';
 import { ApiError, Summary } from '../common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options: UserFindAllOptions): Promise<User[]> => {
+const findAll = async (
+    options: UserFindAllOptions
+): Promise<UserFindAllResult> => {
     return await userRepository.findAll(options);
 };
 
@@ -33,7 +34,7 @@ const findOne = async (
 const findPetHistory = async (
     userID: number,
     options: FindHistoryOptions & { all?: boolean }
-): Promise<PetHistoryOfUser[]> => {
+): Promise<FindPetHistoryResult> => {
     const { all = false, ...restOptions } = options;
 
     // query unreleased pets if `all` is false. an empty object queries everything

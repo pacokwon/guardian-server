@@ -23,6 +23,11 @@ export interface PetFindOneOptions {
     field?: string[];
 }
 
+export interface PetFindAllResult {
+    pets: Pet[];
+    totalCount: number;
+}
+
 export class PetRepository {
     pool: Pool;
 
@@ -30,7 +35,7 @@ export class PetRepository {
         this.pool = getPool();
     }
 
-    async findAll(options: PetFindAllOptions): Promise<Pet[]> {
+    async findAll(options: PetFindAllOptions): Promise<PetFindAllResult> {
         const { field = ['id', 'nickname', 'species', 'imageUrl'] } = options;
 
         const { page = 1, pageSize = 10, after } = options;
@@ -38,9 +43,9 @@ export class PetRepository {
 
         if (after === undefined) {
             const offset = (page - 1) * pageSize;
-            const [rows] = await this.pool.query<SQLRow<Pet>[]>(
+            const [pets] = await this.pool.query<SQLRow<Pet>[]>(
                 `
-                SELECT ?? FROM Pet
+                SELECT SQL_CALC_FOUND_ROWS ?? FROM Pet
                 WHERE deleted=0
                 LIMIT ?
                 OFFSET ?
@@ -48,12 +53,16 @@ export class PetRepository {
                 [field, limit, offset]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { pets, totalCount };
         } else {
             // use cursor
-            const [rows] = await this.pool.query<SQLRow<Pet>[]>(
+            const [pets] = await this.pool.query<SQLRow<Pet>[]>(
                 `
-                SELECT ?? FROM Pet
+                SELECT SQL_CALC_FOUND_ROWS ?? FROM Pet
                 WHERE deleted=0 AND id > ?
                 ORDER BY id
                 LIMIT ?
@@ -61,7 +70,11 @@ export class PetRepository {
                 [field, after, limit]
             );
 
-            return rows;
+            const [[{ totalCount }]] = await this.pool.query<
+                SQLRow<{ totalCount: number }>[]
+            >(`SELECT FOUND_ROWS() as totalCount`);
+
+            return { pets, totalCount };
         }
     }
 

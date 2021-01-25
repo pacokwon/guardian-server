@@ -98,7 +98,7 @@ export class UserController extends Controller {
         if (!validateUserFields(field))
             throw new ValidateError({}, 'Invalid field for User!');
 
-        const users = await UserService.findAll({ page, pageSize, field });
+        const { users } = await UserService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return users;
     }
@@ -245,7 +245,7 @@ export class UserController extends Controller {
         @Query() pageSize?: number,
         @Query() all?: boolean
     ): Promise<PetHistoryOfUser[]> {
-        const petHistory = UserService.findPetHistory(userID, {
+        const { petHistory } = await UserService.findPetHistory(userID, {
             page,
             pageSize,
             all
