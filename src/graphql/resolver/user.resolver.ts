@@ -43,7 +43,7 @@ export const userResolver: IResolvers = {
         },
         user: async (_: unknown, args: GetUserArgs): Promise<User> => {
             const user = await UserService.findOne(Number(args.id), {});
-            return user || null;
+            return user;
         }
     },
     Mutation: {

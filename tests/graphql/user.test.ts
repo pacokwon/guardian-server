@@ -27,6 +27,14 @@ describe('/graphql', () => {
         expect(edges).toHaveLength(0);
     });
 
+    it('should respond with an error for a query on a non existent user', async () => {
+        const response = await request(app).post('/graphql').send({
+            query: 'query { user(id: "1") { id } }'
+        });
+
+        expect(response.body?.errors).not.toBeUndefined();
+    });
+
     it('should successfully create multiple new users', async () => {
         const createFooResponse = await request(app).post('/graphql').send({
             query: `

@@ -296,9 +296,9 @@ describe('/graphql', () => {
                 }
             `
         });
+        expect(guardiansListOfBaz.body?.errors).toBeUndefined();
 
         type UserNode = { node: { user: { nickname: string } } };
-
         const users: string[] = (
             guardiansListOfBaz.body?.data?.pet?.userHistory?.edges || []
         ).map(({ node }: UserNode) => node.user.nickname);
@@ -320,6 +320,7 @@ describe('/graphql', () => {
                 }
             `
         });
+        expect(firstGuardianResponse.body?.errors).toBeUndefined();
 
         const firstGuardian =
             firstGuardianResponse.body?.data?.pet?.userHistory?.edges[0]?.node
@@ -345,6 +346,7 @@ describe('/graphql', () => {
                     cursor: endCursor
                 }
             });
+        expect(secondGuardianResponse.body?.errors).toBeUndefined();
 
         const secondGuardian =
             secondGuardianResponse.body?.data?.pet?.userHistory?.edges[0]?.node
@@ -363,6 +365,7 @@ describe('/graphql', () => {
                 }
             `
         });
+        expect(response.body?.errors).toBeUndefined();
 
         type Pet = { pet: { nickname: string } };
         const petNames = response.body?.data?.user?.pets
@@ -383,6 +386,7 @@ describe('/graphql', () => {
                 }
             `
         });
+        expect(response.body?.errors).toBeUndefined();
 
         type PetNode = { node: { pet: { nickname: string } } };
         const petNames = response.body?.data?.user?.petHistory?.edges
@@ -408,6 +412,8 @@ describe('/graphql', () => {
                 }
             `
         });
+        expect(firstResponse.body?.errors).toBeUndefined();
+
         const petNamesFirst = firstResponse.body?.data?.user?.petHistory?.edges?.map(
             ({ node }: PetNode) => node.pet.nickname
         );
@@ -433,6 +439,8 @@ describe('/graphql', () => {
                     cursor: endCursor
                 }
             });
+        expect(secondResponse.body?.errors).toBeUndefined();
+
         const petNamesSecond = secondResponse.body?.data?.user?.petHistory?.edges?.map(
             ({ node }: PetNode) => node.pet.nickname
         );
