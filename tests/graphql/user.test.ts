@@ -160,7 +160,7 @@ describe('/graphql', () => {
 
         expect(secondResponse.body?.errors).toBeUndefined();
         expect(secondResponse.body?.data?.users?.pageInfo?.hasNextPage).toBe(
-            true
+            false
         );
         expect(secondResponse.body?.data?.users?.edges).toHaveLength(2);
     });

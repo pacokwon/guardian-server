@@ -33,13 +33,17 @@ export const userResolver: IResolvers = {
             const after = convertToID(afterCursor);
 
             // graphql specific pagination operations are done here
-            const users = await UserService.findAll({
+            const { users, totalCount } = await UserService.findAll({
                 after,
                 pageSize: first
             });
 
             // Connection object using the limit count and schema name
-            return listToConnection(users, first, USER_SCHEMA_NAME);
+            return listToConnection({
+                list: users,
+                type: USER_SCHEMA_NAME,
+                totalCount
+            });
         },
         user: async (_: unknown, args: GetUserArgs): Promise<User> => {
             const user = await UserService.findOne(Number(args.id), {});
@@ -116,11 +120,14 @@ export const userResolver: IResolvers = {
         ): Promise<PaginationConnection<NestedUserPetHistory>> => {
             const after = convertToID(afterCursor);
 
-            const petHistory = await UserService.findPetHistory(parent.id, {
-                after,
-                pageSize: first,
-                all: true
-            });
+            const { petHistory, totalCount } = await UserService.findPetHistory(
+                parent.id,
+                {
+                    after,
+                    pageSize: first,
+                    all: true
+                }
+            );
 
             const nestedPetHistory = petHistory.map(
                 ({ petID, species, nickname, imageUrl, ...history }) => ({
@@ -131,11 +138,11 @@ export const userResolver: IResolvers = {
             );
 
             // Connection object using the limit count and schema name
-            return listToConnection(
-                nestedPetHistory,
-                first,
-                HISTORY_SCHEMA_NAME
-            );
+            return listToConnection({
+                list: nestedPetHistory,
+                type: HISTORY_SCHEMA_NAME,
+                totalCount
+            });
         }
     }
 };

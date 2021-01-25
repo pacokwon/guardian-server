@@ -24,17 +24,18 @@ const mapToEdges = <T extends Identifiable>(
         node
     }));
 
-export const listToConnection = <T extends Identifiable>(
-    list: T[],
-    first: number,
-    type: string
-): PaginationConnection<T> => {
+export const listToConnection = <T extends Identifiable>(params: {
+    list: T[]; // actual list of results
+    totalCount: number; // number of items that would have been returned without pagination constraint
+    type: string; // type of resource e.g. 'User', 'Pet'
+}): PaginationConnection<T> => {
+    const { list, totalCount, type } = params;
     const edges = mapToEdges(list, type);
     const pageInfo =
         edges.length === 0
             ? { hasNextPage: false, endCursor: '' }
             : {
-                  hasNextPage: edges.length === first,
+                  hasNextPage: list.length < totalCount, // if there are more to come
                   endCursor: edges[edges.length - 1].cursor
               };
 

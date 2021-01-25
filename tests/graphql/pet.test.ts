@@ -197,7 +197,7 @@ describe('/api/pets endpoint test', () => {
 
         expect(secondResponse.body?.errors).toBeUndefined();
         expect(secondResponse.body?.data?.pets?.pageInfo?.hasNextPage).toBe(
-            true
+            false
         );
         expect(secondResponse.body?.data?.pets?.edges).toHaveLength(2);
     });

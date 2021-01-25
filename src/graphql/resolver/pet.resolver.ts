@@ -31,13 +31,17 @@ export const petResolver: IResolvers = {
         ): Promise<PaginationConnection<Pet>> => {
             const after = convertToID(afterCursor);
 
-            const pets = await PetService.findAll({
+            const { pets, totalCount } = await PetService.findAll({
                 after,
                 pageSize: first
             });
 
             // Connection object using the limit count and schema name
-            return listToConnection(pets, first, PET_SCHEMA_NAME);
+            return listToConnection({
+                list: pets,
+                type: PET_SCHEMA_NAME,
+                totalCount
+            });
         },
         pet: async (_: unknown, args: GetPetArgs): Promise<Pet> => {
             const pet = await PetService.findOne(Number(args.id), {});
@@ -94,7 +98,10 @@ export const petResolver: IResolvers = {
         ): Promise<PaginationConnection<NestedUserPetHistory>> => {
             const after = convertToID(afterCursor);
 
-            const userHistory = await PetService.findUserHistory(parent.id, {
+            const {
+                userHistory,
+                totalCount
+            } = await PetService.findUserHistory(parent.id, {
                 after,
                 pageSize: first
             });
@@ -107,11 +114,11 @@ export const petResolver: IResolvers = {
                 })
             );
 
-            return listToConnection(
-                nestedUserHistory,
-                first,
-                HISTORY_SCHEMA_NAME
-            );
+            return listToConnection({
+                list: nestedUserHistory,
+                type: HISTORY_SCHEMA_NAME,
+                totalCount
+            });
         }
     }
 };
