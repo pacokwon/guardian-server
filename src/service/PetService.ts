@@ -5,40 +5,64 @@ import {
     PetCreationFields,
     PetModifiableFields,
     PetFindAllOptions,
-    PetFindOneOptions
+    PetFindOneOptions,
+    PetFindAllResult
 } from '../repository/PetRepository';
 import {
     UserPetHistoryRepository,
-    FindHistoryOptions
+    FindHistoryOptions,
+    FindUserHistoryResult
 } from '../repository/UserPetHistoryRepository';
-import { UserHistoryOfPet } from '../model/UserHistoryOfPet';
+import { NestedUserHistoryOfPet } from '../model/UserHistoryOfPet';
 import { ApiError, Summary } from '../common/error';
 
 const petRepository = new PetRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options: PetFindAllOptions): Promise<Pet[]> => {
+const findAll = async (
+    options: PetFindAllOptions
+): Promise<PetFindAllResult> => {
     return await petRepository.findAll(options);
 };
 
 const findOne = async (
     id: number,
     options: PetFindOneOptions
-): Promise<Pet & { user: User | null }> => {
+): Promise<Pet> => {
     const pet = await petRepository.findOne(id, options);
     if (!pet) throw new ApiError(Summary.NotFound, 'Pet not found');
+    return pet;
+};
 
+const findGuardian = async (petID: number): Promise<User | null> => {
     // fetch user history of pet. it should contain one user if user exists currently
-    const userHistory = await userPetHistoryRepository.findUserHistoryFromPetID(
-        id,
-        { where: { released: 0 } }
-    );
+    const {
+        userHistory
+    } = await userPetHistoryRepository.findUserHistoryFromPetID(petID, {
+        where: { released: 0 }
+    });
 
     // currently, pet does not have user
-    if (userHistory.length === 0) return { ...pet, user: null };
+    if (userHistory.length === 0) return null;
 
     const { nickname, userID } = userHistory[0];
-    return { ...pet, user: { nickname, id: userID } };
+    return { nickname, id: userID };
+};
+
+const findGuardiansByPetIDs = async (
+    petIDs: readonly number[]
+): Promise<(User | null)[]> => {
+    return userPetHistoryRepository.findGuardiansByPetIDs(petIDs);
+};
+
+const findOneWithGuardian = async (
+    id: number,
+    options: PetFindOneOptions
+): Promise<Pet & { guardian: User | null }> => {
+    const pet = await findOne(id, options);
+    const guardian = await findGuardian(id);
+
+    return { guardian, ...pet };
 };
 
 const createOne = async (fields: PetCreationFields): Promise<number> => {
@@ -60,13 +84,7 @@ const updateOne = async (
     const petExists = (await petRepository.findOne(id, {})) !== undefined;
     if (!petExists) throw new ApiError(Summary.NotFound, 'Pet not found');
 
-    const changedRows = await petRepository.updateOne(id, fields);
-    if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been updated'
-        );
-
+    await petRepository.updateOne(id, fields);
     return { id, ...fields };
 };
 
@@ -74,24 +92,34 @@ const removeOne = async (id: number): Promise<void> => {
     const petExists = (await petRepository.findOne(id, {})) !== undefined;
     if (!petExists) throw new ApiError(Summary.NotFound, 'Pet not found');
 
-    const deletedRowsCount = await petRepository.removeOne(id);
-    if (deletedRowsCount === 0)
-        throw new ApiError(Summary.NotFound, 'Pet not found');
-    else if (deletedRowsCount > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been deleted'
-        );
+    await petRepository.removeOne(id);
 };
 
 const findUserHistory = async (
     petID: number,
     options: FindHistoryOptions
-): Promise<UserHistoryOfPet[]> => {
+): Promise<FindUserHistoryResult> => {
     return await userPetHistoryRepository.findUserHistoryFromPetID(
         petID,
         options
     );
 };
 
-export { findAll, findOne, findUserHistory, createOne, updateOne, removeOne };
+const findUsersByPetIDs = async (
+    userIDs: readonly number[]
+): Promise<NestedUserHistoryOfPet[][]> => {
+    return userPetHistoryRepository.findUsersByPetIDs(userIDs);
+};
+
+export {
+    findAll,
+    findOne,
+    findOneWithGuardian,
+    findGuardian,
+    findGuardiansByPetIDs,
+    findUserHistory,
+    findUsersByPetIDs,
+    createOne,
+    updateOne,
+    removeOne
+};

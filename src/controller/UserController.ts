@@ -98,7 +98,7 @@ export class UserController extends Controller {
         if (!validateUserFields(field))
             throw new ValidateError({}, 'Invalid field for User!');
 
-        const users = await UserService.findAll({ page, pageSize, field });
+        const { users } = await UserService.findAll({ page, pageSize, field });
         this.setStatus(200);
         return users;
     }
@@ -218,19 +218,23 @@ export class UserController extends Controller {
             id: 3,
             userID: 1,
             petID: 7,
-            registeredAt: '2021-01-04T21:45:30.000Z',
-            releasedAt: '2021-01-05T21:45:30.000Z',
+            registeredAt: new Date('2021-01-04T21:45:30.000Z'),
+            releasedAt: new Date('2021-01-05T21:45:30.000Z'),
             released: 1,
-            nickname: 'sutton'
+            nickname: 'sutton',
+            species: 'cat',
+            imageUrl: 'https://placekitten.com/300/300'
         },
         {
             id: 12,
             userID: 1,
             petID: 16,
-            registeredAt: '2021-01-05T21:45:30.000Z',
-            releasedAt: '2021-01-06T21:45:30.000Z',
+            registeredAt: new Date('2021-01-05T21:45:30.000Z'),
+            releasedAt: new Date('2021-01-06T21:45:30.000Z'),
             released: 1,
-            nickname: 'loran'
+            nickname: 'loran',
+            species: 'dog',
+            imageUrl: 'https://placedog.net/300/300'
         }
     ])
     @Example<PetHistoryOfUser[]>([])
@@ -241,7 +245,7 @@ export class UserController extends Controller {
         @Query() pageSize?: number,
         @Query() all?: boolean
     ): Promise<PetHistoryOfUser[]> {
-        const petHistory = UserService.findPetHistory(userID, {
+        const { petHistory } = await UserService.findPetHistory(userID, {
             page,
             pageSize,
             all

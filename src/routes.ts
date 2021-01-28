@@ -31,9 +31,9 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PetWithUserInformation": {
+    "PetWithGuardianInformation": {
         "dataType": "refAlias",
-        "type": {"dataType":"intersection","subSchemas":[{"ref":"Pet"},{"dataType":"nestedObjectLiteral","nestedProperties":{"user":{"dataType":"union","subSchemas":[{"ref":"User"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"Pet"},{"dataType":"nestedObjectLiteral","nestedProperties":{"guardian":{"dataType":"union","subSchemas":[{"ref":"User"},{"dataType":"enum","enums":[null]}],"required":true}}}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "ErrorResponse": {
@@ -73,8 +73,8 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
-            "registeredAt": {"dataType":"string","required":true},
-            "releasedAt": {"dataType":"string","required":true},
+            "registeredAt": {"dataType":"datetime","required":true},
+            "releasedAt": {"dataType":"datetime","required":true},
             "released": {"dataType":"integer","required":true},
             "nickname": {"dataType":"string","required":true},
         },
@@ -108,12 +108,12 @@ const models: TsoaRoute.Models = {
             "id": {"dataType":"integer","required":true},
             "userID": {"dataType":"integer","required":true},
             "petID": {"dataType":"integer","required":true},
-            "registeredAt": {"dataType":"string","required":true},
-            "releasedAt": {"dataType":"string","required":true},
+            "registeredAt": {"dataType":"datetime","required":true},
+            "releasedAt": {"dataType":"datetime","required":true},
             "released": {"dataType":"integer","required":true},
-            "species": {"dataType":"string"},
-            "nickname": {"dataType":"string"},
-            "imageUrl": {"dataType":"string"},
+            "species": {"dataType":"string","required":true},
+            "nickname": {"dataType":"string","required":true},
+            "imageUrl": {"dataType":"string","required":true},
         },
         "additionalProperties": false,
     },

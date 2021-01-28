@@ -4,7 +4,7 @@ export enum Summary {
     InternalServerError = 'Internal Server Error'
 }
 
-const summaryStatuscodeMap: Record<Summary, number> = {
+export const summaryStatuscodeMap: Record<Summary, number> = {
     [Summary.BadRequest]: 400,
     [Summary.NotFound]: 404,
     [Summary.InternalServerError]: 500
@@ -22,10 +22,10 @@ export interface ErrorResponse {
 }
 
 export class ApiError extends Error {
-    public status: number;
+    public summary: Summary;
 
     constructor(summary: Summary, message?: string) {
         super(message);
-        this.status = summaryStatuscodeMap[summary] || 500;
+        this.summary = summary;
     }
 }

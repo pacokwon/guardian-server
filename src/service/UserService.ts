@@ -1,24 +1,31 @@
 import { User } from '../model/User';
 import {
     UserRepository,
-    FindAllOptions,
-    FindOneOptions
+    UserFindAllOptions,
+    UserFindOneOptions,
+    UserFindAllResult
 } from '../repository/UserRepository';
 import {
     UserPetHistoryRepository,
-    FindHistoryOptions
+    FindHistoryOptions,
+    FindPetHistoryResult
 } from '../repository/UserPetHistoryRepository';
-import { PetHistoryOfUser } from '../model/PetHistoryOfUser';
+import { NestedPetHistoryOfUser } from '../model/PetHistoryOfUser';
 import { ApiError, Summary } from '../common/error';
 
 const userRepository = new UserRepository();
 const userPetHistoryRepository = new UserPetHistoryRepository();
 
-const findAll = async (options: FindAllOptions): Promise<User[]> => {
+const findAll = async (
+    options: UserFindAllOptions
+): Promise<UserFindAllResult> => {
     return await userRepository.findAll(options);
 };
 
-const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
+const findOne = async (
+    id: number,
+    options: UserFindOneOptions
+): Promise<User> => {
     const user = await userRepository.findOne(id, options);
     if (!user) throw new ApiError(Summary.NotFound, 'User not found');
     return user;
@@ -27,15 +34,27 @@ const findOne = async (id: number, options: FindOneOptions): Promise<User> => {
 const findPetHistory = async (
     userID: number,
     options: FindHistoryOptions & { all?: boolean }
-): Promise<PetHistoryOfUser[]> => {
-    const { all = false, page, pageSize } = options;
+): Promise<FindPetHistoryResult> => {
+    const { all = false, ...restOptions } = options;
 
     // query unreleased pets if `all` is false. an empty object queries everything
     const where = all ? {} : { released: 0 };
     return await userPetHistoryRepository.findPetHistoryFromUserID(userID, {
-        page,
-        pageSize,
-        where
+        where,
+        ...restOptions
+    });
+};
+
+const findPetsByUserIDs = async (
+    userIDs: readonly number[],
+    options?: { currentOnly: boolean }
+): Promise<NestedPetHistoryOfUser[][]> => {
+    // find *current pets* by default
+    const currentOnly = options?.currentOnly ?? true;
+
+    // apply filter if `currentOnly` == true. otherwise, do not use filter
+    return userPetHistoryRepository.findPetsByUserIDs(userIDs, {
+        where: currentOnly ? { released: 0 } : undefined
     });
 };
 
@@ -55,15 +74,9 @@ const updateOne = async (id: number, newNickname: string): Promise<User> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
     if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
-    const changedRows = await userRepository.updateOne(id, {
+    await userRepository.updateOne(id, {
         nickname: newNickname
     });
-    if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have been updated'
-        );
-
     // return modified entry
     return { id, nickname: newNickname };
 };
@@ -72,25 +85,17 @@ const removeOne = async (id: number): Promise<void> => {
     const userExists = (await userRepository.findOne(id, {})) !== undefined;
     if (!userExists) throw new ApiError(Summary.NotFound, 'User not found');
 
-    const deletedRowsCount = await userRepository.removeOne(id);
-
-    if (deletedRowsCount === 0)
-        throw new ApiError(Summary.NotFound, 'User not found');
-    else if (deletedRowsCount > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows deleted'
-        );
+    await userRepository.removeOne(id);
 };
 
 // check for already existing reservation
 const registerPet = async (petID: number, userID: number): Promise<void> => {
-    const unreleasedPetRows = await userPetHistoryRepository.find({
+    const unreleasedPets = await userPetHistoryRepository.find({
         field: ['id'],
         where: { petID, released: 0 }
     });
 
-    const isPetRegistered = unreleasedPetRows.length !== 0;
+    const isPetRegistered = unreleasedPets.length !== 0;
 
     // pet is already taken
     if (isPetRegistered)
@@ -107,28 +112,17 @@ const registerPet = async (petID: number, userID: number): Promise<void> => {
 
 const unregisterPet = async (petID: number, userID: number): Promise<void> => {
     // the database takes care of foreign key constraints
-    const changedRows = await userPetHistoryRepository
-        .update({ set: { released: 1 }, where: { petID, userID, released: 0 } })
-        .catch(error => {
-            throw new ApiError(
-                Summary.InternalServerError,
-                'Internal Server Error: ' + error?.message
-            );
-        });
-
-    if (changedRows === 0)
-        throw new ApiError(Summary.NotFound, 'User not found');
-    else if (changedRows > 1)
-        throw new ApiError(
-            Summary.InternalServerError,
-            'Multiple rows have changed'
-        );
+    await userPetHistoryRepository.update({
+        set: { released: 1 },
+        where: { petID, userID, released: 0 }
+    });
 };
 
 export {
     findAll,
     findOne,
     findPetHistory,
+    findPetsByUserIDs,
     createOne,
     updateOne,
     removeOne,

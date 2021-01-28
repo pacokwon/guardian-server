@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../src/app';
-import { getPool } from '../src/common/db';
+import app from '../../src/app';
+import { getPool } from '../../src/common/db';
 
 describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     beforeAll(async () => {
@@ -122,7 +122,7 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     it('should have owner information when retrieving pet', async () => {
         const bazResponse = await request(app).get('/api/pets/3');
         expect(bazResponse?.body?.nickname).toBe('baz');
-        expect(bazResponse?.body?.user).toBeNull();
+        expect(bazResponse?.body?.guardian).toBeNull();
     });
 
     it('should not proceed unregistration for invalid registration', async () => {
@@ -166,8 +166,8 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
     it("should correctly retrieve the pet information along with its user's information", async () => {
         const bazResponse = await request(app).get('/api/pets/3');
         expect(bazResponse?.body?.nickname).toBe('baz');
-        expect(bazResponse?.body?.user?.id).toBe(4);
-        expect(bazResponse?.body?.user?.nickname).toBe('jay');
+        expect(bazResponse?.body?.guardian?.id).toBe(4);
+        expect(bazResponse?.body?.guardian?.nickname).toBe('jay');
     });
 
     it('should correctly retrieve the list of guardians that pet "baz" has been registered to', async () => {

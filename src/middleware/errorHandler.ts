@@ -1,6 +1,6 @@
 import { ErrorRequestHandler, Request, Response, NextFunction } from 'express';
 import { ValidateError } from 'tsoa';
-import { ApiError } from '../common/error';
+import { ApiError, summaryStatuscodeMap, Summary } from '../common/error';
 
 // reference: handling errors in express
 // https://expressjs.com/en/guide/error-handling.html
@@ -27,7 +27,8 @@ export const errorHandler: ErrorRequestHandler = (
     }
 
     if (error instanceof ApiError) {
-        const status = error?.status || 500;
+        const status =
+            summaryStatuscodeMap[error?.summary || Summary.InternalServerError];
         const message = error?.message || 'Internal Server Error';
         return res.status(status).json({ message });
     }

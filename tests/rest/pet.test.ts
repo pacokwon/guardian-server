@@ -1,6 +1,6 @@
 import request from 'supertest';
-import app from '../src/app';
-import { getPool } from '../src/common/db';
+import app from '../../src/app';
+import { getPool } from '../../src/common/db';
 
 describe('/api/pets endpoint test', () => {
     afterAll(async () => {
