@@ -3,6 +3,7 @@ import { SQLRow } from '../src/common/type';
 import { User } from '../src/model/User';
 import { Pet } from '../src/model/Pet';
 import { UserPetHistory as _UserPetHistory } from '../src/model/UserPetHistory';
+import { shuffled } from './shuffled';
 
 // UserPetHistory without id field
 type UserPetHistory = Omit<_UserPetHistory, 'id'>;
@@ -15,17 +16,6 @@ interface PetRegistration {
 interface PopulateHistoriesOptions {
     petCountLimit: number;
     unregisterProbability: number;
-}
-
-function shuffled<T>(array: T[]) {
-    const clonedArray = [...array];
-
-    for (let i = clonedArray.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [clonedArray[i], clonedArray[j]] = [clonedArray[j], clonedArray[i]];
-    }
-
-    return clonedArray;
 }
 
 function getDateStringFromTimestamp(timestamp: number) {
