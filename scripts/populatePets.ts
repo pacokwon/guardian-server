@@ -1,34 +1,28 @@
 import axios from 'axios';
 import { getPool } from '../src/common/db';
+import { Pet } from '../src/model/Pet';
+import { shuffled } from './shuffled';
+
+type PetInfo = Omit<Pet, 'id'>;
 
 type DogAPIResponse = {
     status: boolean;
     message: string[];
 };
 
-const populateDogs = async (
+const fetchDogs = async (
     numberOfDogs: number,
     nicknames: string[]
-): Promise<void> => {
-    const pool = getPool();
-
+): Promise<PetInfo[]> => {
     const { data: dogResponse }: { data: DogAPIResponse } = await axios.get(
         `https://dog.ceo/api/breeds/image/random/${numberOfDogs}`
     );
     const { message: dogImageUrls } = dogResponse;
-
-    await Promise.all(
-        nicknames.map(async (nickname, index) => {
-            const species = 'dog';
-            const imageUrl = dogImageUrls[index];
-
-            await pool
-                .query(
-                    `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
-                )
-                .catch(console.error);
-        })
-    );
+    return nicknames.map((nickname, index) => ({
+        nickname,
+        species: 'dog',
+        imageUrl: dogImageUrls[index]
+    }));
 };
 
 type CatAPIResponse = {
@@ -37,12 +31,10 @@ type CatAPIResponse = {
     height: number;
 }[];
 
-const populateCats = async (
+const fetchCats = async (
     numberOfCats: number,
     nicknames: string[]
-): Promise<void> => {
-    const pool = getPool();
-
+): Promise<PetInfo[]> => {
     const { data: catResponse }: { data: CatAPIResponse } = await axios.get(
         `https://api.thecatapi.com/v1/images/search?limit=${numberOfCats}`,
         {
@@ -53,18 +45,11 @@ const populateCats = async (
     );
     const catImageUrls = catResponse.map(res => res.url);
 
-    await Promise.all(
-        nicknames.map(async (nickname, index) => {
-            const species = 'cat';
-            const imageUrl = catImageUrls[index];
-
-            await pool
-                .query(
-                    `INSERT INTO Pet (species, nickname, imageUrl) VALUES ('${species}', '${nickname}', '${imageUrl}')`
-                )
-                .catch(console.error);
-        })
-    );
+    return nicknames.map((nickname, index) => ({
+        nickname,
+        species: 'cat',
+        imageUrl: catImageUrls[index]
+    }));
 };
 
 export const populatePets = async (
@@ -86,11 +71,22 @@ export const populatePets = async (
     const { data: nicknames } = result;
 
     const dogNicknames = nicknames.splice(0, numberOfDogs);
-    await populateDogs(numberOfDogs, dogNicknames);
+    const dogs = await fetchDogs(numberOfDogs, dogNicknames);
 
-    const catNicknames = nicknames.splice(
-        numberOfDogs,
-        numberOfDogs + numberOfCats
+    const catNicknames = nicknames.splice(0, numberOfCats);
+    const cats = await fetchCats(numberOfCats, catNicknames);
+
+    const pool = getPool();
+    await Promise.all(
+        shuffled([...dogs, ...cats]).map(
+            async ({ nickname, species, imageUrl }) => {
+                await pool
+                    .query(
+                        `INSERT INTO Pet (species, nickname, imageUrl) VALUES (?, ?, ?)`,
+                        [species, nickname, imageUrl]
+                    )
+                    .catch(console.error);
+            }
+        )
     );
-    await populateCats(numberOfCats, catNicknames);
 };
