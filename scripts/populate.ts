@@ -4,17 +4,28 @@ import { populateUsers } from './populateUsers';
 import { populatePets } from './populatePets';
 import { populateHistories } from './populateHistories';
 
-(async () => {
-    console.log('👱 Creating Users...');
-    await populateUsers(15);
+async function main() {
+    const args = process.argv.slice(2);
+    if (args.includes('--help')) {
+        console.log('usage:\t<# of users> <# of pets> <# of timestamps>');
+        process.exit(0);
+    }
 
-    console.log('🐶 Creating Pets...');
-    await populatePets(20, 20);
+    const [usersArgs = '40', petsArgs = '40', timestampsArgs = '10'] = args;
+    const petsCountHalf = Math.floor(Number(petsArgs) / 2);
+
+    console.log(`👱 Creating ${usersArgs} Users...`);
+    await populateUsers(Number(usersArgs));
+
+    console.log(`🐶 Creating ${petsArgs} Pets...`);
+    await populatePets(petsCountHalf, Number(petsArgs) - petsCountHalf);
 
     console.log('📖 Creating History...');
-    await populateHistories(10);
+    await populateHistories(Number(timestampsArgs));
 
     console.log('🎉 Done!');
 
     await getPool().end();
-})();
+}
+
+main();
