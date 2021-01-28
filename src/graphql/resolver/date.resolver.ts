@@ -9,13 +9,11 @@ export const dateResolver: IResolvers = {
             return new Date(value);
         },
         serialize(value) {
-            if (typeof value === 'string') return new Date(value).getTime();
-
-            return value.getTime();
+            if (typeof value === 'string') return new Date(value).toISOString();
+            return value.toISOString();
         },
         parseLiteral(ast) {
-            if (ast.kind === Kind.INT) return parseInt(ast.value, 10);
-
+            if (ast.kind === Kind.STRING) return ast.value;
             return null;
         }
     })
