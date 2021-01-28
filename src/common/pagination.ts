@@ -26,16 +26,16 @@ const mapToEdges = <T extends Identifiable>(
 
 export const makeConnection = <T extends Identifiable>(params: {
     list: T[]; // actual list of results
-    totalCount: number; // number of items that would have been returned without pagination constraint
+    hasNext: boolean; // whether there are more results to come after this list
     type: string; // type of resource e.g. 'User', 'Pet'
 }): PaginationConnection<T> => {
-    const { list, totalCount, type } = params;
+    const { list, hasNext, type } = params;
     const edges = mapToEdges(list, type);
     const pageInfo =
         edges.length === 0
             ? { hasNextPage: false, endCursor: '' }
             : {
-                  hasNextPage: list.length < totalCount, // if there are more to come
+                  hasNextPage: hasNext, // if there are more to come
                   endCursor: edges[edges.length - 1].cursor
               };
 

@@ -25,7 +25,7 @@ export interface PetFindOneOptions {
 
 export interface PetFindAllResult {
     pets: Pet[];
-    totalCount: number;
+    hasNext: boolean;
 }
 
 export class PetRepository {
@@ -45,36 +45,30 @@ export class PetRepository {
             const offset = (page - 1) * pageSize;
             const [pets] = await this.pool.query<SQLRow<Pet>[]>(
                 `
-                SELECT SQL_CALC_FOUND_ROWS ?? FROM Pet
+                SELECT ?? FROM Pet
                 WHERE deleted=0
                 LIMIT ?
                 OFFSET ?
             `,
-                [field, limit, offset]
+                [field, limit + 1, offset]
             );
+            const hasNext = pets.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { pets, totalCount };
+            return { pets: pets.slice(0, limit), hasNext };
         } else {
             // use cursor
             const [pets] = await this.pool.query<SQLRow<Pet>[]>(
                 `
-                SELECT SQL_CALC_FOUND_ROWS ?? FROM Pet
+                SELECT ?? FROM Pet
                 WHERE deleted=0 AND id > ?
                 ORDER BY id
                 LIMIT ?
             `,
-                [field, after, limit]
+                [field, after, limit + 1]
             );
+            const hasNext = pets.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { pets, totalCount };
+            return { pets: pets.slice(0, limit), hasNext };
         }
     }
 

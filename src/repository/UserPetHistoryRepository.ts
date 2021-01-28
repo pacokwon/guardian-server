@@ -35,12 +35,12 @@ export interface FindHistoryOptions {
 
 export interface FindUserHistoryResult {
     userHistory: UserHistoryOfPet[];
-    totalCount: number;
+    hasNext: boolean;
 }
 
 export interface FindPetHistoryResult {
     petHistory: PetHistoryOfUser[];
-    totalCount: number;
+    hasNext: boolean;
 }
 
 export class UserPetHistoryRepository {
@@ -134,21 +134,18 @@ export class UserPetHistoryRepository {
                 SQLRow<UserHistoryOfPet>[]
             >(
                 `
-                SELECT SQL_CALC_FOUND_ROWS User.nickname, History.*
+                SELECT User.nickname, History.*
                 FROM UserPetHistory History INNER JOIN User
                 ON History.petID=? AND History.userID=User.id
                 WHERE ${whereQuery} AND User.deleted = 0
                 LIMIT ?
                 OFFSET ?
             `,
-                [petID, limit, offset]
+                [petID, limit + 1, offset]
             );
+            const hasNext = userHistory.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { userHistory, totalCount };
+            return { userHistory: userHistory.slice(0, limit), hasNext };
         } else {
             // use cursor
             const [userHistory] = await this.pool.query<
@@ -162,14 +159,11 @@ export class UserPetHistoryRepository {
                 ORDER BY History.id
                 LIMIT ?
             `,
-                [petID, after, limit]
+                [petID, after, limit + 1]
             );
+            const hasNext = userHistory.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { userHistory, totalCount };
+            return { userHistory: userHistory.slice(0, limit), hasNext };
         }
     }
 
@@ -195,42 +189,36 @@ export class UserPetHistoryRepository {
                 SQLRow<PetHistoryOfUser>[]
             >(
                 `
-                SELECT SQL_CALC_FOUND_ROWS Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
                 FROM UserPetHistory History INNER JOIN Pet
                 ON History.userID=? AND History.petID=Pet.id
                 WHERE ${whereQuery} AND Pet.deleted = 0
                 LIMIT ?
                 OFFSET ?
             `,
-                [userID, limit, offset]
+                [userID, limit + 1, offset]
             );
+            const hasNext = petHistory.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { petHistory, totalCount };
+            return { petHistory: petHistory.slice(0, limit), hasNext };
         } else {
             // use cursor
             const [petHistory] = await this.pool.query<
                 SQLRow<PetHistoryOfUser>[]
             >(
                 `
-                SELECT SQL_CALC_FOUND_ROWS Pet.nickname, Pet.species, Pet.imageUrl, History.*
+                SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
                 FROM UserPetHistory History INNER JOIN Pet
                 ON History.userID=? AND History.petID=Pet.id
                 WHERE ${whereQuery} AND Pet.deleted = 0 AND History.id > ?
                 ORDER BY History.id
                 LIMIT ?
             `,
-                [userID, after, limit]
+                [userID, after, limit + 1]
             );
+            const hasNext = petHistory.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { petHistory, totalCount };
+            return { petHistory: petHistory.slice(0, limit), hasNext };
         }
     }
 

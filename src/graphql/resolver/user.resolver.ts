@@ -33,16 +33,16 @@ export const userResolver: IResolvers = {
             const after = convertToID(afterCursor);
 
             // graphql specific pagination operations are done here
-            const { users, totalCount } = await UserService.findAll({
+            const { users, hasNext } = await UserService.findAll({
                 after,
                 pageSize: first
             });
 
-            // make connection object with result + schema name + total count
+            // make connection object
             return makeConnection({
                 list: users,
                 type: USER_SCHEMA_NAME,
-                totalCount
+                hasNext
             });
         },
         user: async (_: unknown, args: GetUserArgs): Promise<User> => {
@@ -120,7 +120,7 @@ export const userResolver: IResolvers = {
         ): Promise<PaginationConnection<NestedUserPetHistory>> => {
             const after = convertToID(afterCursor);
 
-            const { petHistory, totalCount } = await UserService.findPetHistory(
+            const { petHistory, hasNext } = await UserService.findPetHistory(
                 parent.id,
                 {
                     after,
@@ -137,11 +137,11 @@ export const userResolver: IResolvers = {
                 })
             );
 
-            // make connection object with result + schema name + total count
+            // make connection object
             return makeConnection({
                 list: nestedPetHistory,
                 type: HISTORY_SCHEMA_NAME,
-                totalCount
+                hasNext
             });
         }
     }

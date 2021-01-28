@@ -19,7 +19,7 @@ export interface UserFindOneOptions {
 
 export interface UserFindAllResult {
     users: User[];
-    totalCount: number;
+    hasNext: boolean;
 }
 
 export class UserRepository {
@@ -42,36 +42,30 @@ export class UserRepository {
             const offset = (page - 1) * pageSize;
             const [users] = await this.pool.query<SQLRow<User>[]>(
                 `
-                SELECT SQL_CALC_FOUND_ROWS ?? FROM User
+                SELECT ?? FROM User
                 WHERE deleted=0
                 LIMIT ?
                 OFFSET ?
             `,
-                [field, limit, offset]
+                [field, limit + 1, offset]
             );
+            const hasNext = users.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { users, totalCount };
+            return { users: users.slice(0, limit), hasNext };
         } else {
             // use cursor
             const [users] = await this.pool.query<SQLRow<User>[]>(
                 `
-                SELECT SQL_CALC_FOUND_ROWS ?? FROM User
+                SELECT ?? FROM User
                 WHERE deleted=0 AND id > ?
                 ORDER BY id
                 LIMIT ?
             `,
-                [field, after, limit]
+                [field, after, limit + 1]
             );
+            const hasNext = users.length === limit + 1;
 
-            const [[{ totalCount }]] = await this.pool.query<
-                SQLRow<{ totalCount: number }>[]
-            >(`SELECT FOUND_ROWS() as totalCount`);
-
-            return { users, totalCount };
+            return { users: users.slice(0, limit), hasNext };
         }
     }
 

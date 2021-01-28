@@ -31,16 +31,16 @@ export const petResolver: IResolvers = {
         ): Promise<PaginationConnection<Pet>> => {
             const after = convertToID(afterCursor);
 
-            const { pets, totalCount } = await PetService.findAll({
+            const { pets, hasNext } = await PetService.findAll({
                 after,
                 pageSize: first
             });
 
-            // make connection object with result + schema name + total count
+            // make connection object
             return makeConnection({
                 list: pets,
                 type: PET_SCHEMA_NAME,
-                totalCount
+                hasNext
             });
         },
         pet: async (_: unknown, args: GetPetArgs): Promise<Pet> => {
@@ -98,13 +98,13 @@ export const petResolver: IResolvers = {
         ): Promise<PaginationConnection<NestedUserPetHistory>> => {
             const after = convertToID(afterCursor);
 
-            const {
-                userHistory,
-                totalCount
-            } = await PetService.findUserHistory(parent.id, {
-                after,
-                pageSize: first
-            });
+            const { userHistory, hasNext } = await PetService.findUserHistory(
+                parent.id,
+                {
+                    after,
+                    pageSize: first
+                }
+            );
 
             const nestedUserHistory = userHistory.map(
                 ({ userID, nickname, ...history }) => ({
@@ -114,11 +114,11 @@ export const petResolver: IResolvers = {
                 })
             );
 
-            // make connection object with result + schema name + total count
+            // make connection object
             return makeConnection({
                 list: nestedUserHistory,
                 type: HISTORY_SCHEMA_NAME,
-                totalCount
+                hasNext
             });
         }
     }
