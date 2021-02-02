@@ -237,7 +237,7 @@ export class UserPetHistoryRepository {
             SELECT Pet.nickname, Pet.species, Pet.imageUrl, History.*
             FROM Pet JOIN UserPetHistory History
             ON History.userID IN (?)
-            AND History.petID = Pet.id
+            AND History.petID = Pet.id AND Pet.deleted = 0
             WHERE ${whereQuery}
         `;
 
@@ -263,7 +263,7 @@ export class UserPetHistoryRepository {
             SELECT User.nickname, History.*
             FROM User JOIN UserPetHistory History
             ON History.petID IN (?)
-            AND History.userID = User.id
+            AND History.userID = User.id AND Pet.deleted = 0
         `;
 
         // a flattened array with different petIDs will be returned
@@ -289,7 +289,7 @@ export class UserPetHistoryRepository {
             SELECT User.*,History.petID
             FROM UserPetHistory History INNER JOIN User
             ON History.petID IN (?)
-            AND History.userID = User.id
+            AND History.userID = User.id AND User.deleted = 0
             WHERE History.released = 0
         `;
 
