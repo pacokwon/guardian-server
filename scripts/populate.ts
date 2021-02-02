@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { getPool } from '../src/common/db';
 import { populateUsers } from './populateUsers';
 import { populatePets } from './populatePets';
