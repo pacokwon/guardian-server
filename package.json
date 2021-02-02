@@ -27,8 +27,6 @@
   },
   "homepage": "https://github.com/pacokwon/guardian#readme",
   "devDependencies": {
-    "@babel/preset-env": "^7.12.11",
-    "@babel/preset-typescript": "^7.12.7",
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.9",
     "@types/jest": "^26.0.19",
