@@ -4,7 +4,8 @@
     "module": "commonjs",
     "lib": ["es6"],
     "allowJs": true,
-    "outDir": "build",
+    "outDir": "dist",
+    "rootDir": "./src",
     "strict": true,
     "strictPropertyInitialization": false,
     "noImplicitAny": true,
@@ -16,5 +17,7 @@
     "paths": {
       "@/*": ["*"]
     }
-  }
+  },
+  "exclude": ["tests", "coverage", "scripts", "jest.config.js"],
+  "include": ["src"]
 }
