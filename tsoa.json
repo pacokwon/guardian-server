@@ -8,7 +8,7 @@
     "src/common/error.ts"
   ],
   "spec": {
-    "outputDirectory": "./docs",
+    "outputDirectory": "./src/docs",
     "specVersion": 3,
     "host": "localhost:3000",
     "name": "Guardian",

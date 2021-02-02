@@ -18,7 +18,7 @@ RegisterRoutes(app);
 
 // server swagger docs
 app.use('/docs', swaggerUi.serve, async (_: Request, res: Response) => {
-    res.send(swaggerUi.generateHTML(await import('../docs/swagger.json')));
+    res.send(swaggerUi.generateHTML(await import('./docs/swagger.json')));
 });
 
 // custom error handler
