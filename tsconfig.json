@@ -13,10 +13,7 @@
     "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "baseUrl": "./src", // for non-relative modules import
-    "paths": {
-      "@/*": ["*"]
-    }
+    "baseUrl": "./src" // for non-relative modules import
   },
   "exclude": ["tests", "coverage", "scripts", "jest.config.js"],
   "include": ["src"]
