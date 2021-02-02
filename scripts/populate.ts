@@ -10,7 +10,7 @@ async function main() {
         process.exit(0);
     }
 
-    const [usersArgs = '40', petsArgs = '40', timestampsArgs = '10'] = args;
+    const [usersArgs = '20', petsArgs = '50', timestampsArgs = '30'] = args;
     const petsCountHalf = Math.floor(Number(petsArgs) / 2);
 
     console.log(`👱 Creating ${usersArgs} Users...`);
