@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../../src/app';
+import * as RedisCache from '../../src/redis';
 import { getPool } from '../../src/common/db';
 
 describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
@@ -37,6 +38,10 @@ describe('/api/pets/:id/users + /api/users/:id/pets endpoint test', () => {
         await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
 
         await pool.end();
+
+        await RedisCache.removeBulk('*');
+        const redis = await RedisCache.getRedis();
+        await redis.quit();
     });
 
     it('should successfully register 3 users as guardians for 3 pets respectively', async () => {

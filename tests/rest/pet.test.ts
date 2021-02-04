@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../../src/app';
+import * as RedisCache from '../../src/redis';
 import { getPool } from '../../src/common/db';
 
 describe('/api/pets endpoint test', () => {
@@ -11,6 +12,10 @@ describe('/api/pets endpoint test', () => {
         await pool.query(`ALTER TABLE Pet AUTO_INCREMENT=1`);
 
         await pool.end();
+
+        await RedisCache.removeBulk('*');
+        const redis = await RedisCache.getRedis();
+        await redis.quit();
     });
 
     it('should retrieve an empty list of pets', async () => {

@@ -1,5 +1,6 @@
 import app from '../../src/app';
 import { getPool } from '../../src/common/db';
+import * as RedisCache from '../../src/redis';
 import request from 'supertest';
 
 describe('/api/users endpoint test', () => {
@@ -11,6 +12,10 @@ describe('/api/users endpoint test', () => {
         await pool.query(`ALTER TABLE User AUTO_INCREMENT=1`);
 
         await pool.end();
+
+        await RedisCache.removeBulk('*');
+        const redis = await RedisCache.getRedis();
+        await redis.quit();
     });
 
     it('should retrieve an empty list of users', async () => {
