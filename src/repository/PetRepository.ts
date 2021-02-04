@@ -1,6 +1,7 @@
 import { Pool, OkPacket, ResultSetHeader } from 'mysql2/promise';
 import { getPool } from '../common/db';
 import { SQLRow } from '../common/type';
+import { clearUndefinedFields } from '../common/utils';
 import { ApiError, Summary } from '../common/error';
 import { Pet } from '../model/Pet';
 
@@ -99,9 +100,9 @@ export class PetRepository {
     }
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
-        const [{ changedRows }] = await this.pool.query<OkPacket>(
+        const sanitized = clearUndefinedFields(fields);
             `UPDATE Pet SET ? WHERE id=?`,
-            [fields, id]
+            [sanitized, id]
         );
 
         if (changedRows === 0)
