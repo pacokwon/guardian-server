@@ -2,9 +2,9 @@
 // seems to preserve key ordering, but sort just in case
 // tag/key1:value1,key2:value2,...,keyN:valueN
 export const serialize = <P>(tag: string, params: P): string => {
-    const sortedParams = Object.entries(params).sort((a, b) =>
-        a[0].toString() < b[0].toString() ? -1 : 1
-    );
+    const sortedParams = Object.entries(params)
+        .filter(([_, value]) => value !== undefined)
+        .sort((a, b) => (a[0].toString() < b[0].toString() ? -1 : 1));
 
     // NOTE: this method does NOT escape special characters used here (":" "," "/")
     const serializedParams = sortedParams
