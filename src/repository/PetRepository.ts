@@ -101,12 +101,14 @@ export class PetRepository {
 
     async updateOne(id: number, fields: PetModifiableFields): Promise<void> {
         const sanitized = clearUndefinedFields(fields);
+
+        const [{ affectedRows, changedRows }] = await this.pool.query<OkPacket>(
             `UPDATE Pet SET ? WHERE id=?`,
             [sanitized, id]
         );
 
-        if (changedRows === 0)
-            throw new ApiError(Summary.NotFound, 'User not found');
+        if (changedRows === 0 && affectedRows === 0)
+            throw new ApiError(Summary.NotFound, 'Pet not found');
         else if (changedRows > 1)
             throw new ApiError(
                 Summary.InternalServerError,

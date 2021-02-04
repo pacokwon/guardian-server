@@ -94,12 +94,12 @@ export class UserRepository {
     async updateOne(id: number, fields: UserModifiableFields): Promise<void> {
         // implementation is incomplete since it does not support numerical types
         // it is left as is since the only modifiable field as of now is the nickname
-        const [{ changedRows }] = await this.pool.query<OkPacket>(
+        const [{ changedRows, affectedRows }] = await this.pool.query<OkPacket>(
             `UPDATE User SET ? WHERE id=?`,
             [fields, id]
         );
 
-        if (changedRows === 0)
+        if (changedRows === 0 && affectedRows === 0)
             throw new ApiError(Summary.NotFound, 'User not found');
         else if (changedRows > 1)
             throw new ApiError(
