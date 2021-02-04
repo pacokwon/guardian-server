@@ -163,6 +163,8 @@ const unregisterPet = async (petID: number, userID: number): Promise<void> => {
         set: { released: 1 },
         where: { petID, userID, released: 0 }
     });
+
+    await RedisCache.removeBulk([`User(${userID}):*`, `Pet(${petID}):*`]);
 };
 
 export {
