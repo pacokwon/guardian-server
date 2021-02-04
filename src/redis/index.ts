@@ -56,17 +56,6 @@ export const read = async <T, P>(options: {
     return JSON.parse(result) as T;
 };
 
-export const remove = async <P>(options: {
-    tag: string;
-    params?: P;
-}): Promise<void> => {
-    const redis = await getRedis();
-
-    const { tag, params = {} } = options;
-    const key = serialize(tag, params);
-    await redis.del(key);
-};
-
 export const getKeys = async (
     pattern: string | string[]
 ): Promise<string[]> => {
